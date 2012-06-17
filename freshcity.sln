@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dataproxy", "dataproxy\dataproxy.vcxproj", "{8224696B-F244-48F2-BB97-E789F6BFB85A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{B11C7CF2-45B4-4585-9F5C-3843F0584850}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tester", "tester\tester.vcxproj", "{5B26E307-5A46-442A-B84C-783F55960933}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B26E307-5A46-442A-B84C-783F55960933}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5B26E307-5A46-442A-B84C-783F55960933}.Debug|Win32.Build.0 = Debug|Win32
+		{5B26E307-5A46-442A-B84C-783F55960933}.Release|Win32.ActiveCfg = Release|Win32
+		{5B26E307-5A46-442A-B84C-783F55960933}.Release|Win32.Build.0 = Release|Win32
+		{8224696B-F244-48F2-BB97-E789F6BFB85A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8224696B-F244-48F2-BB97-E789F6BFB85A}.Debug|Win32.Build.0 = Debug|Win32
+		{8224696B-F244-48F2-BB97-E789F6BFB85A}.Release|Win32.ActiveCfg = Release|Win32
+		{8224696B-F244-48F2-BB97-E789F6BFB85A}.Release|Win32.Build.0 = Release|Win32
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850}.Debug|Win32.Build.0 = Debug|Win32
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850}.Release|Win32.ActiveCfg = Release|Win32
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
