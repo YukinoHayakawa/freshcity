@@ -38,6 +38,6 @@ ConfigFile::~ConfigFile() {
 	try {
 		boost::property_tree::ini_parser::write_ini(_filename, _parser.get()->_parser);
 	} catch(...) {
-		WriteLog("将设置写入到文件 " + _filename + " 时发生错误");
+		LOGERROR("将设置写入到文件 " + _filename + " 时发生错误");
 	}
 }

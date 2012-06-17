@@ -3,7 +3,7 @@
 #include "logging.h"
 
 FCException::FCException(const std::string& message) : _errormsg(message) {
-	WriteLog(message);
+	LOGERROR(message);
 };
 
 std::string FCException::GetMessage() {
