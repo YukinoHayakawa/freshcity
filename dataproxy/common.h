@@ -3,6 +3,6 @@
 
 #pragma warning(disable: 4996)
 
-#include <mongo/client/dbclient.h>
+#include "../mongo/client/dbclient.h"
 
 #endif

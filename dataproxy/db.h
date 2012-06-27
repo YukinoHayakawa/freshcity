@@ -3,6 +3,8 @@
 
 #include "common.h"
 
-mongo::DBClientConnection &GetDB();
+extern mongo::DBClientConnection dbconnection;
+
+void ConnectDatabase();
 
 #endif

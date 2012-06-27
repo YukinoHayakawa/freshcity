@@ -2,10 +2,17 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dataproxy", "dataproxy\dataproxy.vcxproj", "{8224696B-F244-48F2-BB97-E789F6BFB85A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850} = {B11C7CF2-45B4-4585-9F5C-3843F0584850}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "common\common.vcxproj", "{B11C7CF2-45B4-4585-9F5C-3843F0584850}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tester", "tester\tester.vcxproj", "{5B26E307-5A46-442A-B84C-783F55960933}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8224696B-F244-48F2-BB97-E789F6BFB85A} = {8224696B-F244-48F2-BB97-E789F6BFB85A}
+		{B11C7CF2-45B4-4585-9F5C-3843F0584850} = {B11C7CF2-45B4-4585-9F5C-3843F0584850}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
