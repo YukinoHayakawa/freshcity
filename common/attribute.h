@@ -20,7 +20,10 @@ private:
 
 public:
 	AttributeElement(const std::string& value);
+	AttributeElement(const char* value);
 	AttributeElement(double value);
+	AttributeElement(int value);
+	AttributeElement(long value);
 	AttributeElement(bool value);
 	AttributeElement::Type GetValueType();
 	std::string ToString();

@@ -21,10 +21,16 @@
     <ClInclude Include="db.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="base.h">
+    <ClInclude Include="config.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="config.h">
+    <ClInclude Include=".\base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basebuilder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\profilebuilder.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -38,10 +44,16 @@
     <ClCompile Include="config.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="base.cpp">
+    <ClCompile Include="..\mongo\client\mongo_client_lib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\mongo\client\mongo_client_lib.cpp">
+    <ClCompile Include=".\base.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basebuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\profilebuilder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

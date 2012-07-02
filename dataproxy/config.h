@@ -1,3 +1,3 @@
 #include "../common/config.h"
 
-extern ConfigFile dbconfig;
+ConfigFile& GetConfig();

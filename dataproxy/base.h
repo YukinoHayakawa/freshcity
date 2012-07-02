@@ -10,17 +10,19 @@
 
 class FCEXPORT BaseObject {
 private:
-	struct AttributeMap;
-	std::string _uniqueid;
+	struct Members;
 	std::string _collection;
-	boost::shared_ptr<BaseObject::AttributeMap> _attributes;
+	std::string _uniqueid;
+	boost::shared_ptr<BaseObject::Members> _members;
 
 public:
+	BaseObject(const std::string& collection, const std::string& uniqueid);
 	BaseObject(const std::string& uniqueid);
-	void SetAttribute(const std::string& key, const AttributeElement& value);
-	void RemoveAttribute(const std::string& key);
 	AttributeElement GetAttribute(const std::string& key);
-	void Submit();
+	void SetAttribute(const std::string& key, const AttributeElement& value);
+	void SetAttributeIncrease(const std::string& key, double value);
+	void RemoveAttribute(const std::string& key);
+	void Synchronize();
 };
 
 #endif

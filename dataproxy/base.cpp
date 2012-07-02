@@ -1,72 +1,140 @@
 #include "common.h"
 #define FCEXPORTIMPL
 #include <boost/unordered_map.hpp>
+#include <vector>
 #include "../common/exception.h"
 #include "../common/logging.h"
+#include "config.h"
 #include "db.h"
 #include "base.h"
-#include "config.h"
 
-struct BaseObject::AttributeMap {
-	boost::unordered_map<std::string, boost::shared_ptr<AttributeElement>> map;
+struct BaseObject::Members {
+	typedef boost::shared_ptr<AttributeElement> ElementPtr;
+	typedef boost::unordered_map<std::string, ElementPtr> ElementBuffer;
+	typedef boost::unordered_map<std::string, double> IncreaseBuffer;
+	typedef std::vector<std::string> RemoveList;
+	ElementBuffer loaded;
+	ElementBuffer set;
+	IncreaseBuffer increase;
+	RemoveList remove;
 };
 
-BaseObject::BaseObject(const std::string& uniqueid)	: _uniqueid(uniqueid),
-	_collection(dbconfig.GetAttribute("Database.undefined").ToString()), _attributes(new BaseObject::AttributeMap) {
-		ConnectDatabase();
+BaseObject::BaseObject(const std::string& collection, const std::string& uniqueid)
+	: _collection(collection), _uniqueid(uniqueid), _members(new BaseObject::Members) {
+		Synchronize();
+}
+
+BaseObject::BaseObject(const std::string& uniqueid)
+	: _collection(GetConfig().GetAttribute("Database.undefined").ToString()), _uniqueid(uniqueid),_members(new BaseObject::Members) {
+		Synchronize();
 }
 
 void BaseObject::SetAttribute(const std::string& key, const AttributeElement& value) {
-	_attributes->map[key] = boost::shared_ptr<AttributeElement>(new AttributeElement(value));
+	_members->set[key] = Members::ElementPtr(new AttributeElement(value));
+}
+
+void BaseObject::SetAttributeIncrease(const std::string& key, double value) {
+	_members->increase[key] = value;
 }
 
 void BaseObject::RemoveAttribute(const std::string& key) {
-	try {
-		_attributes->map.erase(key);
-	} catch(...) {
-		LOGERROR("不存在的键值 " + key);
-		throw FCException("尝试删除一对不存在的键值");
-	}
+	_members->remove.push_back(key);
 }
 
 AttributeElement BaseObject::GetAttribute(const std::string& key) {
 	try {
-		return *_attributes->map.at(key).get();
+		return *_members->loaded.at(key).get();
 	} catch(...) {
 		LOGERROR("不存在的键值 " + key);
 		throw FCException("尝试查找并获取不存在的值");
 	}
 }
 
-void BaseObject::Submit() {
-	mongo::BSONObjBuilder attributelist;
-	boost::unordered_map<std::string, boost::shared_ptr<AttributeElement>>& map = _attributes->map;
-	boost::unordered_map<std::string, boost::shared_ptr<AttributeElement>>::iterator mapiter = map.begin();
+void BaseObject::Synchronize() {
+	mongo::BSONObjBuilder set;
+	mongo::BSONObjBuilder remove;
+	mongo::BSONObjBuilder increase;
+	bool emptyset = _members->set.empty();
+	bool emptyincrease = _members->increase.empty();
+	bool emptyremove = _members->remove.empty();
 
-	for(mapiter; mapiter != map.end(); mapiter++) {
-		switch(mapiter->second->GetValueType()) {
-		case AttributeElement::Type::STRING:
-			attributelist.append("attribute." + mapiter->first, mapiter->second->ToString());
-			break;
+	// Set
+	if(!emptyset) {
+		for(Members::ElementBuffer::iterator mapiter = _members->set.begin(); mapiter != _members->set.end(); mapiter++) {
+			switch(mapiter->second->GetValueType()) {
+			case AttributeElement::Type::STRING:
+				set.append("attribute." + mapiter->first, mapiter->second->ToString());
+				break;
 
-		case AttributeElement::Type::NUMBER:
-			attributelist.append("attribute." + mapiter->first, mapiter->second->ToNumber());
-			break;
+			case AttributeElement::Type::NUMBER:
+				set.appendNumber("attribute." + mapiter->first, mapiter->second->ToNumber());
+				break;
 
-		case AttributeElement::Type::BOOL:
-			attributelist.append("attribute." + mapiter->first, mapiter->second->ToBool());
-			break;
+			case AttributeElement::Type::BOOL:
+				set.appendBool("attribute." + mapiter->first, mapiter->second->ToBool());
+				break;
 			
-		default:
-			break;
+			default:
+				break;
+			}
 		}
+		_members->set.clear();
+	}
+
+	// Increase
+	if(!emptyincrease) {
+		for(Members::IncreaseBuffer::iterator mapiter = _members->increase.begin(); mapiter != _members->increase.end(); mapiter++) {
+			increase.appendNumber("attribute." + mapiter->first, mapiter->second);
+		}
+		_members->increase.clear();
+	}
+
+	// Remove
+	if(!emptyremove) {
+		for(Members::RemoveList::iterator iter = _members->remove.begin(); iter != _members->remove.end(); iter++) {
+			remove.appendNumber("attribute." + *iter, 1);
+		}
+		_members->remove.clear();
 	}
 
 	try {
-		dbconnection.update(_collection, BSON("_id" << mongo::OID(_uniqueid)), BSON("$set" << attributelist.obj()), true);
+		if(!(emptyset && emptyincrease && emptyremove)) {
+			DBInstance::GetDB().update(_collection, BSON("_id" << mongo::OID(_uniqueid)),
+				BSON("$set" << set.obj() <<
+				"$unset" << remove.obj() <<
+				"$inc" << increase.obj()));
+		}
+
+		mongo::BSONObj updated = DBInstance::GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
+
+		if(updated.isEmpty()) {
+			LOGERROR("指定对象 " + _collection + " ( ObjectID: " + _uniqueid + " ) 不存在");
+			throw FCException("尝试获取不存在的对象");
+		}
+
+		if(updated.hasField("attribute")) {
+			mongo::BSONObj attributes = updated.getObjectField("attribute");
+			_members->loaded.clear();
+			for(mongo::BSONObjIterator iter(attributes); iter.more();) {
+				mongo::BSONElement e = iter.next();
+				switch(e.type()) {
+				case mongo::BSONType::NumberDouble:
+					_members->loaded.insert(std::make_pair(e.fieldName(), Members::ElementPtr(new AttributeElement(e.Number()))));
+					break;
+
+				case mongo::BSONType::Bool:
+					_members->loaded.insert(std::make_pair(e.fieldName(), Members::ElementPtr(new AttributeElement(e.Bool()))));
+					break;
+
+				case mongo::BSONType::String:
+					_members->loaded.insert(std::make_pair(e.fieldName(), Members::ElementPtr(new AttributeElement(e.String()))));
+					break;
+				}
+			}
+		}
 	} catch(mongo::UserException& e) {
-		LOGERROR("提交对象数据时发生错误: " + e.toString());
-		throw FCException("无法保存对象数据");
+		LOGERROR("同步对象数据时发生错误: " + e.toString());
+		throw FCException("无法同步对象数据");
 	}
 
 	return;

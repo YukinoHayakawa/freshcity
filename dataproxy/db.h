@@ -3,8 +3,9 @@
 
 #include "common.h"
 
-extern mongo::DBClientConnection dbconnection;
-
-void ConnectDatabase();
+class DBInstance {
+public:
+	static mongo::DBClientConnection& GetDB();
+};
 
 #endif
