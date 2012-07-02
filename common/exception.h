@@ -12,7 +12,7 @@ private:
 
 public:
 	FCException(const std::string& message);
-	std::string GetMessage();
+	std::string GetMessage() const;
 };
 
 #endif

@@ -16,15 +16,15 @@ AttributeElement::AttributeElement(long value) : _type(Type::NUMBER), _value(boo
 
 AttributeElement::AttributeElement(bool value) : _type(Type::BOOL), _value(boost::lexical_cast<std::string>(value)) {}
 
-AttributeElement::Type AttributeElement::GetValueType() { 
+AttributeElement::Type AttributeElement::GetValueType() const { 
 	return _type;
 }
 
-std::string AttributeElement::ToString() {
+std::string AttributeElement::ToString() const {
 	return _value;
 }
 
-double AttributeElement::ToNumber() {
+double AttributeElement::ToNumber() const {
 	try {
 		return boost::lexical_cast<double>(_value);
 	} catch (...) {
@@ -33,7 +33,7 @@ double AttributeElement::ToNumber() {
 	}
 }
 
-bool AttributeElement::ToBool() {
+bool AttributeElement::ToBool() const {
 	try {
 		return boost::lexical_cast<bool>(_value);
 	} catch (...) {

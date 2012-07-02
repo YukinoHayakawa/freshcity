@@ -33,6 +33,12 @@
     <ClInclude Include=".\profilebuilder.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="profile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="basemembsers.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.cpp">
@@ -54,6 +60,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include=".\profilebuilder.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="profile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

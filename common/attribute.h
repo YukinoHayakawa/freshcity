@@ -25,10 +25,10 @@ public:
 	AttributeElement(int value);
 	AttributeElement(long value);
 	AttributeElement(bool value);
-	AttributeElement::Type GetValueType();
-	std::string ToString();
-	double ToNumber();
-	bool ToBool();
+	AttributeElement::Type GetValueType() const;
+	std::string ToString() const;
+	double ToNumber() const;
+	bool ToBool() const;
 };
 
 #endif

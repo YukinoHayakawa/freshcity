@@ -1,6 +1,7 @@
 #include <iostream>
 #include "../dataproxy/base.h"
-#include "../dataproxy/basebuilder.h"
+#include "../dataproxy/profilebuilder.h"
+#include "../dataproxy/profile.h"
 #include <time.h>
 #include <iostream>
 
@@ -10,21 +11,33 @@
 int main() {
 	std::ios::sync_with_stdio(false);
 
-	std::string newid(CreateObject("freshcity.user"));
+	std::string newid(CreateProfile("TennenColl"));
 	std::cout << newid << std::endl;
 
-	BaseObject obj("freshcity.user", newid);
-	obj.SetAttribute("name", AttributeElement("TennenColl"));
-	obj.SetAttribute("age", AttributeElement(12));
-	obj.Synchronize();
+	Profile profile(newid);
+	profile.SetAttribute("name", AttributeElement("TennenColl"));
+	profile.SetAttribute("age", AttributeElement(12));
 
-	std::cout << obj.GetAttribute("name").ToString() << std::endl;
+	std::string password;
+	std::cout << "Input password:" << std::endl;
+	std::cin >> password;
+	std::cout << profile.CheckPassword(password) << std::endl;
+	profile.Synchronize();
 
-	obj.SetAttributeIncrease("age", 3);
-	obj.Synchronize();
+	std::cout << profile.GetAttribute("name").ToString() << std::endl;
+	std::cout << profile.GetAttribute("age").ToNumber() << std::endl;
+
+	profile.SetAttributeIncrease("age", 3);
+	profile.Synchronize();
 	
-	std::cout << obj.GetAttribute("age").ToString() << std::endl;
+	std::cout << profile.GetAttribute("age").ToString() << std::endl;
 
-	getchar();
+	profile.SetPassword("freshrat");
+	std::cout << "Input password:" << std::endl;
+	std::cin >> password;
+	std::cout << profile.CheckPassword(password) << std::endl;
+	profile.Synchronize();
+
+	system("pause");
 	return 0;
 }

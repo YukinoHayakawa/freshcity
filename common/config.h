@@ -16,7 +16,7 @@ private:
 
 public:
 	ConfigFile(const std::string& filename);
-	AttributeElement GetAttribute(const std::string& path);
+	AttributeElement GetAttribute(const std::string& path) const;
 	void SetAttribute(const std::string& path, const std::string& value);
 	void Reload();
 	void Save();

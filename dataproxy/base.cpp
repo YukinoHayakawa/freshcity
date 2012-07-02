@@ -1,23 +1,10 @@
 #include "common.h"
 #define FCEXPORTIMPL
-#include <boost/unordered_map.hpp>
-#include <vector>
 #include "../common/exception.h"
 #include "../common/logging.h"
 #include "config.h"
 #include "db.h"
-#include "base.h"
-
-struct BaseObject::Members {
-	typedef boost::shared_ptr<AttributeElement> ElementPtr;
-	typedef boost::unordered_map<std::string, ElementPtr> ElementBuffer;
-	typedef boost::unordered_map<std::string, double> IncreaseBuffer;
-	typedef std::vector<std::string> RemoveList;
-	ElementBuffer loaded;
-	ElementBuffer set;
-	IncreaseBuffer increase;
-	RemoveList remove;
-};
+#include "basemembsers.h"
 
 BaseObject::BaseObject(const std::string& collection, const std::string& uniqueid)
 	: _collection(collection), _uniqueid(uniqueid), _members(new BaseObject::Members) {
@@ -41,7 +28,7 @@ void BaseObject::RemoveAttribute(const std::string& key) {
 	_members->remove.push_back(key);
 }
 
-AttributeElement BaseObject::GetAttribute(const std::string& key) {
+AttributeElement BaseObject::GetAttribute(const std::string& key) const {
 	try {
 		return *_members->loaded.at(key).get();
 	} catch(...) {
@@ -105,15 +92,15 @@ void BaseObject::Synchronize() {
 				"$inc" << increase.obj()));
 		}
 
-		mongo::BSONObj updated = DBInstance::GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
+		_members->rawdata = DBInstance::GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
 
-		if(updated.isEmpty()) {
+		if(_members->rawdata.isEmpty()) {
 			LOGERROR("指定对象 " + _collection + " ( ObjectID: " + _uniqueid + " ) 不存在");
 			throw FCException("尝试获取不存在的对象");
 		}
 
-		if(updated.hasField("attribute")) {
-			mongo::BSONObj attributes = updated.getObjectField("attribute");
+		if(_members->rawdata.hasField("attribute")) {
+			mongo::BSONObj attributes = _members->rawdata.getObjectField("attribute");
 			_members->loaded.clear();
 			for(mongo::BSONObjIterator iter(attributes); iter.more();) {
 				mongo::BSONElement e = iter.next();

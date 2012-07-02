@@ -3,6 +3,6 @@
 
 FCException::FCException(const std::string& message) : _errormsg(message) {};
 
-std::string FCException::GetMessage() {
+std::string FCException::GetMessage() const {
 	return _errormsg;
 }

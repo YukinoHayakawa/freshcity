@@ -13,7 +13,7 @@ ConfigFile::ConfigFile(const std::string& filename) : _filename(filename), _pars
 	Reload();
 }
 
-AttributeElement ConfigFile::GetAttribute(const std::string& path) {
+AttributeElement ConfigFile::GetAttribute(const std::string& path) const {
 	try {
 		return AttributeElement(_parser->parser.get<std::string>(path));
 	} catch(...) {
