@@ -36,6 +36,9 @@
     <ClInclude Include="attribute.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="minidump.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="logging.cpp">
@@ -54,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="attribute.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="minidump.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

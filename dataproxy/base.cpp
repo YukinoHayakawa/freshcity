@@ -95,7 +95,7 @@ void BaseObject::Synchronize() {
 		_members->rawdata = DBInstance::GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
 
 		if(_members->rawdata.isEmpty()) {
-			LOGERROR("指定对象 " + _collection + " ( ObjectID: " + _uniqueid + " ) 不存在");
+			LOGERROR("指定对象 " + _uniqueid + " ( Collection: " + _collection + " ) 不存在");
 			throw FCException("尝试获取不存在的对象");
 		}
 

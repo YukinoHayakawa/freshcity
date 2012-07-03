@@ -1,4 +1,5 @@
 #include <iostream>
+#include "../common/minidump.h"
 #include "../dataproxy/base.h"
 #include "../dataproxy/profilebuilder.h"
 #include "../dataproxy/profile.h"
@@ -9,6 +10,8 @@
 #pragma comment(lib, "dataproxy.lib")
 
 int main() {
+	SetExceptionHandler();
+
 	std::ios::sync_with_stdio(false);
 
 	std::string newid(CreateProfile("TennenColl"));
@@ -37,6 +40,8 @@ int main() {
 	std::cin >> password;
 	std::cout << profile.CheckPassword(password) << std::endl;
 	profile.Synchronize();
+
+	*(int*)0 = 0;
 
 	system("pause");
 	return 0;

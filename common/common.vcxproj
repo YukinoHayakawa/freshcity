@@ -16,6 +16,7 @@
     <ClCompile Include="attribute.cpp" />
     <ClCompile Include="hash.cpp" />
     <ClCompile Include="logging.cpp" />
+    <ClCompile Include="minidump.cpp" />
     <ClCompile Include="sha256.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +26,7 @@
     <ClInclude Include="export.h" />
     <ClInclude Include="hash.h" />
     <ClInclude Include="logging.h" />
+    <ClInclude Include="minidump.h" />
     <ClInclude Include="sha256.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
