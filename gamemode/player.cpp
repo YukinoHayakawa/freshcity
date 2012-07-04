@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-#define FCEXPORTIMPL
-#include "exception.h"
+#include "player.h"
 
-FCException::FCException(const std::string& message) : _errormsg(message) {};
-
-std::string FCException::GetMessage() const {
-	return _errormsg;
-}
+SinglePlayer::SinglePlayer(int playerid) : Player(playerid), Profile(GetName()) {}

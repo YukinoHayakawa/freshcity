@@ -14,8 +14,8 @@
     <VCTargetsPath Condition="'$(VCTargetsPath11)' != '' and '$(VSVersion)' == '' and '$(VisualStudioVersion)' == ''">$(VCTargetsPath11)</VCTargetsPath>
   </PropertyGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{5B26E307-5A46-442A-B84C-783F55960933}</ProjectGuid>
-    <RootNamespace>tester</RootNamespace>
+    <ProjectGuid>{425924C6-3DA5-4F20-B25D-7B7BCF7FEEF3}</ProjectGuid>
+    <RootNamespace>teststation</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

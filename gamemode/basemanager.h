@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-#define FCEXPORTIMPL
-#include "exception.h"
+#ifndef FRESHCITY_GAMEMODE_BASEMANAGER
+#define FRESHCITY_GAMEMODE_BASEMANAGER
 
-FCException::FCException(const std::string& message) : _errormsg(message) {};
+template<class T>
+class BaseManager {
 
-std::string FCException::GetMessage() const {
-	return _errormsg;
-}
+#endif

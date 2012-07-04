@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-#define FCEXPORTIMPL
-#include "exception.h"
+#ifndef FRESHCITY_GAMEMODE_PLAYER
+#define FRESHCITY_GAMEMODE_PLAYER
 
-FCException::FCException(const std::string& message) : _errormsg(message) {};
+#include "../dataproxy/profile.h"
+#include <sampgdk/a_players.h>
 
-std::string FCException::GetMessage() const {
-	return _errormsg;
-}
+class SinglePlayer : public Player, public Profile {
+public:
+	SinglePlayer(int playerid);
+};
+
+#endif
