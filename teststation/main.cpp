@@ -16,8 +16,7 @@
 
 #include <iostream>
 #include "../common/minidump.h"
-#include "../dataproxy/base.h"
-#include "../dataproxy/profilebuilder.h"
+#include "../common/gbkencoder.h"
 #include "../dataproxy/profile.h"
 #include <time.h>
 #include <iostream>
@@ -30,34 +29,32 @@ int main() {
 
 	std::ios::sync_with_stdio(false);
 
-	std::string newid(CreateProfile("TennenColl"));
-	std::cout << newid << std::endl;
-
-	Profile profile(newid);
-	profile.SetAttribute("name", AttributeElement("TennenColl"));
-	profile.SetAttribute("age", AttributeElement(12));
-
+	Profile profile;
 	std::string password;
-	std::cout << "Input password:" << std::endl;
+	std::cout << "Creating a new profile, now set password:" << std::endl;
+	std::cin >> password;
+	profile.SetPassword(password);
+
+	std::cout << "Verify password:" << std::endl;
 	std::cin >> password;
 	std::cout << profile.CheckPassword(password) << std::endl;
+
+	std::cout << "Set age and name" << std::endl;
+	profile.SetAttribute("name", AttributeElement(GBKToUTF8("É³¶¡Óã")));
+	profile.SetAttribute("age", AttributeElement(12));
+	std::cout << "Synchronize profile" << std::endl;
 	profile.Synchronize();
 
-	std::cout << profile.GetAttribute("name").ToString() << std::endl;
-	std::cout << profile.GetAttribute("age").ToNumber() << std::endl;
+	std::cout << "name = " << profile.GetAttribute("name").ToString() << std::endl;
+	std::cout << "name = " << UTF8ToGBK(profile.GetAttribute("name").ToString()) << std::endl;
+	std::cout << "age = " << profile.GetAttribute("age").ToNumber() << std::endl;
 
+	std::cout << "Age += 3" << std::endl;
 	profile.SetAttributeIncrease("age", 3);
+	std::cout << "Synchronize profile" << std::endl;
 	profile.Synchronize();
 	
-	std::cout << profile.GetAttribute("age").ToString() << std::endl;
-
-	profile.SetPassword("freshrat");
-	std::cout << "Input password:" << std::endl;
-	std::cin >> password;
-	std::cout << profile.CheckPassword(password) << std::endl;
-	profile.Synchronize();
-
-	*(int*)0 = 0;
+	std::cout << "now age = " << profile.GetAttribute("age").ToString() << std::endl;
 
 	system("pause");
 	return 0;

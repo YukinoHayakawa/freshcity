@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-#include "common.h"
-#define FCEXPORTIMPL
-#include "db.h"
-#include <time.h>
-#include "basebuilder.h"
+#ifndef FRESHCITY_COMMON_GBKENCODER
+#define FRESHCITY_COMMON_GBKENCODER
 
-FCEXPORT std::string CreateObject(const std::string& collection) {
-	mongo::BSONObj submit = mongo::BSONObjBuilder().genOID().appendNumber("timestamp", time(0)).obj();
-	mongo::BSONElement OID;
-	submit.getObjectID(OID);
-	DBInstance::GetDB().insert(collection, submit);
-	return OID.OID().toString();
-}
+#include "export.h"
+#include <string>
+
+FCEXPORT std::string GBKToUTF8(const std::string& strGBK);
+FCEXPORT std::string UTF8ToGBK(const std::string& strUTF8);
+
+#endif

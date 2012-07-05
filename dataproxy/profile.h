@@ -30,7 +30,9 @@ private:
 	void FlushPasswordHash();
 
 public:
+	Profile();
 	Profile(const std::string& profileid);
+	bool HasPassword() const;
 	bool CheckPassword(const std::string& input) const;
 	void SetPassword(const std::string& newpassword);
 	void Synchronize();

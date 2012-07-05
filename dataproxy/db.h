@@ -19,9 +19,6 @@
 
 #include "common.h"
 
-class DBInstance {
-public:
-	static mongo::DBClientConnection& GetDB();
-};
+mongo::DBClientConnection& GetDB();
 
 #endif

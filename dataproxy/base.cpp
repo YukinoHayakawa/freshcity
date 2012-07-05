@@ -27,9 +27,18 @@ BaseObject::BaseObject(const std::string& collection, const std::string& uniquei
 		Synchronize();
 }
 
-BaseObject::BaseObject(const std::string& uniqueid)
-	: _collection(GetConfig().GetAttribute("Database.undefined").ToString()), _uniqueid(uniqueid),_members(new BaseObject::Members) {
+BaseObject::BaseObject(const std::string& collection)
+	: _collection(collection), _members(new BaseObject::Members) {
+		mongo::BSONObj submit(mongo::BSONObjBuilder().genOID().obj());
+		mongo::BSONElement OID;
+		submit.getObjectID(OID);
+		GetDB().insert(collection, submit);
+		_uniqueid = OID.OID().toString();
 		Synchronize();
+}
+
+std::string BaseObject::GetObjectID() const {
+	return _uniqueid;
 }
 
 void BaseObject::SetAttribute(const std::string& key, const AttributeElement& value) {
@@ -102,13 +111,13 @@ void BaseObject::Synchronize() {
 
 	try {
 		if(!(emptyset && emptyincrease && emptyremove)) {
-			DBInstance::GetDB().update(_collection, BSON("_id" << mongo::OID(_uniqueid)),
+			GetDB().update(_collection, BSON("_id" << mongo::OID(_uniqueid)),
 				BSON("$set" << set.obj() <<
 				"$unset" << remove.obj() <<
 				"$inc" << increase.obj()));
 		}
 
-		_members->rawdata = DBInstance::GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
+		_members->rawdata = GetDB().findOne(_collection, BSON("_id" << mongo::OID(_uniqueid)));
 
 		if(_members->rawdata.isEmpty()) {
 			LOGERROR("指定对象 " + _uniqueid + " ( Collection: " + _collection + " ) 不存在");

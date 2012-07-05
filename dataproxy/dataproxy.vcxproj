@@ -68,8 +68,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include=".\base.h" />
-    <ClInclude Include=".\profilebuilder.h" />
-    <ClInclude Include="basebuilder.h" />
     <ClInclude Include="basemembsers.h" />
     <ClInclude Include="common.h" />
     <ClInclude Include="config.h" />
@@ -81,8 +79,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include=".\base.cpp" />
-    <ClCompile Include=".\profilebuilder.cpp" />
-    <ClCompile Include="basebuilder.cpp" />
     <ClCompile Include="common.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>

@@ -33,7 +33,8 @@ protected:
 
 public:
 	BaseObject(const std::string& collection, const std::string& uniqueid);
-	BaseObject(const std::string& uniqueid);
+	BaseObject(const std::string& collection);
+	std::string GetObjectID() const;
 	AttributeElement GetAttribute(const std::string& key) const;
 	void SetAttribute(const std::string& key, const AttributeElement& value);
 	void SetAttributeIncrease(const std::string& key, double value);

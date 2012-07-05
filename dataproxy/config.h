@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include "../common/export.h"
 #include "../common/config.h"
 
-ConfigFile& GetConfig();
+FCEXPORT ConfigFile& GetConfig();

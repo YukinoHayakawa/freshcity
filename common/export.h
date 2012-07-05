@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+#ifndef FRESHCITY_COMMON_EXPORT
+#define FRESHCITY_COMMON_EXPORT
+
 #ifdef FCEXPORTIMPL
 #define FCEXPORT __declspec(dllexport)
 #else
 #define FCEXPORT __declspec(dllimport)
+#endif
+
 #endif

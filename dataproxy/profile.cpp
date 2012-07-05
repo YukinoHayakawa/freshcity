@@ -28,22 +28,29 @@ void Profile::FlushPasswordHash() {
 	try {
 		_passwordhash = _members->rawdata.getObjectField("auth").getField("password").String();
 	} catch(...) {
-		LOGERROR("位于 " + GetConfig().GetAttribute("Database.profile").ToString() + " 的无效用户资料 " + _uniqueid);
+		LOGERROR("位于 " + GetConfig().GetAttribute("Database.profile").ToString() + " 的不包含密码的用户资料 " + _uniqueid);
 		throw FCException("不包含密码的用户文档");
 	}
 }
+
+Profile::Profile() : BaseObject(GetConfig().GetAttribute("Database.profile").ToString()) {}
 
 Profile::Profile(const std::string& profileid)
 	: BaseObject(GetConfig().GetAttribute("Database.profile").ToString(), profileid) {
 		FlushPasswordHash();
 }
 
+bool Profile::HasPassword() const {
+	return !_passwordhash.empty();
+}
+
 bool Profile::CheckPassword(const std::string& input) const {
+	if(_passwordhash.empty()) return false;
 	return GetPasswordDigest(input) == _passwordhash;
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
-	DBInstance::GetDB().update(GetConfig().GetAttribute("Database.profile").ToString(), 
+	GetDB().update(GetConfig().GetAttribute("Database.profile").ToString(), 
 		BSON("_id" << mongo::OID(_uniqueid)), BSON("$set" << BSON("auth.password" << GetPasswordDigest(newpassword))));
 	Synchronize();
 }

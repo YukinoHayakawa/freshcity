@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+#define FCEXPORTIMPL
 #include "config.h"
 
-ConfigFile dbconfig("freshcity_dataproxy.ini");
+ConfigFile dbconfig("freshcity.ini");
 
-ConfigFile& GetConfig() {
+FCEXPORT ConfigFile& GetConfig() {
 	return dbconfig;
 }
