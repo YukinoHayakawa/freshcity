@@ -70,6 +70,8 @@
     <ClCompile Include=".\basic_algorithm_sha256.cpp" />
     <ClCompile Include=".\application_user_auth.cpp" />
     <ClCompile Include=".\application_config.cpp" />
+    <ClCompile Include="basic_algorithm_wchar.cpp" />
+    <ClCompile Include="basic_debug_logging.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +79,7 @@
     <ClInclude Include=".\basic_algorithm_sha256.h" />
     <ClInclude Include=".\application_user_auth.h" />
     <ClInclude Include=".\application_config.h" />
+    <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

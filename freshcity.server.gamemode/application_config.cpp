@@ -28,7 +28,7 @@ bool inline LoadConfig() {
 void* configinit((void*)LoadConfig());
 
 void ReloadConfig() {
-	boost::property_tree::ini_parser::read_ini("freshcity.ini", _config);
+	boost::property_tree::ini_parser::read_ini("freshcity.server.config.ini", _config);
 }
 
 boost::property_tree::ptree& GetConfig() {

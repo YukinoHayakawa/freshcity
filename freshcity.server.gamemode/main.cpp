@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-#include "basic_algorithm_gbkencoder.h"
-#include "application_user_auth.h"
-#include "application_config.h"
-#include <iostream>
+#include "basic_debug_logging.h"
+
+using namespace log4cplus;
+using namespace log4cplus::helpers;
 
 int main() {
-	std::cout << CONFIG_STRING("Database.host") << std::endl;
-	std::cout << GetPasswordDigest("TennenColl") << std::endl;
-	std::cout << UTF8ToGBK(GBKToUTF8("É³¶¡Óã")) << std::endl;
-	*(int*)0 = 0;
+	LOG_TRACE("boolean: " << true);
+    LOG_WARN("double: " << 3.1415926535);
 	system("pause");
 	return 0;
 }

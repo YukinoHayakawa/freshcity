@@ -30,6 +30,9 @@
     <ClInclude Include="basic_debug_logging.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="basic_algorithm_wchar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -48,6 +51,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basic_debug_logging.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="basic_algorithm_wchar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

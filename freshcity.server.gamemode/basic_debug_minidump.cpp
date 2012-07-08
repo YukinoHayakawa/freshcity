@@ -20,7 +20,7 @@
 #include <DbgHelp.h>
 #include <sstream>
 
-#pragma comment(lib, "DbgHelp.lib") 
+#pragma comment(lib, "DbgHelp.lib")
 
 LONG WINAPI ExceptionFilter(struct _EXCEPTION_POINTERS *pExceptionInfo) {
 	LONG ret = EXCEPTION_CONTINUE_SEARCH;
@@ -46,4 +46,4 @@ LONG WINAPI ExceptionFilter(struct _EXCEPTION_POINTERS *pExceptionInfo) {
 	return ret;
 }
 
-void* minidump_instance(SetUnhandledExceptionFilter(ExceptionFilter));
+void* minidumpinit(SetUnhandledExceptionFilter(ExceptionFilter));

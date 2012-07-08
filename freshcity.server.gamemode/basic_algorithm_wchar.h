@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_BASIC_DEBUG_LOGGING
-#define FRESHCITY_BASIC_DEBUG_LOGGING
+#ifndef FRESHCITY_BASIC_ALGORITHM_WCHAR
+#define FRESHCITY_BASIC_ALGORITHM_WCHAR
 
-#include <log4cplus/logger.h>
+#include <string>
 
-extern log4cplus::Logger globalogger;
-
-#define LOG_TRACE(x) LOG4CPLUS_TRACE(globalogger, x)
-#define LOG_DEBUG(x) LOG4CPLUS_DEBUG(globalogger, x)
-#define LOG_INFO(x) LOG4CPLUS_INFO(globalogger, x)
-#define LOG_WARN(x) LOG4CPLUS_WARN(globalogger, x)
-#define LOG_ERROR(x) LOG4CPLUS_ERROR(globalogger, x)
-#define LOG_FATAL(x) LOG4CPLUS_FATAL(globalogger, x)
+std::wstring string2wstring(const std::string& str);
+std::string wstring2string(const std::wstring& wstr);
 
 #endif
