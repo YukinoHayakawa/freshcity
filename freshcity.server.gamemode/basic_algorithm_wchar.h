@@ -22,4 +22,7 @@
 std::wstring string2wstring(const std::string& str);
 std::string wstring2string(const std::wstring& wstr);
 
+#define S2W(x) string2wstring(x)
+#define W2S(x) wstring2string(x)
+
 #endif

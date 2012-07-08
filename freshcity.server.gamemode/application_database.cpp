@@ -15,11 +15,27 @@
  */
 
 #include "application_database.h"
+#include "application_config.h"
 #include "basic_debug_logging.h"
 #include "basic_algorithm_wchar.h"
 
-int main() {
-	LOG_INFO(S2W(GetDB().toString()));
-	::system("pause");
-	return 0;
+#pragma comment(lib, "freshcity.dependency.mongoclient.lib")
+
+mongo::DBClientConnection _dbconnection(true);
+bool _connected;
+
+mongo::DBClientConnection& GetDB() {
+	if(!_connected) {
+		std::string host(CONFIG_STRING("Database.host"));
+		LOG_INFO("尝试连接到 " << S2W(host) << " 的 mongodb 服务器");
+		try {
+			_dbconnection.connect(host);
+			_connected = true;
+			LOG_INFO("已连接");
+		} catch(mongo::DBException &e) {
+			LOG_FATAL("连接数据库时发生错误: " << S2W(e.toString()));
+			throw;
+		}
+	}
+	return _dbconnection;
 }

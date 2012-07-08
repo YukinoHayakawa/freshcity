@@ -14,12 +14,5 @@
  * limitations under the License.
  */
 
+#pragma warning(disable: 4996)
 #include "application_database.h"
-#include "basic_debug_logging.h"
-#include "basic_algorithm_wchar.h"
-
-int main() {
-	LOG_INFO(S2W(GetDB().toString()));
-	::system("pause");
-	return 0;
-}

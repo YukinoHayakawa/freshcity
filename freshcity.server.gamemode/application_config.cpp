@@ -16,6 +16,7 @@
 
 #include <stdexcept>
 #include "application_config.h"
+#include "basic_debug_logging.h"
 #include <boost/property_tree/ini_parser.hpp>
 
 boost::property_tree::ptree _config;
@@ -28,7 +29,12 @@ bool inline LoadConfig() {
 void* configinit((void*)LoadConfig());
 
 void ReloadConfig() {
-	boost::property_tree::ini_parser::read_ini("freshcity.server.config.ini", _config);
+	try {
+		boost::property_tree::ini_parser::read_ini("freshcity.server.config.ini", _config);
+	} catch(...) {
+		LOG_FATAL("无法打开配置文件");
+		throw;
+	}
 }
 
 boost::property_tree::ptree& GetConfig() {

@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "basic_debug_logging.h"
-#include "basic_algorithm_wchar.h"
+#ifndef FRESHCITY_APPLICATION_DATABASE
+#define FRESHCITY_APPLICATION_DATABASE
 
-int main() {
-	LOG_INFO(S2W(GetDB().toString()));
-	::system("pause");
-	return 0;
-}
+#include "../freshcity.dependency.mongoclient/client/dbclient.h"
+
+mongo::DBClientConnection& GetDB();
+
+#endif
