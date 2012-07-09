@@ -2,6 +2,10 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freshcity.server.gamemode", "freshcity.server.gamemode\freshcity.server.gamemode.vcxproj", "{3FC3247D-2870-409A-8993-266F4E886121}"
+	ProjectSection(ProjectDependencies) = postProject
+		{24986999-D89E-4911-9041-AD8409E4CD5A} = {24986999-D89E-4911-9041-AD8409E4CD5A}
+		{F42F1B29-DA7D-4C2B-867F-77B367D6CE3C} = {F42F1B29-DA7D-4C2B-867F-77B367D6CE3C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freshcity.dependency.mongoclient", "freshcity.dependency.mongoclient\freshcity.dependency.mongoclient.vcxproj", "{24986999-D89E-4911-9041-AD8409E4CD5A}"
 EndProject

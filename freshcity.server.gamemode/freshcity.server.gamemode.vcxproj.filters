@@ -21,9 +21,6 @@
     <ClInclude Include=".\basic_algorithm_gbkencoder.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include=".\application_user_auth.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include=".\application_config.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -34,6 +31,18 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="application_database.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_data_base.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_algorithm_auth.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_data_profile.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_struct_coordinate.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -47,13 +56,7 @@
     <ClCompile Include=".\basic_algorithm_gbkencoder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include=".\application_user_auth.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include=".\application_config.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="basic_debug_logging.cpp">
@@ -68,5 +71,25 @@
     <ClCompile Include="application_database_pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="application_data_base.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_algorithm_auth.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_lib.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_data_profile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_gamemode_main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".\application_gamemode_export.def">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_USER_AUTH
-#define FRESHCITY_APPLICATION_USER_AUTH
+#ifndef FRESHCITY_APPLICATION_DATA_BASE
+#define FRESHCITY_APPLICATION_DATA_BASE
 
-#include <string>
+#include "application_database.h"
 
-std::string GetPasswordDigest(const std::string& source);
+class SingleObject {
+protected:
+	mongo::BSONObj _rawdata;
+	mongo::OID _uniqueid;
+	SingleObject(const std::string& collection, const mongo::OID& uniqueid);
+	SingleObject(const std::string& collection, const mongo::BSONObj& query);
+	SingleObject(const mongo::BSONObj& data);
+	void _Flush(const std::string& collection, const mongo::BSONObj& query);
+};
 
 #endif

@@ -25,7 +25,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -49,6 +49,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>Source.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -64,6 +65,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>application_gamemode_export.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -76,7 +78,7 @@
     <ClCompile Include=".\basic_algorithm_sha256.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include=".\application_user_auth.cpp">
+    <ClCompile Include=".\application_algorithm_auth.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include=".\application_config.cpp">
@@ -86,24 +88,33 @@
     <ClCompile Include="application_database_pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="application_data_base.cpp" />
+    <ClCompile Include="application_data_profile.cpp" />
+    <ClCompile Include="application_gamemode_lib.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="basic_algorithm_wchar.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="basic_debug_logging.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include=".\application_gamemode_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\basic_algorithm_gbkencoder.h" />
     <ClInclude Include=".\basic_algorithm_sha256.h" />
-    <ClInclude Include=".\application_user_auth.h" />
+    <ClInclude Include=".\application_algorithm_auth.h" />
     <ClInclude Include=".\application_config.h" />
     <ClInclude Include="application_database.h" />
+    <ClInclude Include="application_data_base.h" />
+    <ClInclude Include="application_data_profile.h" />
+    <ClInclude Include=".\application_struct_coordinate.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".\application_gamemode_export.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
