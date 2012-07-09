@@ -90,6 +90,7 @@ Profile::Profile(int playerid, const mongo::OID& uniqueid)
 Profile::Profile(int playerid, const std::string& logname)
 	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << logname)),
 	Player(playerid) {
+		LOG_TRACE("Profile::Profile(int playerid, const std::string& logname)");
 		if(!IsEmpty())
 			_ApplyDataToPlayer();
 }
@@ -140,9 +141,9 @@ void Profile::Sync() {
 	mongo::BSONObj submit = BSON("$set"				<< BSON(
 		"archive.gtasa.geo.coordinate"				<< BSON_ARRAY(pos.x << pos.y) <<
 		"archive.gtasa.geo.height"					<< pos.z <<
-		"archive.gtasa.direction"					<< GetFacingAngle() <<
-		"archive.gtasa.world"						<< GetVirtualWorld() <<
-		"archive.gtasa.interior"					<< GetInterior() <<
+		"archive.gtasa.geo.direction"					<< GetFacingAngle() <<
+		"archive.gtasa.geo.world"						<< GetVirtualWorld() <<
+		"archive.gtasa.geo.interior"					<< GetInterior() <<
 		"archive.gtasa.ability.hp"					<< GetHealth() <<
 		"archive.gtasa.personality.skin"			<< GetSkin() <<
 		"archive.gtasa.personality.fightingstyle"	<< GetFightingStyle() <<

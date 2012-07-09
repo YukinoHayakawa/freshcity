@@ -19,8 +19,10 @@
 #include <sampgdk/a_samp.h>
 #include <sampgdk/plugin.h>
 #include "basic_debug_logging.h"
-#include "application_data_profile.h"
 #include "basic_algorithm_wchar.h"
+#include "application_gamemode_manager_profile.h"
+
+ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
@@ -31,7 +33,18 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	SendClientMessage(playerid, 0xFFFFFFFF, "Welcome to TennenColl's devserver!");
-	return true;
+	ProfileMgr.Add(playerid);
+	ProfileMgr.SetAuthed(playerid, false);
+	try {
+		Profile& player = ProfileMgr.Get(playerid);
+		if(player.IsEmpty())
+			player.Create(player.GetName(), "TennenColl");
+	} catch(std::runtime_error& e) {
+		LOG_ERROR(e.what());
+	} catch(mongo::UserException& e) {
+		LOG_ERROR(e.what());
+	}
+return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
@@ -42,27 +55,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
-	if (std::strcmp(cmdtext, "/register") == 0) {
-		try {
-			Profile test(playerid, GetPlayerName(playerid));
-			if(test.IsEmpty())
-				test.Create(test.GetName(), "TennenColl");
-			test.Sync();
-		} catch(std::runtime_error& e) {
-			LOG_ERROR(e.what());
-		} catch(mongo::UserException& e) {
-			LOG_ERROR(e.what());
-		}
-		return true;
-	}
-	if (std::strcmp(cmdtext, "/pos") == 0) {
-		float x, y, z;
-		GetPlayerPos(playerid, &x, &y, &z);
-		char message[128];
-		std::sprintf(message, "You are at (%f, %f, %f)", x, y, z);
-		SendClientMessage(playerid, 0xFFFFFFFF, message);
-		return true;
-	}
 	return false;
 }
 
