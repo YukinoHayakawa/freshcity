@@ -19,6 +19,7 @@
 #include "application_config.h"
 #include "basic_debug_logging.h"
 #include "application_algorithm_auth.h"
+#include "basic_algorithm_gbkencoder.h"
 
 #pragma warning(disable: 4244)
 
@@ -44,13 +45,12 @@ void Profile::_FlushMemberData() {
 	}
 }
 
-void Profile::_ApplyDataToPlayer() {
+void Profile::ApplyDataToPlayer() {
 	_FlushMemberData();
 	try {
 		mongo::BSONObj personality	= _gamearchive["personality"].Obj();
 		mongo::BSONObj geo			= _gamearchive["geo"].Obj();
 		mongo::BSONObj equipment	= _gamearchive["equipment"].Obj();
-		mongo::BSONObj score		= _gamearchive["score"].Obj();
 		mongo::BSONObj ability		= _gamearchive["ability"].Obj();
 		std::vector<mongo::BSONElement> coordinate
 									= geo["coordinate"].Array();
@@ -84,20 +84,19 @@ void inline Profile::_ImmediatelyUpdate(const mongo::BSONObj& modifier) {
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
 	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid) {
-		_ApplyDataToPlayer();
+		_FlushMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
-	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << logname)),
+	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
 	Player(playerid) {
-		LOG_TRACE("Profile::Profile(int playerid, const std::string& logname)");
 		if(!IsEmpty())
-			_ApplyDataToPlayer();
+			_FlushMemberData();
 }
 
 Profile::Profile(int playerid, const mongo::BSONObj& data)
 	: SingleObject(data), Player(playerid) {
-		_ApplyDataToPlayer();
+		_FlushMemberData();
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
@@ -106,13 +105,13 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"auth"		<< BSON(
 			"logname"	<< logname	<<
-			"password"	<< GetPasswordDigest(password) <<
+			"password"	<< GetPasswordDigest(GBKToUTF8(password)) <<
 			"deleted"	<< false) <<
 		"jointime"	<< mongo::DATENOW <<
 		"archive"	<< BSON(
 			"gtasa"		<< BSON(
 				"personality"	<< BSON(
-					"nickname"	<< logname <<
+					"nickname"	<< GBKToUTF8(logname) <<
 					"jointime"	<< mongo::DATENOW <<
 					"joinip"	<< GetIp() <<
 					"color"		<< GetColor()) <<
@@ -157,11 +156,12 @@ void Profile::Sync() {
 }
 
 bool Profile::AuthPassword(const std::string& input) const {
-	return GetPasswordDigest(input) == _passwordhash;
+	return GetPasswordDigest(GBKToUTF8(input)) == _passwordhash;
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("auth.password" << GetPasswordDigest(newpassword))));
+	if(newpassword.empty()) throw std::runtime_error("ÃÜÂë²»ÄÜÎª¿Õ.");
+	_ImmediatelyUpdate(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))));
 }
 
 bool Profile::IsEmpty() {
@@ -179,7 +179,7 @@ std::string Profile::GetNickname() const {
 }
 
 void Profile::SetNickname(const std::string& nickname) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.personality.nickname" << nickname)));
+	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.personality.nickname" << GBKToUTF8(nickname))));
 }
 
 int Profile::GetCustomColor() const {

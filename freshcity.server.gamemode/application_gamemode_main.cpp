@@ -21,6 +21,9 @@
 #include "basic_debug_logging.h"
 #include "basic_algorithm_wchar.h"
 #include "application_gamemode_manager_profile.h"
+#include "application_gamemode_manager_command.h"
+#include "application_gamemode_colordefinitions.h"
+#include <boost/algorithm/string.hpp>
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 
@@ -32,19 +35,40 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
-	SendClientMessage(playerid, 0xFFFFFFFF, "Welcome to TennenColl's devserver!");
-	ProfileMgr.Add(playerid);
-	ProfileMgr.SetAuthed(playerid, false);
 	try {
-		Profile& player = ProfileMgr.Get(playerid);
-		if(player.IsEmpty())
-			player.Create(player.GetName(), "TennenColl");
-	} catch(std::runtime_error& e) {
-		LOG_ERROR(e.what());
-	} catch(mongo::UserException& e) {
-		LOG_ERROR(e.what());
+		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
+		try {
+			ProfileMgr.Add(playerid);
+			ProfileMgr.SetAuthed(playerid, false);
+			Profile& player = ProfileMgr[playerid];
+			if(player.IsEmpty()) {
+				player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
+			} else {
+				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");
+			}
+		} catch(std::runtime_error& e) {
+			LOG_ERROR(e.what());
+			throw;
+		} catch(mongo::UserException& e) {
+			LOG_ERROR(e.what());
+			throw;
+		} catch(...) {
+			throw;
+		}
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "初始化玩家数据时发生错误, 请联系服务器管理员.");
+		return false;
 	}
-return true;
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
+	try {
+		ProfileMgr.Remove(playerid);
+	} catch(...) {
+		return false;
+	}
+	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
@@ -55,6 +79,18 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
+	char cmdname[128] = {0}, cmdline[128] = {0};
+	sscanf(cmdtext, "%s%s", cmdname, cmdline);
+	try {
+		CommandManager::GetInstance().Exec(playerid, boost::to_lower_copy(std::string(&cmdname[1])), cmdline);
+		return true;
+	} catch(std::runtime_error& e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+		return true;
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "处理命令时发生未知错误, 请联系服务器管理员.");
+		return true;
+	}
 	return false;
 }
 

@@ -25,7 +25,6 @@
 class Profile : public SingleObject, public Player {
 private:
 	void _FlushMemberData();
-	void _ApplyDataToPlayer();
 	void inline _ImmediatelyUpdate(const mongo::BSONObj& modifier);
 	mongo::BSONObj _gamearchive;
 	std::string _passwordhash;
@@ -38,6 +37,7 @@ public:
 	Profile(int playerid, const mongo::OID& uniqueid);
 	Profile(int playerid, const std::string& logname);
 	Profile(int playerid, const mongo::BSONObj& data);
+	void ApplyDataToPlayer();
 	void Create(const std::string& logname, const std::string& password);
 	void Sync();
 	bool AuthPassword(const std::string& input) const;

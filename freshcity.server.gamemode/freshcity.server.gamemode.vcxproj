@@ -90,9 +90,11 @@
     </ClCompile>
     <ClCompile Include="application_data_base.cpp" />
     <ClCompile Include="application_data_profile.cpp" />
+    <ClCompile Include=".\application_gamemode_commands.cpp" />
     <ClCompile Include="application_gamemode_lib.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="application_gamemode_manager_command.cpp" />
     <ClCompile Include="application_gamemode_manager_profile.cpp" />
     <ClCompile Include="basic_algorithm_wchar.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
@@ -114,6 +116,8 @@
     <ClInclude Include=".\application_gamemode_manager_profile.h">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClInclude>
+    <ClInclude Include=".\application_gamemode_colordefinitions.h" />
+    <ClInclude Include="application_gamemode_manager_command.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />
   </ItemGroup>

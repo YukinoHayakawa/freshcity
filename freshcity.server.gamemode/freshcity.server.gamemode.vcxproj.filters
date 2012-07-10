@@ -48,6 +48,12 @@
     <ClInclude Include=".\application_gamemode_manager_profile.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_gamemode_manager_command.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_colordefinitions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -90,6 +96,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_gamemode_manager_profile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_manager_command.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_gamemode_commands.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

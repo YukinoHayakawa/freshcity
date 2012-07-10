@@ -40,5 +40,4 @@ public:
 	static ProfileManager& GetInstance();
 };
 
-
 #endif
