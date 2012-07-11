@@ -17,13 +17,19 @@
 #include "application_database.h"
 #include "application_gamemode_manager_command.h"
 
+struct CommandManager::Callback {
+	CallbackPtr ptr;
+	int reqlevel;
+	Callback(CallbackPtr ptr, int reqlevel) : ptr(ptr), reqlevel(reqlevel) {}
+};
+
 CommandManager::CommandManager() {}
 
 CommandManager::~CommandManager() {}
 
-bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function) {
+bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel) {
 	if(IsExist(cmd)) return false;
-	_cmds.insert(std::make_pair(cmd, CallbackPtr(function)));
+	_cmds.insert(std::make_pair(cmd, Callback(CallbackPtr(function), reqlevel)));
 	return true;
 }
 
@@ -41,7 +47,10 @@ bool CommandManager::Remove(const std::string& cmd) {
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) const {
 	CommandMap::const_iterator iter(_cmds.find(cmd));
 	if(iter == _cmds.end()) throw std::runtime_error("不存在的命令.");
-	iter->second(ProfileManager::GetInstance()[playerid], cmdline);
+	Profile& player = ProfileManager::GetInstance()[playerid];
+	if(iter->second.reqlevel > player.GetAdminLevel())
+		throw std::runtime_error("您没有足够管理权限来执行此命令.");
+	iter->second.ptr(player, cmdline);
 }
 
 CommandManager& CommandManager::GetInstance() {

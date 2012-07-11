@@ -24,38 +24,38 @@
 
 class Profile : public SingleObject, public Player {
 private:
-	void _FlushMemberData();
+	void _LoadMemberData();
 	void inline _ImmediatelyUpdate(const mongo::BSONObj& modifier);
-	mongo::BSONObj _gamearchive;
-	std::string _passwordhash;
 	std::string _nickname;
-	int _customcolor;
-	bool _isadmin;
+	std::string _passwordhash;
+	mongo::BSONObj _gamearchive;
 	int _adminlevel;
+	bool _registered;
+	bool _deleted;
+	bool _banned;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
 	Profile(int playerid, const std::string& logname);
 	Profile(int playerid, const mongo::BSONObj& data);
+	bool IsProfileDeleted();
+	bool IsBannedForGame();
 	void ApplyDataToPlayer();
 	void Create(const std::string& logname, const std::string& password);
 	void Sync();
 	bool AuthPassword(const std::string& input) const;
 	void SetPassword(const std::string& newpassword);
-	bool IsEmpty();
+	bool IsRegistered();
 	CoordinatePlane GetPlaneCoordinate() const;
 	std::string GetNickname() const;
 	void SetNickname(const std::string& nickname);
-	int GetCustomColor() const;
-	void SetCustomColor(int newcolor);
-	bool IsAdmin() const;
-	void SetAdmin(bool isadmin);
 	int GetAdminLevel() const;
 	void SetAdminLevel(int level);
 	Coordinate3D GetCameraFrontVector() const;
 	Coordinate3D GetCameraPos() const;
 	Coordinate3D GetPos() const;
 	Coordinate3D GetVelocity() const;
+	void SetBanned(bool banned);
 	//float GetDistanceFromPoint(Coordinate3D target) const;
 	//bool SetPos(Coordinate3D target) const;
 	//bool SetPosFindZ(Coordinate3D target) const;

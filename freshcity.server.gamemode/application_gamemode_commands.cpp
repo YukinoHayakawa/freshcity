@@ -23,8 +23,8 @@
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
 CMD(Register) {
-	if(!player.IsEmpty()) throw std::runtime_error("玩家已注册.");
-	if(cmdline == '\0') throw std::runtime_error("密码不能为空.");
+	if(player.IsRegistered()) throw std::runtime_error("玩家已注册.");
+	if(cmdline[0] == 0) throw std::runtime_error("密码不能为空.");
 	try {
 		player.Create(player.GetName(), cmdline);
 		player.SendChatMessage(COLOR_SUCC, std::string("注册成功. 登录名: " + player.GetName() + ", 密码(引号内): \"" + cmdline + "\".").c_str());
@@ -35,7 +35,7 @@ CMD(Register) {
 }
 
 CMD(Login) {
-	if(player.IsEmpty()) throw std::runtime_error("玩家尚未注册.");
+	if(!player.IsRegistered()) throw std::runtime_error("玩家尚未注册.");
 	if(ProfileManager::GetInstance().IsAuthed(player.GetId())) throw std::runtime_error("玩家已登录过.");
 	if(!player.AuthPassword(cmdline)) throw std::runtime_error("密码错误.");
 	ProfileManager::GetInstance().SetAuthed(player.GetId(), true);
@@ -57,19 +57,32 @@ CMD(SaveData) {
 
 CMD(SetSkin) {
 	int skinid(0);
-	if(sscanf(cmdline, "%d", &skinid) == 0) throw std::runtime_error("用法: /setskin <皮肤ID>");
+	if(cmdline[0] == 0 || sscanf(cmdline, "%d", &skinid) == 0) throw std::runtime_error("用法: /setskin <皮肤ID>");
 	player.SetSkin(skinid);
 	player.SendChatMessage(COLOR_SUCC, "皮肤已更改.");
 }
 
+CMD(GiveWeapon) {
+	int target(-1), weapon(-1), ammo(-1);
+	if(sscanf(cmdline, "%d%d%d", &target, &weapon, &ammo) == 0
+		|| !(target != -1 && weapon != -1 && ammo != -1))
+		throw std::runtime_error("用法: /giveweapon <玩家ID> <武器ID> <弹药量>");
+	GivePlayerWeapon(target, weapon, ammo);
+}
+
+#define REGCMD(x, y, z) CmdMgr.Add(x, y, z)
+
 bool RegisterPlayerCmds() {
 	CommandManager& CmdMgr = CommandManager::GetInstance();
-	CmdMgr.Add("register", CmdRegister);
-	CmdMgr.Add("login", CmdLogin);
-	CmdMgr.Add("logout", CmdLogOut);
-	CmdMgr.Add("sync", CmdSaveData);
-	CmdMgr.Add("setskin", CmdSetSkin);
+	REGCMD("register",			CmdRegister,			0);
+	REGCMD("login",				CmdLogin,				0);
+	REGCMD("logout",			CmdLogOut,				0);
+	REGCMD("sync",				CmdSaveData,			0);
+	REGCMD("setskin",			CmdSetSkin,				1);
+	REGCMD("giveweapon",		CmdGiveWeapon,			1);
 	return true;
 }
+
+#undef REGCMD
 
 void* PlayerCmdInit((void*)RegisterPlayerCmds());

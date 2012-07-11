@@ -41,7 +41,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			ProfileMgr.Add(playerid);
 			ProfileMgr.SetAuthed(playerid, false);
 			Profile& player = ProfileMgr[playerid];
-			if(player.IsEmpty()) {
+			if(!player.IsRegistered()) {
 				player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
 			} else {
 				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");

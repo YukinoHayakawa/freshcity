@@ -23,22 +23,17 @@
 
 #pragma warning(disable: 4244)
 
-void Profile::_FlushMemberData() {
+void Profile::_LoadMemberData() {
 	if(_rawdata.isEmpty())
 		throw std::runtime_error("玩家没有注册信息");
 	try {
 		_passwordhash	= _rawdata["auth"]["password"].String();
 		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
-
-		mongo::BSONObj
-			personality	= _gamearchive["personality"].Obj();
-		_nickname		= personality["nickname"].String();
-		_customcolor	= personality["color"].Number();
-
-		mongo::BSONObj
-			admin		= _gamearchive["admin"].Obj();
-		_isadmin		= admin["isadmin"].Bool();
-		_adminlevel		= admin["level"].Number();
+		_banned			= _rawdata["auth"]["deleted"].Bool();
+		_nickname		= _gamearchive["reginfo"]["nickname"].String();
+		_adminlevel		= _gamearchive["mgmtlevel"].Number();
+		_deleted		= _gamearchive["banned"].Bool();
+		_registered		= true;
 	} catch(mongo::UserException &e) {
 		LOG_ERROR(e.what());
 		throw std::runtime_error("玩家基本数据不完整");
@@ -46,31 +41,29 @@ void Profile::_FlushMemberData() {
 }
 
 void Profile::ApplyDataToPlayer() {
-	_FlushMemberData();
+	if(_gamearchive.isEmpty()) _LoadMemberData();
 	try {
-		mongo::BSONObj personality	= _gamearchive["personality"].Obj();
 		mongo::BSONObj geo			= _gamearchive["geo"].Obj();
-		mongo::BSONObj equipment	= _gamearchive["equipment"].Obj();
-		mongo::BSONObj ability		= _gamearchive["ability"].Obj();
+		mongo::BSONObj attribute	= _gamearchive["attribute"].Obj();
 		std::vector<mongo::BSONElement> coordinate
 									= geo["coordinate"].Array();
 		std::vector<mongo::BSONElement> weapons
-									= equipment["weapon"].Array();
+									= attribute["weapon"].Array();
 
 		Spawn();
-		SetSkin(personality["skin"].Number());
-		SetColor(_customcolor);
-		SetFightingStyle(personality["fightingstyle"].Number());
-		SetPos(coordinate[0].Number(), coordinate[1].Number(), geo["height"].Number());
-		SetInterior(geo["interior"].Number());
-		SetVirtualWorld(geo["world"].Number());
-		SetFacingAngle(geo["direction"].Number());
-		SetHealth(ability["hp"].Number());
-		SetArmour(equipment["armour"].Number());
+		SetHealth(attribute["health"].Number());
+		SetArmour(attribute["armour"].Number());
 		for(std::vector<mongo::BSONElement>::iterator iter = weapons.begin(); iter != weapons.end(); iter++) {
 			mongo::BSONObj single = iter->Obj();
 			GiveWeapon(single["id"].Number(), single["ammo"].Number());
 		}
+		SetSkin(attribute["skin"].Number());
+		SetColor(attribute["color"].Number());
+		SetFightingStyle(attribute["fightingstyle"].Number());
+		SetPos(coordinate[0].Number(), coordinate[1].Number(), geo["height"].Number());
+		SetFacingAngle(geo["direction"].Number());
+		SetInterior(geo["interior"].Number());
+		SetVirtualWorld(geo["world"].Number());
 	} catch(mongo::UserException &e) {
 		LOG_ERROR(e.what());
 		throw std::runtime_error("玩家游戏数据不完整");
@@ -83,41 +76,50 @@ void inline Profile::_ImmediatelyUpdate(const mongo::BSONObj& modifier) {
 }
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
-	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid) {
-		_FlushMemberData();
+	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
+	_adminlevel(0), _registered(false), _deleted(false), _banned(false) {
+		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
 	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
-	Player(playerid) {
-		if(!IsEmpty())
-			_FlushMemberData();
+	Player(playerid), _adminlevel(0), _registered(false), _deleted(false), _banned(false) {
+		if(!_rawdata.isEmpty())
+			_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const mongo::BSONObj& data)
-	: SingleObject(data), Player(playerid) {
-		_FlushMemberData();
+	: SingleObject(data), Player(playerid), _adminlevel(0),
+	_registered(false), _deleted(false), _banned(false) {
+		_LoadMemberData();
+}
+
+bool Profile::IsProfileDeleted() {
+	return _deleted;
+}
+
+bool Profile::IsBannedForGame() {
+	return _banned;
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
-	if(!IsEmpty())
+	if(IsRegistered())
 		throw std::runtime_error("玩家注册资料已存在");
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"auth"		<< BSON(
 			"logname"	<< logname	<<
 			"password"	<< GetPasswordDigest(GBKToUTF8(password)) <<
+			"ip"		<< GetIp() <<
+			"time"		<< mongo::DATENOW <<
 			"deleted"	<< false) <<
-		"jointime"	<< mongo::DATENOW <<
 		"archive"	<< BSON(
 			"gtasa"		<< BSON(
-				"personality"	<< BSON(
+				"reginfo"	<< BSON(
 					"nickname"	<< GBKToUTF8(logname) <<
-					"jointime"	<< mongo::DATENOW <<
-					"joinip"	<< GetIp() <<
-					"color"		<< GetColor()) <<
-				"admin"			<< BSON(
-					"isadmin"	<< false <<
-					"level"		<< 0))));
+					"time"		<< mongo::DATENOW <<
+					"ip"		<< GetIp()) <<
+				"banned"	<< false <<
+				"mgmtlevel"	<< 0)));
 	mongo::BSONElement OID;
 	submit.getObjectID(OID);
 	GetDB().insert(CONFIG_STRING("Database.profile"), submit);
@@ -137,22 +139,23 @@ void Profile::Sync() {
 			weapons.push_back(BSON("id" << weapon[i][0] << "ammo" << weapon[i][1]));
 	}
 
-	mongo::BSONObj submit = BSON("$set"				<< BSON(
-		"archive.gtasa.geo.coordinate"				<< BSON_ARRAY(pos.x << pos.y) <<
-		"archive.gtasa.geo.height"					<< pos.z <<
-		"archive.gtasa.geo.direction"					<< GetFacingAngle() <<
-		"archive.gtasa.geo.world"						<< GetVirtualWorld() <<
-		"archive.gtasa.geo.interior"					<< GetInterior() <<
-		"archive.gtasa.ability.hp"					<< GetHealth() <<
-		"archive.gtasa.personality.skin"			<< GetSkin() <<
-		"archive.gtasa.personality.fightingstyle"	<< GetFightingStyle() <<
-		"archive.gtasa.equipment.weapon"			<< weapons <<
-		"archive.gtasa.equipment.armour"			<< GetArmour()
-		));
-
+	mongo::BSONObj submit = BSON(
+		"$set" << BSON(
+			"archive.gtasa.attribute.health"			<< GetHealth() <<
+			"archive.gtasa.attribute.armour"			<< GetArmour() <<
+			"archive.gtasa.attribute.weapon"			<< weapons <<
+			"archive.gtasa.attribute.skin"				<< GetSkin() <<
+			"archive.gtasa.attribute.color"				<< GetColor() <<
+			"archive.gtasa.attribute.fightingstyle"		<< GetFightingStyle() <<
+			"archive.gtasa.geo.coordinate"				<< BSON_ARRAY(pos.x << pos.y) <<
+			"archive.gtasa.geo.height"					<< pos.z <<
+			"archive.gtasa.geo.direction"				<< GetFacingAngle() <<
+			"archive.gtasa.geo.interior"				<< GetInterior() <<
+			"archive.gtasa.geo.world"					<< GetVirtualWorld()
+			));
 	GetDB().update(CONFIG_STRING("Database.profile"), BSON("_id" << _uniqueid), submit);
 	_Flush(CONFIG_STRING("Database.profile"), BSON("_id" << _uniqueid));
-	_FlushMemberData();
+	_LoadMemberData();
 }
 
 bool Profile::AuthPassword(const std::string& input) const {
@@ -164,8 +167,8 @@ void Profile::SetPassword(const std::string& newpassword) {
 	_ImmediatelyUpdate(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))));
 }
 
-bool Profile::IsEmpty() {
-	return _rawdata.isEmpty();
+bool Profile::IsRegistered() {
+	return _registered;
 }
 
 CoordinatePlane Profile::GetPlaneCoordinate() const {
@@ -179,24 +182,7 @@ std::string Profile::GetNickname() const {
 }
 
 void Profile::SetNickname(const std::string& nickname) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.personality.nickname" << GBKToUTF8(nickname))));
-}
-
-int Profile::GetCustomColor() const {
-	return _customcolor;
-}
-
-void Profile::SetCustomColor(int newcolor) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.personality.color" << newcolor)));
-	SetColor(newcolor);
-}
-
-bool Profile::IsAdmin() const {
-	return _isadmin;
-}
-
-void Profile::SetAdmin(bool isadmin) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.admin.isadmin" << isadmin)));
+	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << GBKToUTF8(nickname))));
 }
 
 int Profile::GetAdminLevel() const {
@@ -204,7 +190,7 @@ int Profile::GetAdminLevel() const {
 }
 
 void Profile::SetAdminLevel(int level) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.admin.level" << level)));
+	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.mgmtlevel" << level)));
 }
 
 Coordinate3D Profile::GetCameraFrontVector() const {
@@ -229,4 +215,8 @@ Coordinate3D Profile::GetVelocity() const {
 	float x, y, z;
 	Player::GetVelocity(x, y, z);
 	return Coordinate3D(x, y, z);
+}
+
+void Profile::SetBanned(bool banned) {
+	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.banned" << banned)));
 }

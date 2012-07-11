@@ -26,14 +26,15 @@ typedef void (*COMMAND_CALLBACK)(Profile& player, const char* cmdline);
 
 class CommandManager {
 protected:
+	struct Callback;
 	typedef boost::function<void(Profile&, const char*)> CallbackPtr;
-	typedef boost::unordered_map<std::string, CallbackPtr> CommandMap;
+	typedef boost::unordered_map<std::string, Callback> CommandMap;
 	CommandMap _cmds;
 	CommandManager();
 	~CommandManager();
 
 public:
-	bool Add(const std::string& cmd, COMMAND_CALLBACK function);
+	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel);
 	bool IsExist(const std::string& cmd) const;
 	bool Remove(const std::string& cmd);
 	void Exec(int playerid, const std::string& cmd, const char* cmdline) const;
