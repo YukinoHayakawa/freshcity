@@ -16,20 +16,18 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_command.h"
+#include "application_gamemode_manager_profile.h"
 
 struct CommandManager::Callback {
 	CallbackPtr ptr;
 	int reqlevel;
-	Callback(CallbackPtr ptr, int reqlevel) : ptr(ptr), reqlevel(reqlevel) {}
+	unsigned int flags;
+	Callback(CallbackPtr ptr, int reqlevel, unsigned int flags) : ptr(ptr), reqlevel(reqlevel), flags(flags) {}
 };
 
-CommandManager::CommandManager() {}
-
-CommandManager::~CommandManager() {}
-
-bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel) {
+bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags) {
 	if(IsExist(cmd)) return false;
-	_cmds.insert(std::make_pair(cmd, Callback(CallbackPtr(function), reqlevel)));
+	_cmds.insert(std::make_pair(cmd, Callback(CallbackPtr(function), reqlevel, flags)));
 	return true;
 }
 
@@ -44,14 +42,28 @@ bool CommandManager::Remove(const std::string& cmd) {
 	return true;
 }
 
+#define MATCHREQ(req) ((iter->second.flags & req) == req)
+
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) const {
 	CommandMap::const_iterator iter(_cmds.find(cmd));
 	if(iter == _cmds.end()) throw std::runtime_error("不存在的命令.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
+	if(!MATCHREQ(NO_REQUIREMENT)) {
+		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsRegistered() == false)
+			throw std::runtime_error("此命令仅限已注册玩家使用.");
+		if(MATCHREQ(NEED_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == false)
+			throw std::runtime_error("此命令仅限已登录玩家使用.");
+		if(MATCHREQ(DONOT_REGISTERED) && ProfileManager::GetInstance()[playerid].IsRegistered() == true)
+			throw std::runtime_error("此命令仅限未注册玩家使用.");
+		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == true)
+			throw std::runtime_error("此命令仅限未登录玩家使用.");
+	}
 	if(iter->second.reqlevel > player.GetAdminLevel())
 		throw std::runtime_error("您没有足够管理权限来执行此命令.");
 	iter->second.ptr(player, cmdline);
 }
+
+#undef MATCHREQ
 
 CommandManager& CommandManager::GetInstance() {
 	static CommandManager inst;

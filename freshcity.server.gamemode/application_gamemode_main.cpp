@@ -29,7 +29,8 @@ ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
-	AddPlayerClass(0, 1958.3783f, 1343.1572f, 15.3746f, 269.1425f, 0, 0, 0, 0, 0, 0);
+	for(int i = 0; i < 299; i++) 
+		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	LOG_INFO("Freshcity Gamemode 已载入");
 	return true;
 }
@@ -39,7 +40,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
 		try {
 			ProfileMgr.Add(playerid);
-			ProfileMgr.SetAuthed(playerid, false);
+			ProfileMgr[playerid].SetSignedIn(false);
 			Profile& player = ProfileMgr[playerid];
 			if(!player.IsRegistered()) {
 				player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
@@ -64,6 +65,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 	try {
+		if(reason != 0 /* timeout */ && ProfileMgr[playerid].IsSignedIn())
+			ProfileMgr[playerid].Sync();
 		ProfileMgr.Remove(playerid);
 	} catch(...) {
 		return false;
@@ -72,15 +75,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
-	SetPlayerPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-	SetPlayerCameraPos(playerid, 1958.3783f, 1343.1572f, 15.3746f);
-	SetPlayerCameraLookAt(playerid, 1958.3783f, 1343.1572f, 15.3746f, CAMERA_CUT);
+	SetPlayerPos(playerid, 1497.07f, -689.485f, 94.956f);
+	SetPlayerFacingAngle(playerid, 180.86f);
+	SetPlayerCameraPos(playerid, 1497.81f, -707.83f, 99.69f);
+	SetPlayerCameraLookAt(playerid, 1493.39f, -686.97f, 98.35f, CAMERA_MOVE);
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
 	char cmdname[128] = {0}, cmdline[128] = {0};
-	sscanf(cmdtext, "%s%s", cmdname, cmdline);
+	sscanf(cmdtext, "%s%*[ ]%[^\0]", cmdname, cmdline);
 	try {
 		CommandManager::GetInstance().Exec(playerid, boost::to_lower_copy(std::string(&cmdname[1])), cmdline);
 		return true;

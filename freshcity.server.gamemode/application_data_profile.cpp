@@ -21,8 +21,6 @@
 #include "application_algorithm_auth.h"
 #include "basic_algorithm_gbkencoder.h"
 
-#pragma warning(disable: 4244)
-
 void Profile::_LoadMemberData() {
 	if(_rawdata.isEmpty())
 		throw std::runtime_error("玩家没有注册信息");
@@ -31,7 +29,7 @@ void Profile::_LoadMemberData() {
 		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
 		_banned			= _rawdata["auth"]["deleted"].Bool();
 		_nickname		= _gamearchive["reginfo"]["nickname"].String();
-		_adminlevel		= _gamearchive["mgmtlevel"].Number();
+		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
 		_registered		= true;
 	} catch(mongo::UserException &e) {
@@ -51,19 +49,19 @@ void Profile::ApplyDataToPlayer() {
 									= attribute["weapon"].Array();
 
 		Spawn();
-		SetHealth(attribute["health"].Number());
-		SetArmour(attribute["armour"].Number());
+		SetHealth((float)attribute["health"].Number());
+		SetArmour((float)attribute["armour"].Number());
 		for(std::vector<mongo::BSONElement>::iterator iter = weapons.begin(); iter != weapons.end(); iter++) {
 			mongo::BSONObj single = iter->Obj();
-			GiveWeapon(single["id"].Number(), single["ammo"].Number());
+			GiveWeapon((int)single["id"].Number(), (int)single["ammo"].Number());
 		}
-		SetSkin(attribute["skin"].Number());
-		SetColor(attribute["color"].Number());
-		SetFightingStyle(attribute["fightingstyle"].Number());
-		SetPos(coordinate[0].Number(), coordinate[1].Number(), geo["height"].Number());
-		SetFacingAngle(geo["direction"].Number());
-		SetInterior(geo["interior"].Number());
-		SetVirtualWorld(geo["world"].Number());
+		SetSkin((int)attribute["skin"].Number());
+		SetColor((int)attribute["color"].Number());
+		SetFightingStyle((int)attribute["fightingstyle"].Number());
+		SetPos((float)coordinate[0].Number(), (float)coordinate[1].Number(), (float)geo["height"].Number());
+		SetFacingAngle((float)geo["direction"].Number());
+		SetInterior((int)geo["interior"].Number());
+		SetVirtualWorld((int)geo["world"].Number());
 	} catch(mongo::UserException &e) {
 		LOG_ERROR(e.what());
 		throw std::runtime_error("玩家游戏数据不完整");
@@ -77,20 +75,20 @@ void inline Profile::_ImmediatelyUpdate(const mongo::BSONObj& modifier) {
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
 	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
-	_adminlevel(0), _registered(false), _deleted(false), _banned(false) {
+	_adminlevel(0), _registered(false), _deleted(false), _banned(false), _signedin(false) {
 		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
 	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
-	Player(playerid), _adminlevel(0), _registered(false), _deleted(false), _banned(false) {
+	Player(playerid), _adminlevel(0), _registered(false), _deleted(false), _banned(false), _signedin(false) {
 		if(!_rawdata.isEmpty())
 			_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const mongo::BSONObj& data)
 	: SingleObject(data), Player(playerid), _adminlevel(0),
-	_registered(false), _deleted(false), _banned(false) {
+	_registered(false), _deleted(false), _banned(false), _signedin(false) {
 		_LoadMemberData();
 }
 
@@ -219,4 +217,12 @@ Coordinate3D Profile::GetVelocity() const {
 
 void Profile::SetBanned(bool banned) {
 	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.banned" << banned)));
+}
+
+bool Profile::IsSignedIn() {
+	return _signedin;
+}
+
+void Profile::SetSignedIn(bool signedin) {
+	_signedin = signedin;
 }

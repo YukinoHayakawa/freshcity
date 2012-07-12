@@ -17,22 +17,10 @@
 #include "application_database.h"
 #include "application_gamemode_manager_profile.h"
 
-struct ProfileManager::ProfileWithAuthInfo {
-	boost::shared_ptr<Profile> profile;
-	bool authed;
-	ProfileWithAuthInfo(const boost::shared_ptr<Profile>& obj, bool authed)
-		: profile(obj), authed(authed) {}
-};
-
-ProfileManager::ProfileManager() {}
-
-ProfileManager::~ProfileManager() {}
-
 bool ProfileManager::Add(int playerid) {
 	if(IsExist(playerid)) return false;
 	_players.insert(std::make_pair(playerid,
-		ProfileWithAuthInfo(boost::shared_ptr<Profile>(
-		new Profile(playerid, GetPlayerName(playerid))), false)));
+		boost::shared_ptr<Profile>(new Profile(playerid, GetPlayerName(playerid)))));
 	return true;
 }
 
@@ -48,24 +36,11 @@ bool ProfileManager::Remove(int playerid) {
 }
 
 Profile& ProfileManager::Get(int playerid) {
-	return *_players.at(playerid).profile.get();
+	return *_players.at(playerid).get();
 }
 
 Profile& ProfileManager::operator[](int playerid) {
 	return Get(playerid);
-}
-
-bool ProfileManager::IsAuthed(int playerid) const {
-	ProfileMap::const_iterator iter(_players.find(playerid));
-	if(iter == _players.end()) return false;
-	return iter->second.authed;
-}
-
-bool ProfileManager::SetAuthed(int playerid, bool authed) {
-	ProfileMap::iterator iter(_players.find(playerid));
-	if(iter == _players.end()) return false;
-	iter->second.authed = authed;
-	return true;
 }
 
 ProfileManager& ProfileManager::GetInstance() {

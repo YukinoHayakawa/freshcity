@@ -19,15 +19,13 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/noncopyable.hpp>
 #include "application_data_profile.h"
 
-class ProfileManager {
+class ProfileManager : private boost::noncopyable {
 protected:
-	struct ProfileWithAuthInfo;
-	typedef boost::unordered_map<int, ProfileWithAuthInfo> ProfileMap;
+	typedef boost::unordered_map<int, boost::shared_ptr<Profile>> ProfileMap;
 	ProfileMap _players;
-	ProfileManager();
-	~ProfileManager();
 
 public:
 	bool Add(int playerid);
@@ -35,8 +33,6 @@ public:
 	bool Remove(int playerid);
 	Profile& Get(int playerid);
 	Profile& operator[](int playerid);
-	bool IsAuthed(int playerid) const;
-	bool SetAuthed(int playerid, bool authed);
 	static ProfileManager& GetInstance();
 };
 

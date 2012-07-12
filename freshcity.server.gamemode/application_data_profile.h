@@ -33,6 +33,7 @@ private:
 	bool _registered;
 	bool _deleted;
 	bool _banned;
+	bool _signedin;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -56,6 +57,8 @@ public:
 	Coordinate3D GetPos() const;
 	Coordinate3D GetVelocity() const;
 	void SetBanned(bool banned);
+	bool IsSignedIn();
+	void SetSignedIn(bool signedin);
 	//float GetDistanceFromPoint(Coordinate3D target) const;
 	//bool SetPos(Coordinate3D target) const;
 	//bool SetPosFindZ(Coordinate3D target) const;
