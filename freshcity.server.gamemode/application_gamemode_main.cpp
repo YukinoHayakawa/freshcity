@@ -23,6 +23,7 @@
 #include "application_gamemode_manager_command.h"
 #include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
+#include "basic_algorithm_random.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 
@@ -42,10 +43,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			ProfileMgr[playerid].SetSignedIn(false);
 			Profile& player = ProfileMgr[playerid];
 			if(!player.IsExistInDatabase()) {
-				player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
+				if(player.IsBannedForGame()) {
+					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁.");
+					player.KickNow();
+				} else {
+					player.SetColor(Random(0x00000000, 0xFFFFFFFF));
+					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
+				}
 			} else {
 				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");
 			}
+			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器.").c_str());
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
 			throw;
@@ -63,6 +71,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
+	SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器.").c_str());
 	try {
 		if(reason != 0 /* timeout */ && ProfileMgr[playerid].IsSignedIn())
 			ProfileMgr[playerid].Sync();
