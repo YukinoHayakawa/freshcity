@@ -121,6 +121,10 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 	mongo::BSONElement OID;
 	submit.getObjectID(OID);
 	GetDB().insert(CONFIG_STRING("Database.profile"), submit);
+	if(!GetDB().getLastError().empty()) {
+		LOG_ERROR(GetDB().getLastError().c_str());
+		throw std::runtime_error("注册失败, 可能是名称已被注册或其他数据库错误");
+	}
 	_uniqueid = OID.OID();
 	Sync();
 }

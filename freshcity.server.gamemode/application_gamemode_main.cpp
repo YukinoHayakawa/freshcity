@@ -19,7 +19,6 @@
 #include <sampgdk/a_samp.h>
 #include <sampgdk/plugin.h>
 #include "basic_debug_logging.h"
-#include "basic_algorithm_wchar.h"
 #include "application_gamemode_manager_profile.h"
 #include "application_gamemode_manager_command.h"
 #include "application_gamemode_colordefinitions.h"
