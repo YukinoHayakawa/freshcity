@@ -20,11 +20,13 @@
 struct CoordinatePlane {
 	float x, y;
 	CoordinatePlane(float x, float y) : x(x), y(y) {}
+	CoordinatePlane() : x(0.0f), y(0.0f) {}
 };
 
 struct Coordinate3D {
 	float x, y, z;
 	Coordinate3D(float x, float y, float z) : x(x), y(y), z(z) {}
+	Coordinate3D() : x(0.0f), y(0.0f), z(0.0f) {}
 };
 
 struct Coordinate5D {
@@ -32,6 +34,7 @@ struct Coordinate5D {
 	int virtualworld, interior; 
 	Coordinate5D(float x, float y, float z, int world, int interior)
 		: x(x), y(y), z(z), virtualworld(world), interior(interior) {}
+	Coordinate5D() : x(0.0f), y(0.0f), z(0.0f), virtualworld(0), interior(0) {}
 };
 
 #endif

@@ -89,7 +89,7 @@ bool Profile::IsBannedForGame() {
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
-	if(IsRegistered())
+	if(IsExistInDatabase())
 		throw std::runtime_error("玩家注册资料已存在");
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"auth"		<< BSON(
@@ -111,7 +111,7 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 }
 
 void Profile::Sync() {
-	Coordinate3D pos = GetPos();
+	Coordinate5D pos = GetDetailedPos();
 
 	int weapon[13][2];
 	std::list<mongo::BSONObj> weapons;
@@ -132,8 +132,8 @@ void Profile::Sync() {
 			"archive.gtasa.geo.coordinate"				<< BSON_ARRAY(pos.x << pos.y) <<
 			"archive.gtasa.geo.height"					<< pos.z <<
 			"archive.gtasa.geo.direction"				<< GetFacingAngle() <<
-			"archive.gtasa.geo.interior"				<< GetInterior() <<
-			"archive.gtasa.geo.world"					<< GetVirtualWorld()
+			"archive.gtasa.geo.interior"				<< pos.interior <<
+			"archive.gtasa.geo.world"					<< pos.virtualworld
 			));
 
 	Update(submit);
@@ -148,10 +148,6 @@ void Profile::SetPassword(const std::string& newpassword) {
 	if(newpassword.empty()) throw std::runtime_error("密码不能为空.");
 	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
 	Sync();
-}
-
-bool Profile::IsRegistered() {
-	return _existsindatabase;
 }
 
 CoordinatePlane Profile::GetPlaneCoordinate() const {
@@ -207,10 +203,16 @@ void Profile::SetBanned(bool banned) {
 	Sync();
 }
 
-bool Profile::IsSignedIn() {
+bool Profile::IsSignedIn() const {
 	return _signedin;
 }
 
 void Profile::SetSignedIn(bool signedin) {
 	_signedin = signedin;
+}
+
+Coordinate5D Profile::GetDetailedPos() const {
+	float x, y, z;
+	Player::GetPos(x, y, z);
+	return Coordinate5D(x, y, z, Player::GetVirtualWorld(), Player::GetInterior());
 }

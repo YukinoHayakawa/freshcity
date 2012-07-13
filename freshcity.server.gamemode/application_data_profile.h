@@ -22,7 +22,7 @@
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
 
-class Profile : protected SingleObject, public Player {
+class Profile : public SingleObject, public Player {
 private:
 	void _LoadMemberData();
 	std::string _nickname;
@@ -43,7 +43,6 @@ public:
 	void Sync();
 	bool AuthPassword(const std::string& input) const;
 	void SetPassword(const std::string& newpassword);
-	bool IsRegistered();
 	CoordinatePlane GetPlaneCoordinate() const;
 	std::string GetNickname() const;
 	void SetNickname(const std::string& nickname);
@@ -54,21 +53,9 @@ public:
 	Coordinate3D GetPos() const;
 	Coordinate3D GetVelocity() const;
 	void SetBanned(bool banned);
-	bool IsSignedIn();
+	bool IsSignedIn() const;
 	void SetSignedIn(bool signedin);
-	//float GetDistanceFromPoint(Coordinate3D target) const;
-	//bool SetPos(Coordinate3D target) const;
-	//bool SetPosFindZ(Coordinate3D target) const;
-	//bool MoveCameraLookAt(Coordinate3D from, Coordinate3D to, int time, int cut = CAMERA_CUT) const;
-	//bool MoveCameraPos(Coordinate3D from, Coordinate3D to, int time, int cut = CAMERA_CUT) const;
-	//bool IsInRangeOfPoint(float range, Coordinate3D center) const;
-	//bool PlayAudioStream(const std::string& url, Coordinate3D center, float distance, bool usepos = false) const;
-	//bool RemoveBuilding(int modelid, Coordinate3D center, float radius);
-	//bool SetAttachedObject(int index, int modelid, int bone, Coordinate3D offset, Coordinate3D rot, Coordinate3D scale, int color1 = 0, int color2 = 0) const;
-	//bool SetCameraLookAt(Coordinate3D target, int cut = CAMERA_CUT) const;
-	//bool SetCameraPos(Coordinate3D point) const;
-	//bool SetCheckpoint(Coordinate3D point, float size) const;
-	//bool SetMapIcon(int iconid, Coordinate3D point, int markertype, int color, int style = MAPICON_LOCAL) const;
+	Coordinate5D GetDetailedPos() const;
 };
 
 #endif

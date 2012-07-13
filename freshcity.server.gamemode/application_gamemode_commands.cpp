@@ -18,6 +18,7 @@
 #include "application_gamemode_manager_command.h"
 #include "application_gamemode_manager_profile.h"
 #include "application_gamemode_colordefinitions.h"
+#include "application_data_waypoint.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
 
@@ -27,7 +28,7 @@ CMD(Register) {
 	if(cmdline[0] == 0) throw std::runtime_error("密码不能为空.");
 	try {
 		player.Create(player.GetName(), cmdline);
-		player.SendChatMessage(COLOR_SUCC, std::string("注册成功. 登录名: " + player.GetName() + ", 密码(引号内): \"" + cmdline + "\".").c_str());
+		player.SendChatMessage(COLOR_SUCC, "注册成功. 登录名: " + player.GetName() + ", 密码(引号内): \"" + cmdline + "\".");
 		player.SetSignedIn(true);
 	} catch(std::runtime_error) {
 		throw;
@@ -78,6 +79,19 @@ CMD(GetVehicle) {
 	PutPlayerInVehicle(player.GetId(), vid, 0);
 }
 
+CMD(CreateWaypoint) {
+	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
+	CreateWaypoint(cmdline, player.GetDetailedPos(), player.GetID());
+	player.SendChatMessage(COLOR_SUCC, "已创建传送点 \"" + std::string(cmdline) + "\" .");
+}
+
+CMD(UseWaypoint) {
+	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
+	Waypoint point(cmdline);
+	point.ApplyToPlayer(player.GetId());
+	player.SendChatMessage(COLOR_SUCC, "已创建到 \"" + std::string(cmdline) + "\" .");
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -89,6 +103,8 @@ bool RegisterPlayerCmds() {
 	REGCMD("setskin",			CmdSetSkin,				1, NEED_SIGNED_IN);
 	REGCMD("giveweapon",		CmdGiveWeapon,			1, NEED_SIGNED_IN);
 	REGCMD("v",					CmdGetVehicle,			0, NO_REQUIREMENT);
+	REGCMD("ctp",				CmdCreateWaypoint,		0, NEED_SIGNED_IN);
+	REGCMD("tp",				CmdUseWaypoint,			0, NO_REQUIREMENT);
 	return true;
 }
 

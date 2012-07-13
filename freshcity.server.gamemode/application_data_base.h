@@ -35,6 +35,7 @@ public:
 	void Update(const mongo::BSONObj& modifier, bool refresh = true);
 	void SetCollection(const std::string& collection);
 	bool IsExistInDatabase() const;
+	mongo::OID GetID() const;
 };
 
 #endif

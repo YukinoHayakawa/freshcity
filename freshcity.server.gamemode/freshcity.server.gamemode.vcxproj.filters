@@ -54,6 +54,9 @@
     <ClInclude Include=".\application_gamemode_colordefinitions.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_data_waypoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -102,6 +105,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include=".\application_gamemode_commands.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_data_waypoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

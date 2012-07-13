@@ -69,3 +69,7 @@ void SingleObject::SetCollection(const std::string& collection) {
 bool SingleObject::IsExistInDatabase() const {
 	return _existsindatabase;
 }
+
+mongo::OID SingleObject::GetID() const {
+	return _uniqueid;
+}

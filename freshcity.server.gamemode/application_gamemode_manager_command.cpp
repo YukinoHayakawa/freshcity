@@ -49,11 +49,11 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 	if(iter == _cmds.end()) throw std::runtime_error("不存在的命令.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	if(!MATCHREQ(NO_REQUIREMENT)) {
-		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsRegistered() == false)
+		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsExistInDatabase() == false)
 			throw std::runtime_error("此命令仅限已注册玩家使用.");
 		if(MATCHREQ(NEED_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == false)
 			throw std::runtime_error("此命令仅限已登录玩家使用.");
-		if(MATCHREQ(DONOT_REGISTERED) && ProfileManager::GetInstance()[playerid].IsRegistered() == true)
+		if(MATCHREQ(DONOT_REGISTERED) && ProfileManager::GetInstance()[playerid].IsExistInDatabase() == true)
 			throw std::runtime_error("此命令仅限未注册玩家使用.");
 		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == true)
 			throw std::runtime_error("此命令仅限未登录玩家使用.");
