@@ -21,12 +21,20 @@
 
 class SingleObject {
 protected:
+	std::string _collection;
 	mongo::BSONObj _rawdata;
 	mongo::OID _uniqueid;
-	SingleObject(const std::string& collection, const mongo::OID& uniqueid);
+	bool _existsindatabase;
+
+public:
 	SingleObject(const std::string& collection, const mongo::BSONObj& query);
-	SingleObject(const mongo::BSONObj& data);
-	void _Flush(const std::string& collection, const mongo::BSONObj& query);
+	SingleObject(const std::string& collection, const mongo::OID& uniqueid);
+	SingleObject(const std::string& collection);
+	void Refresh();
+	void Create(const mongo::BSONObj& newdoc);
+	void Update(const mongo::BSONObj& modifier, bool refresh = true);
+	void SetCollection(const std::string& collection);
+	bool IsExistInDatabase() const;
 };
 
 #endif

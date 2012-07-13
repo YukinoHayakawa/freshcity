@@ -22,15 +22,13 @@
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
 
-class Profile : public SingleObject, public Player {
+class Profile : protected SingleObject, public Player {
 private:
 	void _LoadMemberData();
-	void inline _ImmediatelyUpdate(const mongo::BSONObj& modifier);
 	std::string _nickname;
 	std::string _passwordhash;
 	mongo::BSONObj _gamearchive;
 	int _adminlevel;
-	bool _registered;
 	bool _deleted;
 	bool _banned;
 	bool _signedin;
@@ -38,7 +36,6 @@ private:
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
 	Profile(int playerid, const std::string& logname);
-	Profile(int playerid, const mongo::BSONObj& data);
 	bool IsProfileDeleted();
 	bool IsBannedForGame();
 	void ApplyDataToPlayer();

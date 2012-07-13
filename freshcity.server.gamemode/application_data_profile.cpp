@@ -22,7 +22,7 @@
 #include "basic_algorithm_gbkencoder.h"
 
 void Profile::_LoadMemberData() {
-	if(_rawdata.isEmpty())
+	if(!_existsindatabase)
 		throw std::runtime_error("玩家没有注册信息");
 	try {
 		_passwordhash	= _rawdata["auth"]["password"].String();
@@ -31,7 +31,6 @@ void Profile::_LoadMemberData() {
 		_nickname		= _gamearchive["reginfo"]["nickname"].String();
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
-		_registered		= true;
 	} catch(mongo::UserException &e) {
 		LOG_ERROR(e.what());
 		throw std::runtime_error("玩家基本数据不完整");
@@ -68,28 +67,17 @@ void Profile::ApplyDataToPlayer() {
 	}
 }
 
-void inline Profile::_ImmediatelyUpdate(const mongo::BSONObj& modifier) {
-	GetDB().update(CONFIG_STRING("Database.profile"), BSON("_id" << _uniqueid), modifier);
-	Sync();
-}
-
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
 	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
-	_adminlevel(0), _registered(false), _deleted(false), _banned(false), _signedin(false) {
+	_adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
 		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
 	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
-	Player(playerid), _adminlevel(0), _registered(false), _deleted(false), _banned(false), _signedin(false) {
-		if(!_rawdata.isEmpty())
+	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
+		if(_existsindatabase)
 			_LoadMemberData();
-}
-
-Profile::Profile(int playerid, const mongo::BSONObj& data)
-	: SingleObject(data), Player(playerid), _adminlevel(0),
-	_registered(false), _deleted(false), _banned(false), _signedin(false) {
-		_LoadMemberData();
 }
 
 bool Profile::IsProfileDeleted() {
@@ -118,17 +106,9 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 					"ip"		<< GetIp()) <<
 				"banned"	<< false <<
 				"mgmtlevel"	<< 0)));
-	mongo::BSONElement OID;
-	submit.getObjectID(OID);
-	GetDB().insert(CONFIG_STRING("Database.profile"), submit);
-	if(!GetDB().getLastError().empty()) {
-		LOG_ERROR(GetDB().getLastError().c_str());
-		throw std::runtime_error("注册失败, 可能是名称已被注册或其他数据库错误");
-	}
-	_uniqueid = OID.OID();
+	SingleObject::Create(submit);
 	Sync();
 }
-
 
 void Profile::Sync() {
 	Coordinate3D pos = GetPos();
@@ -155,8 +135,8 @@ void Profile::Sync() {
 			"archive.gtasa.geo.interior"				<< GetInterior() <<
 			"archive.gtasa.geo.world"					<< GetVirtualWorld()
 			));
-	GetDB().update(CONFIG_STRING("Database.profile"), BSON("_id" << _uniqueid), submit);
-	_Flush(CONFIG_STRING("Database.profile"), BSON("_id" << _uniqueid));
+
+	Update(submit);
 	_LoadMemberData();
 }
 
@@ -166,11 +146,12 @@ bool Profile::AuthPassword(const std::string& input) const {
 
 void Profile::SetPassword(const std::string& newpassword) {
 	if(newpassword.empty()) throw std::runtime_error("密码不能为空.");
-	_ImmediatelyUpdate(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))));
+	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
+	Sync();
 }
 
 bool Profile::IsRegistered() {
-	return _registered;
+	return _existsindatabase;
 }
 
 CoordinatePlane Profile::GetPlaneCoordinate() const {
@@ -184,7 +165,8 @@ std::string Profile::GetNickname() const {
 }
 
 void Profile::SetNickname(const std::string& nickname) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << GBKToUTF8(nickname))));
+	Update(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << GBKToUTF8(nickname))), false);
+	Sync();
 }
 
 int Profile::GetAdminLevel() const {
@@ -192,7 +174,8 @@ int Profile::GetAdminLevel() const {
 }
 
 void Profile::SetAdminLevel(int level) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.mgmtlevel" << level)));
+	Update(BSON("$set" << BSON("archive.gtasa.mgmtlevel" << level)), false);
+	Sync();
 }
 
 Coordinate3D Profile::GetCameraFrontVector() const {
@@ -220,7 +203,8 @@ Coordinate3D Profile::GetVelocity() const {
 }
 
 void Profile::SetBanned(bool banned) {
-	_ImmediatelyUpdate(BSON("$set" << BSON("archive.gtasa.banned" << banned)));
+	Update(BSON("$set" << BSON("archive.gtasa.banned" << banned)), false);
+	Sync();
 }
 
 bool Profile::IsSignedIn() {

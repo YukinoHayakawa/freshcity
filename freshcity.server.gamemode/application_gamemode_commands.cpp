@@ -29,6 +29,8 @@ CMD(Register) {
 		player.Create(player.GetName(), cmdline);
 		player.SendChatMessage(COLOR_SUCC, std::string("×¢²á³É¹¦. µÇÂ¼Ãû: " + player.GetName() + ", ÃÜÂë(ÒıºÅÄÚ): \"" + cmdline + "\".").c_str());
 		player.SetSignedIn(true);
+	} catch(std::runtime_error) {
+		throw;
 	} catch(...) {
 		throw std::runtime_error("×¢²áÊ§°Ü.");
 	}
