@@ -17,6 +17,6 @@
 #ifndef FRESHCITY_BASIC_ALGORITHM_RANDOM
 #define FRESHCITY_BASIC_ALGORITHM_RANDOM
 
-long Random(long min, long max);
+long long Random(long long min, long long max);
 
 #endif

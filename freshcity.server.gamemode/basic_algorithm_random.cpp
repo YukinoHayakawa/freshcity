@@ -15,10 +15,12 @@
  */
 
 #include "basic_algorithm_random.h"
-#include <time.h>
-#include <stdlib.h>
+#include <boost/random.hpp>
 
-long Random(long min, long max) {
-	srand((unsigned)time(NULL));
-	return (rand() % (max-min)) + min;
+long long Random(long long min, long long max) {
+	unsigned long seed = (unsigned)clock();
+	boost::mt19937 engine(seed);
+	boost::uniform_int<long long> range(min, max);
+	boost::variate_generator<boost::mt19937&, boost::uniform_int<long long>> gen(engine, range);
+	return gen();
 }
