@@ -9,3 +9,4 @@ EXPORTS
 	OnPlayerDisconnect
 	OnPlayerRequestClass
 	OnPlayerCommandText
+	OnPlayerKeyStateChange

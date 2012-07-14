@@ -19,6 +19,7 @@
 #include "application_config.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
+#include "basic_algorithm_gbkencoder.h"
 
 void Waypoint::_LoadData() {
 	if(_existsindatabase) {
@@ -36,7 +37,7 @@ void Waypoint::_LoadData() {
 }
 
 Waypoint::Waypoint(const std::string& title)
-	: SingleObject(CONFIG_STRING("Database.waypoint"), BSON("title" << title)) {
+	: SingleObject(CONFIG_STRING("Database.waypoint"), BSON("title" << GBKToUTF8(title))) {
 		_LoadData();
 }
 
@@ -62,7 +63,7 @@ void Waypoint::ApplyToVehicle(int vid) const {
 
 mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, const mongo::OID& creator) {
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
-		"title"		<< title <<
+		"title"		<< GBKToUTF8(title) <<
 		"creator"	<< creator <<
 		"xy"		<< BSON_ARRAY(point.x << point.y) <<
 		"z"			<< point.z <<

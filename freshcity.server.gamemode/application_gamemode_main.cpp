@@ -17,6 +17,7 @@
 #include "application_database.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_samp.h>
+#include <sampgdk/a_vehicles.h>
 #include <sampgdk/plugin.h>
 #include "basic_debug_logging.h"
 #include "application_gamemode_manager_profile.h"
@@ -26,6 +27,23 @@
 #include "basic_algorithm_random.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
+
+PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
+	return SUPPORTS_VERSION | SUPPORTS_PROCESS_TICK;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppPluginData) {
+	sampgdk_initialize_plugin(ppPluginData);
+	return true;
+}
+
+PLUGIN_EXPORT void PLUGIN_CALL Unload() {
+	return;
+}
+
+PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
+	sampgdk_process_timers();
+}
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
@@ -106,19 +124,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 	return false;
 }
 
-PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
-	return SUPPORTS_VERSION | SUPPORTS_PROCESS_TICK;
-}
-
-PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppPluginData) {
-	sampgdk_initialize_plugin(ppPluginData);
-	return true;
-}
-
-PLUGIN_EXPORT void PLUGIN_CALL Unload() {
-	return;
-}
-
-PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
-	sampgdk_process_timers();
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys) {
+	if((newkeys & KEY_FIRE) == KEY_FIRE || (newkeys & KEY_ACTION) == KEY_ACTION)
+		if(IsPlayerInAnyVehicle(playerid))
+			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
+	return true;	
 }
