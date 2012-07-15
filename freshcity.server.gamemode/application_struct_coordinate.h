@@ -30,11 +30,11 @@ struct Coordinate3D {
 };
 
 struct Coordinate5D {
-	float x, y, z;
+	float x, y, z, facingangle;
 	int virtualworld, interior; 
-	Coordinate5D(float x, float y, float z, int world, int interior)
-		: x(x), y(y), z(z), virtualworld(world), interior(interior) {}
-	Coordinate5D() : x(0.0f), y(0.0f), z(0.0f), virtualworld(0), interior(0) {}
+	Coordinate5D(float x, float y, float z, int world, int interior, float facingangle = 0.0f)
+		: x(x), y(y), z(z), virtualworld(world), interior(interior), facingangle(facingangle) {}
+	Coordinate5D() : x(0.0f), y(0.0f), z(0.0f), virtualworld(0), interior(0), facingangle(0.0f)  {}
 };
 
 #endif

@@ -214,5 +214,5 @@ void Profile::SetSignedIn(bool signedin) {
 Coordinate5D Profile::GetDetailedPos() const {
 	float x, y, z;
 	Player::GetPos(x, y, z);
-	return Coordinate5D(x, y, z, Player::GetVirtualWorld(), Player::GetInterior());
+	return Coordinate5D(x, y, z, Player::GetVirtualWorld(), Player::GetInterior(), Player::GetFacingAngle());
 }

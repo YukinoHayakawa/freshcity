@@ -47,7 +47,7 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
-	for(int i = 0; i < 299; i++) 
+	for(int i = 0; i < 299; ++i) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	LOG_INFO("Freshcity Gamemode 已载入");
 	return true;
@@ -65,7 +65,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁.");
 					player.KickNow();
 				} else {
-					player.SetColor(Random(0x00000000, 0xFFFFFFFF));
+					player.SetColor((int)Random(0x00000000, 0xFFFFFFFF));
 					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
 				}
 			} else {

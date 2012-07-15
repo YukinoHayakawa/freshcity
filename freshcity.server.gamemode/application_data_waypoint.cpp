@@ -27,7 +27,8 @@ void Waypoint::_LoadData() {
 			std::vector<mongo::BSONElement> coordinate = _rawdata["xy"].Array();
 			_waypoint = Coordinate5D((float)coordinate[0].Number(),
 				(float)coordinate[1].Number(), (float)_rawdata["z"].Number(),
-				(int)_rawdata["world"].Number(), (int)_rawdata["interior"].Number());
+				(int)_rawdata["world"].Number(), (int)_rawdata["interior"].Number(),
+				(float)_rawdata["facing"].Number());
 		} catch(mongo::UserException) {
 			throw std::runtime_error("无效传送点文档");
 		}
@@ -53,6 +54,7 @@ void Waypoint::ApplyToPlayer(int playerid) const {
 	SetPlayerVirtualWorld(playerid, _waypoint.virtualworld);
 	SetPlayerInterior(playerid, _waypoint.interior);
 	SetPlayerPos(playerid, _waypoint.x, _waypoint.y, _waypoint.z);
+	SetPlayerFacingAngle(playerid, _waypoint.facingangle);
 }
 
 void Waypoint::ApplyToVehicle(int vid) const {
@@ -68,7 +70,8 @@ mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, c
 		"xy"		<< BSON_ARRAY(point.x << point.y) <<
 		"z"			<< point.z <<
 		"world"		<< point.virtualworld <<
-		"interior"	<< point.interior);
+		"interior"	<< point.interior <<
+		"facing"	<< point.facingangle);
 	SingleObject submitter(CONFIG_STRING("Database.waypoint"));
 	submitter.Create(submit);
 	return submitter.GetID();
