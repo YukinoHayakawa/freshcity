@@ -60,6 +60,12 @@
     <ClInclude Include="basic_algorithm_random.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_struct_variable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_gamemode_convoy.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -114,6 +120,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="basic_algorithm_random.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_struct_variable.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_convoy.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

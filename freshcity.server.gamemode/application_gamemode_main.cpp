@@ -25,6 +25,8 @@
 #include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
+#include "application_struct_variable.h"
+#include "application_gamemode_convoy.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 
@@ -47,8 +49,7 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
-	for(int i = 0; i < 299; ++i) 
-		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
+	Convey_AddPlayerClasses();
 	LOG_INFO("Freshcity Gamemode ÒÑÔØÈë");
 	return true;
 }
@@ -105,6 +106,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 	SetPlayerFacingAngle(playerid, 180.86f);
 	SetPlayerCameraPos(playerid, 1497.81f, -707.83f, 99.69f);
 	SetPlayerCameraLookAt(playerid, 1493.39f, -686.97f, 98.35f, CAMERA_MOVE);
+	switch(GetPlayerTeam(playerid)) {
+	case CONVEY_TEAM_COPS:
+		GameTextForPlayer(playerid, "Cop", 3000, 6);
+		break;
+
+	case CONVEY_TEAM_CRIMINALS:
+		GameTextForPlayer(playerid, "Criminal", 3000, 6);
+		break;
+	}
 	return true;
 }
 
@@ -129,4 +139,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 		if(IsPlayerInAnyVehicle(playerid))
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
 	return true;	
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
+	return true;
 }
