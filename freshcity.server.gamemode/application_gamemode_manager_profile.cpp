@@ -19,31 +19,7 @@
 
 bool ProfileManager::Add(int playerid) {
 	if(IsExist(playerid)) return false;
-	_players.insert(std::make_pair(playerid,
-		boost::shared_ptr<Profile>(new Profile(playerid, GetPlayerName(playerid)))));
+	_members.insert(std::make_pair(playerid,
+		MemberPtr(new Profile(playerid, GetPlayerName(playerid)))));
 	return true;
-}
-
-bool ProfileManager::IsExist(int playerid) const {
-	return _players.find(playerid) != _players.end();
-}
-
-bool ProfileManager::Remove(int playerid) {
-	ProfileMap::const_iterator iter(_players.find(playerid));
-	if(iter == _players.end()) return false;
-	_players.erase(iter);
-	return true;
-}
-
-Profile& ProfileManager::Get(int playerid) {
-	return *_players.at(playerid).get();
-}
-
-Profile& ProfileManager::operator[](int playerid) {
-	return Get(playerid);
-}
-
-ProfileManager& ProfileManager::GetInstance() {
-	static ProfileManager inst;
-	return inst;
 }

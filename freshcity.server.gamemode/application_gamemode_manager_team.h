@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef APPLICATION_STRUCT_VARIABLE
-#define APPLICATION_STRUCT_VARIABLE
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_MANAGER_TEAM
+#define FRESHCITY_APPLICATION_GAMEMODE_MANAGER_TEAM
 
-#include <boost/any.hpp>
-#include <boost/unordered_map.hpp>
+#include "application_gamemode_manager_base.h"
+#include "application_data_team.h"
 
-typedef boost::unordered_map<std::string, boost::any> VariableMap;
+class TeamManager : public BaseManager<TeamManager, std::string, Team> {
+private:
+	int _teamidcounter;
+	typedef boost::unordered_map<int, std::string> IDNameMap;
+	IDNameMap _idtoname;
 
-VariableMap& GetGVar();
+protected:
+	TeamManager();
+
+public:
+	friend class BaseManager<TeamManager, std::string, Team>;
+	bool Add(const std::string& teamname);
+	bool Remove(const std::string& teamname);
+	std::string GetNameByID(int teamid);
+};
 
 #endif

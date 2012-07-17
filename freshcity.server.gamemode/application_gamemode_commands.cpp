@@ -21,6 +21,7 @@
 #include "application_data_waypoint.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
+#include "application_gamemode_manager_team.h"
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
@@ -92,6 +93,14 @@ CMD(UseWaypoint) {
 	player.SendChatMessage(COLOR_SUCC, "已创建到 \"" + std::string(cmdline) + "\" .");
 }
 
+CMD(TeamJoin) {
+	TeamManager::GetInstance()[cmdline].Join(player);
+}
+
+CMD(TeamQuit) {
+	TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeam())].Quit(player);
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -105,6 +114,8 @@ bool RegisterPlayerCmds() {
 	REGCMD("v",					CmdGetVehicle,			0, NO_REQUIREMENT);
 	REGCMD("ctp",				CmdCreateWaypoint,		0, NEED_SIGNED_IN);
 	REGCMD("tp",				CmdUseWaypoint,			0, NO_REQUIREMENT);
+	REGCMD("teamjoin",			CmdTeamJoin,			0, NEED_SIGNED_IN);
+	REGCMD("teamquit",			CmdTeamQuit,			0, NEED_SIGNED_IN);
 	return true;
 }
 

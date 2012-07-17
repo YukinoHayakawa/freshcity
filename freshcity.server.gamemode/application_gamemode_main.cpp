@@ -25,10 +25,10 @@
 #include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
-#include "application_struct_variable.h"
-#include "application_gamemode_convoy.h"
+#include "application_gamemode_manager_team.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
+TeamManager& TeamMgr(TeamManager::GetInstance());
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 	return SUPPORTS_VERSION | SUPPORTS_PROCESS_TICK;
@@ -49,7 +49,12 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
-	Convey_AddPlayerClasses();
+	for(int i = 1; i < 299; i++) 
+		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 16, 3, 27, 100, 31, 100);
+	TeamMgr.Add("Cops");
+	TeamMgr["Cops"].SetColor(COLOR_BLUE);
+	TeamMgr.Add("Criminals");
+	TeamMgr["Criminals"].SetColor(COLOR_GREEN);
 	LOG_INFO("Freshcity Gamemode 已载入");
 	return true;
 }
@@ -66,13 +71,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁.");
 					player.KickNow();
 				} else {
-					player.SetColor((int)Random(0x00000000, 0xFFFFFFFF));
+					//player.SetColor(RandomRGBAColor());
 					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
 				}
 			} else {
 				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");
 			}
+			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器.").c_str());
+			player.SendChatMessage(COLOR_INFO, "/teamjoin Cops 加入警察");
+			player.SendChatMessage(COLOR_INFO, "/teamjoin Criminals 加入罪犯");
+			player.SendChatMessage(COLOR_WARN, "请注意大小写");
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
 			throw;
@@ -94,6 +103,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 	try {
 		if(reason != 0 /* timeout */ && ProfileMgr[playerid].IsSignedIn())
 			ProfileMgr[playerid].Sync();
+		int playerteamid = GetPlayerTeam(playerid);
+		if(playerteamid != NO_TEAM)
+			TeamMgr[TeamMgr.GetNameByID(playerteamid)].Quit(ProfileMgr[playerid]);
 		ProfileMgr.Remove(playerid);
 	} catch(...) {
 		return false;
@@ -106,19 +118,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 	SetPlayerFacingAngle(playerid, 180.86f);
 	SetPlayerCameraPos(playerid, 1497.81f, -707.83f, 99.69f);
 	SetPlayerCameraLookAt(playerid, 1493.39f, -686.97f, 98.35f, CAMERA_MOVE);
-	switch(GetPlayerTeam(playerid)) {
-	case CONVEY_TEAM_COPS:
-		GameTextForPlayer(playerid, "Cop", 3000, 6);
-		break;
-
-	case CONVEY_TEAM_CRIMINALS:
-		GameTextForPlayer(playerid, "Criminal", 3000, 6);
-		break;
-	}
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
+	LOG_DEBUG(cmdtext);
 	char cmdname[128] = {0}, cmdline[128] = {0};
 	sscanf(cmdtext, "%s%*[ ]%[^\0]", cmdname, cmdline);
 	try {
@@ -139,8 +143,4 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 		if(IsPlayerInAnyVehicle(playerid))
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
 	return true;	
-}
-
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
-	return true;
 }

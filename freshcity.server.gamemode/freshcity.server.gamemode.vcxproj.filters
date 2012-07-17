@@ -60,10 +60,13 @@
     <ClInclude Include="basic_algorithm_random.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_struct_variable.h">
+    <ClInclude Include=".\application_data_team.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_gamemode_convoy.h">
+    <ClInclude Include="application_gamemode_manager_team.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_manager_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -107,9 +110,6 @@
     <ClCompile Include=".\application_gamemode_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_gamemode_manager_profile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="application_gamemode_manager_command.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -122,10 +122,13 @@
     <ClCompile Include="basic_algorithm_random.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_struct_variable.cpp">
+    <ClCompile Include="application_data_team.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_gamemode_convoy.cpp">
+    <ClCompile Include="application_gamemode_manager_profile.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_manager_team.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,5 +18,6 @@
 #define FRESHCITY_BASIC_ALGORITHM_RANDOM
 
 long long Random(long long min, long long max);
+int inline RandomRGBAColor() {return (int)Random(0x00000000, 0xFFFFFFFF);}
 
 #endif

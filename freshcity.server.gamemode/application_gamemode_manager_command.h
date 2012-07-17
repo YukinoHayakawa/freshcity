@@ -17,27 +17,24 @@
 #ifndef FRESHCITY_APPLICATION_GAMEMODE_MANAGER_COMMAND
 #define FRESHCITY_APPLICATION_GAMEMODE_MANAGER_COMMAND
 
-#include <boost/shared_ptr.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/function.hpp>
-#include <boost/noncopyable.hpp>
+#include "application_gamemode_manager_base.h"
 #include "application_gamemode_manager_profile.h"
+#include <boost/function.hpp>
 
 typedef void (*COMMAND_CALLBACK)(Profile& player, const char* cmdline);
+typedef boost::function<void(Profile&, const char*)> CommandPtr;
 
-class CommandManager : private boost::noncopyable {
-protected:
-	struct Callback;
-	typedef boost::function<void(Profile&, const char*)> CallbackPtr;
-	typedef boost::unordered_map<std::string, Callback> CommandMap;
-	CommandMap _cmds;
+struct CommandCallbackCell {
+	CommandPtr ptr;
+	int reqlevel;
+	unsigned int flags;
+	CommandCallbackCell(CommandPtr ptr, int reqlevel, unsigned int flags) : ptr(ptr), reqlevel(reqlevel), flags(flags) {}
+};
 
+class CommandManager : public BaseManager<CommandManager, std::string, CommandCallbackCell> {
 public:
 	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags);
-	bool IsExist(const std::string& cmd) const;
-	bool Remove(const std::string& cmd);
 	void Exec(int playerid, const std::string& cmd, const char* cmdline) const;
-	static CommandManager& GetInstance();
 };
 
 enum CommandRequirement {

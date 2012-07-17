@@ -17,23 +17,12 @@
 #ifndef FRESHCITY_APPLICATION_GAMEMODE_MANAGER_PROFILE
 #define FRESHCITY_APPLICATION_GAMEMODE_MANAGER_PROFILE
 
-#include <boost/shared_ptr.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/noncopyable.hpp>
+#include "application_gamemode_manager_base.h"
 #include "application_data_profile.h"
 
-class ProfileManager : private boost::noncopyable {
-protected:
-	typedef boost::unordered_map<int, boost::shared_ptr<Profile>> ProfileMap;
-	ProfileMap _players;
-
+class ProfileManager : public BaseManager<ProfileManager, int, Profile> {
 public:
 	bool Add(int playerid);
-	bool IsExist(int playerid) const;
-	bool Remove(int playerid);
-	Profile& Get(int playerid);
-	Profile& operator[](int playerid);
-	static ProfileManager& GetInstance();
 };
 
 #endif
