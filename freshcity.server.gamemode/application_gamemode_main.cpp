@@ -26,6 +26,8 @@
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
 #include "application_gamemode_manager_team.h"
+#include "application_gamemode_manager_dialog.h"
+#include "application_gamemode_dialogdefinitions.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -77,8 +79,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			} else {
 				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");
 			}
-			player.SetTeam(NO_TEAM);
+			player.SetTeamFixed(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器.").c_str());
+			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 			player.SendChatMessage(COLOR_INFO, "/teamjoin Cops 加入警察");
 			player.SendChatMessage(COLOR_INFO, "/teamjoin Criminals 加入罪犯");
 			player.SendChatMessage(COLOR_WARN, "请注意大小写");
@@ -99,14 +102,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
-	SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器.").c_str());
 	try {
-		if(reason != 0 /* timeout */ && ProfileMgr[playerid].IsSignedIn())
-			ProfileMgr[playerid].Sync();
-		int playerteamid = GetPlayerTeam(playerid);
+		Profile& player =  ProfileMgr[playerid];
+		if(reason != 0 /* timeout */ && player.IsSignedIn())
+			player.Sync();
+		int playerteamid = player.GetTeamFixed();
 		if(playerteamid != NO_TEAM)
 			TeamMgr[TeamMgr.GetNameByID(playerteamid)].Quit(ProfileMgr[playerid]);
 		ProfileMgr.Remove(playerid);
+		SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器.").c_str());
+		SendDeathMessage(INVALID_PLAYER_ID, playerid, 201);
 	} catch(...) {
 		return false;
 	}
@@ -143,4 +148,39 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 		if(IsPlayerInAnyVehicle(playerid))
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
 	return true;	
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char *inputtext) {
+	LOG_DEBUG("DialogID: " << dialogid << " Response: " << response << " Listitem: " << listitem << " Input: " << inputtext);
+	try {
+		DialogManager::GetInstance().Exec(playerid, response == 1, dialogid, listitem, inputtext);
+	} catch(std::runtime_error& e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+		return true;
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "处理对话框时发生未知错误, 请联系服务器管理员.");
+		return true;
+	}
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, float z) {
+	SetPlayerPos(playerid, x, y, z);
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason) {
+	LOG_DEBUG("Killer: " << killerid << " Victim: " << playerid << " Reason: " << reason);
+	GivePlayerMoney(playerid, -500);
+	if(killerid != INVALID_PLAYER_ID) {
+		SetPlayerScore(killerid, GetPlayerScore(killerid) + 1);
+		GivePlayerMoney(killerid, 1000);
+	}
+	SendDeathMessage(killerid, playerid, reason);
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
+	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "Cops\nCriminals", "确定", "");
+	return true;
 }

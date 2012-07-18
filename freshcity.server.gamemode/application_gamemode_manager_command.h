@@ -34,7 +34,7 @@ struct CommandCallbackCell {
 class CommandManager : public BaseManager<CommandManager, std::string, CommandCallbackCell> {
 public:
 	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags);
-	void Exec(int playerid, const std::string& cmd, const char* cmdline) const;
+	void Exec(int playerid, const std::string& cmd, const char* cmdline);
 };
 
 enum CommandRequirement {

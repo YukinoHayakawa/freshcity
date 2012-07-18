@@ -16,15 +16,17 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_team.h"
+#include "basic_debug_logging.h"
 
 TeamManager::TeamManager() : _teamidcounter(0) {}
 
 bool TeamManager::Add(const std::string& teamname) {
-	if(IsExist(teamname)) return false;
 	MemberPtr ptr(new Team(teamname, ++_teamidcounter));
-	_members.insert(std::make_pair(teamname, ptr));
-	_idtoname.insert(std::make_pair(ptr->GetIngameID(), teamname));
-	return true;
+	LOG_DEBUG("AddTeam Name: " << teamname.c_str() << " ID: " << _teamidcounter);
+	if(BaseManager::Add(teamname, ptr)) {
+		_idtoname.insert(std::make_pair(_teamidcounter, teamname));
+		return true;
+	} else return false;
 }
 
 bool TeamManager::Remove(const std::string& teamname) {
@@ -35,9 +37,9 @@ bool TeamManager::Remove(const std::string& teamname) {
 	} return false;
 }
 
-std::string TeamManager::GetNameByID(int teamid) {
-	IDNameMap::iterator iter = _idtoname.find(teamid);
+std::string TeamManager::GetNameByID(int teamid) const {
+	IDNameMap::const_iterator iter = _idtoname.find(teamid);
 	if(iter == _idtoname.end())
-		throw std::runtime_error("尝试获取不存在的对象");
+		throw std::runtime_error("无法获得指定团队的ID");
 	return iter->second;
 }

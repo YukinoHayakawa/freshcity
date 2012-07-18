@@ -15,8 +15,15 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_manager_profile.h"
+#include "application_gamemode_manager_dialog.h"
 
-bool ProfileManager::Add(int playerid) {
-	return BaseManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
+bool DialogManager::Add(int dialogid, DIALOG_CALLBACK function) {
+	return BaseManager::Add(dialogid, MemberPtr(new DialogPtr(function)));
+}
+
+void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
+	MemberMap::const_iterator iter(_members.find(dialogid));
+	if(iter == _members.end()) throw std::runtime_error("未注册回调的对话框.");
+	Profile& player = ProfileManager::GetInstance()[playerid];
+	iter->second->operator()(player, response, listitem, inputtext);
 }

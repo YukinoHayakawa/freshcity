@@ -90,7 +90,9 @@ CMD(UseWaypoint) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
 	point.ApplyToPlayer(player.GetId());
-	player.SendChatMessage(COLOR_SUCC, "已创建到 \"" + std::string(cmdline) + "\" .");
+	if(player.GetVehicleSeat() == 0)
+		point.ApplyToVehicle(player.GetVehicleID());
+	player.SendChatMessage(COLOR_SUCC, "已传送到 \"" + std::string(cmdline) + "\" .");
 }
 
 CMD(TeamJoin) {
@@ -98,7 +100,7 @@ CMD(TeamJoin) {
 }
 
 CMD(TeamQuit) {
-	TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeam())].Quit(player);
+	TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
 }
 
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)

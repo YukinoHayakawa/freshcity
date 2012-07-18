@@ -16,18 +16,14 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_command.h"
-#include "application_gamemode_manager_profile.h"
 
 bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags) {
-	if(IsExist(cmd)) return false;
-	_members.insert(std::make_pair(cmd, MemberPtr(
-		new CommandCallbackCell(CommandPtr(function), reqlevel, flags))));
-	return true;
+	return BaseManager::Add(cmd, MemberPtr(new CommandCallbackCell(CommandPtr(function), reqlevel, flags)));
 }
 
 #define MATCHREQ(req) ((iter->second->flags & req) == req)
 
-void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) const {
+void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) {
 	MemberMap::const_iterator iter(_members.find(cmd));
 	if(iter == _members.end()) throw std::runtime_error("²»´æÔÚµÄÃüÁî.");
 	Profile& player = ProfileManager::GetInstance()[playerid];

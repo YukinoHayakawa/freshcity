@@ -33,7 +33,7 @@ public:
 	friend class BaseManager<TeamManager, std::string, Team>;
 	bool Add(const std::string& teamname);
 	bool Remove(const std::string& teamname);
-	std::string GetNameByID(int teamid);
+	std::string GetNameByID(int teamid) const;
 };
 
 #endif

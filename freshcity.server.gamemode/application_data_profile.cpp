@@ -61,6 +61,9 @@ void Profile::ApplyDataToPlayer() {
 		SetFacingAngle((float)geo["direction"].Number());
 		SetInterior((int)geo["interior"].Number());
 		SetVirtualWorld((int)geo["world"].Number());
+		ResetMoney();
+		GiveMoney((int)attribute["money"].Number());
+		SetScore((int)attribute["score"].Number());
 	} catch(mongo::UserException &e) {
 		LOG_ERROR(e.what());
 		throw std::runtime_error("玩家游戏数据不完整");
@@ -129,6 +132,8 @@ void Profile::Sync() {
 			"archive.gtasa.attribute.skin"				<< GetSkin() <<
 			"archive.gtasa.attribute.color"				<< GetColor() <<
 			"archive.gtasa.attribute.fightingstyle"		<< GetFightingStyle() <<
+			"archive.gtasa.attribute.money"				<< GetMoney() <<
+			"archive.gtasa.attribute.score"				<< GetScore() <<
 			"archive.gtasa.geo.coordinate"				<< BSON_ARRAY(pos.x << pos.y) <<
 			"archive.gtasa.geo.height"					<< pos.z <<
 			"archive.gtasa.geo.direction"				<< GetFacingAngle() <<
@@ -215,4 +220,13 @@ Coordinate5D Profile::GetDetailedPos() const {
 	float x, y, z;
 	Player::GetPos(x, y, z);
 	return Coordinate5D(x, y, z, Player::GetVirtualWorld(), Player::GetInterior(), Player::GetFacingAngle());
+}
+
+int Profile::GetTeamFixed() const {
+	return _team;
+}
+
+bool Profile::SetTeamFixed(int teamid) {
+	_team = teamid;
+	return Player::SetTeam(teamid);
 }

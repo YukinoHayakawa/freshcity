@@ -69,6 +69,12 @@
     <ClInclude Include=".\application_gamemode_manager_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_gamemode_manager_dialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_gamemode_dialogdefinitions.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -129,6 +135,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_gamemode_manager_team.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_manager_dialog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_dialogs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

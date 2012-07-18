@@ -21,27 +21,29 @@
 #include <sampgdk/a_players.h>
 #include "application_gamemode_colordefinitions.h"
 #include "basic_algorithm_random.h"
+#include "basic_debug_logging.h"
 
 Team::Team(const std::string& name, int teamid) : SingleObject(CONFIG_STRING("Database.team")),
 	_name(name), _score(0), _ingameteamid(teamid), _color(RandomRGBAColor()), _level(0) {}
 
 void Team::Join(Profile& player) {
+	LOG_DEBUG("Playerteam: " << player.GetTeamFixed());
 	if(IsMember(player.GetId()))
 		throw std::runtime_error("您已经是该团队的成员了");
-	std::cout << "PLAYERTEAM:" << player.GetTeam() << std::endl;
-	if(player.GetTeam() != NO_TEAM)
+	if(player.GetTeamFixed() != NO_TEAM)
 		throw std::runtime_error("您已加入过别的团队了 请执行 /teamquit 退出先前加入的团队");
-	player.SetTeam(_ingameteamid);
+	player.SetTeamFixed(_ingameteamid);
 	player.SetColor(_color);
 	player.SendChatMessage(COLOR_SUCC, "您已加入团队 " + _name);
 	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetID()));
+	LOG_DEBUG("Player joined team: " << _ingameteamid);
 }
 
 void Team::Quit(Profile& player) {
 	TeamMemberMap::iterator iter = _onlineplayers.find(player.GetId());
 	if(iter == _onlineplayers.end())
 		throw std::runtime_error("您并未加入此团队");
-	player.SetTeam(NO_TEAM);
+	player.SetTeamFixed(NO_TEAM);
 	player.SetColor(COLOR_WHITE);
 	player.SendChatMessage(COLOR_SUCC, "您已退出团队 " + _name);
 	_onlineplayers.erase(iter);

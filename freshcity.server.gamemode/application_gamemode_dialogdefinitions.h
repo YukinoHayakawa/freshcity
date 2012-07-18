@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_gamemode_manager_profile.h"
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
+#define FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
 
-bool ProfileManager::Add(int playerid) {
-	return BaseManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
-}
+#include "application_gamemode_manager_base.h"
+#include "application_gamemode_manager_profile.h"
+#include <boost/function.hpp>
+
+enum {
+	DIALOG_TEAM_SELECT
+};
+
+#endif

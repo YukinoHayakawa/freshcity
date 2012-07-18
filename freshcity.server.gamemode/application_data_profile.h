@@ -32,6 +32,7 @@ private:
 	bool _deleted;
 	bool _banned;
 	bool _signedin;
+	int _team;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -56,6 +57,8 @@ public:
 	bool IsSignedIn() const;
 	void SetSignedIn(bool signedin);
 	Coordinate5D GetDetailedPos() const;
+	int GetTeamFixed() const;
+	bool SetTeamFixed(int teamid);
 };
 
 #endif

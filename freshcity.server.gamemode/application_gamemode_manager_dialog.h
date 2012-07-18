@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_gamemode_manager_profile.h"
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_MANAGER_DIALOG
+#define FRESHCITY_APPLICATION_GAMEMODE_MANAGER_DIALOG
 
-bool ProfileManager::Add(int playerid) {
-	return BaseManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
-}
+#include "application_gamemode_manager_base.h"
+#include "application_gamemode_manager_profile.h"
+#include <boost/function.hpp>
+
+typedef void (*DIALOG_CALLBACK)(Profile& player, bool response, int listitem, const char* inputtext);
+typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
+
+class DialogManager : public BaseManager<DialogManager, int, DialogPtr> {
+public:
+	bool Add(int dialogid, DIALOG_CALLBACK function);
+	void Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext);
+};
+
+#endif
