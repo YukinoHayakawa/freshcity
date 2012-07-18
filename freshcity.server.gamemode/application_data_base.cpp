@@ -36,7 +36,7 @@ void SingleObject::Refresh() {
 		throw std::runtime_error("刷新文档失败");
 }
 
-void SingleObject::Create(const mongo::BSONObj& newdoc) {
+void SingleObject::Create(const mongo::BSONObj& newdoc, bool refresh) {
 	if(_existsindatabase)
 		throw std::runtime_error("文档已存在");
 	GetDB().insert(_collection, newdoc);
@@ -48,7 +48,7 @@ void SingleObject::Create(const mongo::BSONObj& newdoc) {
 	newdoc.getObjectID(OID);
 	_uniqueid = OID.OID();
 	_existsindatabase = true;
-	Refresh();
+	if(refresh) Refresh();
 }
 
 void SingleObject::Update(const mongo::BSONObj& modifier, bool refresh) {

@@ -31,8 +31,8 @@ public:
 	SingleObject(const std::string& collection, const mongo::OID& uniqueid);
 	SingleObject(const std::string& collection);
 	void Refresh();
-	void Create(const mongo::BSONObj& newdoc);
-	void Update(const mongo::BSONObj& modifier, bool refresh = true);
+	void Create(const mongo::BSONObj& newdoc, bool refresh);
+	void Update(const mongo::BSONObj& modifier, bool refresh);
 	void SetCollection(const std::string& collection);
 	bool IsExistInDatabase() const;
 	mongo::OID GetID() const;

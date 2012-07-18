@@ -34,8 +34,7 @@ public:
 	void ApplyToPlayer(int playerid) const;
 	void ApplyToVehicle(int vid) const;
 	void PerformTeleport(int playerid) const;
+	void Create(const std::string& title, const mongo::OID& creator);
 };
-
-mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, const mongo::OID& creator);
 
 #endif

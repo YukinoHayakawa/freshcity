@@ -109,7 +109,7 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 					"ip"		<< GetIp()) <<
 				"banned"	<< false <<
 				"mgmtlevel"	<< 0)));
-	SingleObject::Create(submit);
+	SingleObject::Create(submit, true);
 	Sync();
 }
 
@@ -141,7 +141,7 @@ void Profile::Sync() {
 			"archive.gtasa.geo.world"					<< pos.virtualworld
 			));
 
-	Update(submit);
+	Update(submit, true);
 	_LoadMemberData();
 }
 

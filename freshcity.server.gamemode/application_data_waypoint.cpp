@@ -73,16 +73,14 @@ void Waypoint::PerformTeleport(int playerid) const {
 		ApplyToVehicle(GetPlayerVehicleID(playerid));
 }
 
-mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, const mongo::OID& creator) {
+void Waypoint::Create(const std::string& title, const mongo::OID& creator) {
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"title"		<< GBKToUTF8(title) <<
 		"creator"	<< creator <<
-		"xy"		<< BSON_ARRAY(point.x << point.y) <<
-		"z"			<< point.z <<
-		"world"		<< point.virtualworld <<
-		"interior"	<< point.interior <<
-		"facing"	<< point.facingangle);
-	SingleObject submitter(CONFIG_STRING("Database.waypoint"));
-	submitter.Create(submit);
-	return submitter.GetID();
+		"xy"		<< BSON_ARRAY(_waypoint.x << _waypoint.y) <<
+		"z"			<< _waypoint.z <<
+		"world"		<< _waypoint.virtualworld <<
+		"interior"	<< _waypoint.interior <<
+		"facing"	<< _waypoint.facingangle);
+	SingleObject::Create(submit, false);
 }

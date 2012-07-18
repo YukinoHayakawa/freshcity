@@ -75,9 +75,6 @@
     <ClInclude Include="application_gamemode_dialogdefinitions.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_dependency_streamer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">

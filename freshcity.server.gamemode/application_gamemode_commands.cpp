@@ -83,7 +83,8 @@ CMD(GetVehicle) {
 
 CMD(CreateWaypoint) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
-	CreateWaypoint(cmdline, player.GetDetailedPos(), player.GetID());
+	Waypoint create(player.GetDetailedPos());
+	create.Create(cmdline, player.GetID());
 	player.SendChatMessage(COLOR_SUCC, "已创建传送点 \"" + std::string(cmdline) + "\" .");
 }
 

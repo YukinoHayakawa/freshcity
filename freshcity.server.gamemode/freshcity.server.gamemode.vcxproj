@@ -128,7 +128,6 @@
     <ClInclude Include=".\application_gamemode_colordefinitions.h" />
     <ClInclude Include="application_data_waypoint.h" />
     <ClInclude Include=".\application_gamemode_manager_base.h" />
-    <ClInclude Include="application_dependency_streamer.h" />
     <ClInclude Include="application_gamemode_dialogdefinitions.h" />
     <ClInclude Include="application_gamemode_manager_command.h" />
     <ClInclude Include="application_gamemode_manager_dialog.h" />
