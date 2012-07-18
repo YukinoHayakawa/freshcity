@@ -15,3 +15,4 @@
  */
 
 #pragma comment(lib, "freshcity.dependency.sampgdk.lib")
+#pragma comment(lib, "freshcity.dependency.streamer.lib")

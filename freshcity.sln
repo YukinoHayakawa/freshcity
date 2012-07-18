@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freshcity.dependency.mongoc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freshcity.dependency.sampgdk", "freshcity.dependency.sampgdk\freshcity.dependency.sampgdk.vcxproj", "{F42F1B29-DA7D-4C2B-867F-77B367D6CE3C}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freshcity.dependency.streamer", "freshcity.dependency.streamer\freshcity.dependency.streamer.vcxproj", "{D7929C41-C8CE-40D9-8374-1A7E027B011F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +43,16 @@ Global
 		{3FC3247D-2870-409A-8993-266F4E886121}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{3FC3247D-2870-409A-8993-266F4E886121}.Release|Win32.ActiveCfg = Release|Win32
 		{3FC3247D-2870-409A-8993-266F4E886121}.Release|Win32.Build.0 = Release|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Debug|Win32.Build.0 = Debug|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Release|Any CPU.ActiveCfg = Release|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Release|Win32.ActiveCfg = Release|Win32
+		{D7929C41-C8CE-40D9-8374-1A7E027B011F}.Release|Win32.Build.0 = Release|Win32
 		{F42F1B29-DA7D-4C2B-867F-77B367D6CE3C}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{F42F1B29-DA7D-4C2B-867F-77B367D6CE3C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{F42F1B29-DA7D-4C2B-867F-77B367D6CE3C}.Debug|Mixed Platforms.Build.0 = Debug|Win32

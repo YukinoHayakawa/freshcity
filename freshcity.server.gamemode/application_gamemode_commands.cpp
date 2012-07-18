@@ -22,6 +22,7 @@
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
 #include "application_gamemode_manager_team.h"
+#include "application_dependency_streamer.h"
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
@@ -117,6 +118,13 @@ CMD(GetPlayer) {
 	point.PerformTeleport(targetid);
 }
 
+CMD(CreatePickupHere) {
+	int pickupid(-1);
+	sscanf(cmdline, "%d", &pickupid);
+	Coordinate3D playerpos = player.GetPos();
+	CreateDynamicPickup(pickupid, 1, playerpos.x, playerpos.y, playerpos.z);
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -134,6 +142,7 @@ bool RegisterPlayerCmds() {
 	REGCMD("teamquit",			CmdTeamQuit,			5, NEED_SIGNED_IN);
 	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
+	REGCMD("pickup",			CmdCreatePickupHere,	0, NO_REQUIREMENT);
 	return true;
 }
 

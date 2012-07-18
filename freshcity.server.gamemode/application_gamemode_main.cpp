@@ -28,9 +28,14 @@
 #include "application_gamemode_manager_team.h"
 #include "application_gamemode_manager_dialog.h"
 #include "application_gamemode_dialogdefinitions.h"
+#include "application_dependency_streamer.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
+
+__declspec(dllexport) void OnPlayerEnterDynamicArea(int playerid, int areaid);
+__declspec(dllexport) void OnPlayerLeaveDynamicArea(int playerid, int areaid);
+__declspec(dllexport) void OnDynamicObjectMoved(int objectid);
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 	return SUPPORTS_VERSION | SUPPORTS_PROCESS_TICK;
@@ -38,6 +43,9 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppPluginData) {
 	sampgdk_initialize_plugin(ppPluginData);
+	SetOnPlayerEnterDynamicAreaCallback(OnPlayerEnterDynamicArea);
+	SetOnPlayerLeaveDynamicAreaCallback(OnPlayerLeaveDynamicArea);
+	SetOnDynamicObjectMovedCallback(OnDynamicObjectMoved);
 	return true;
 }
 
@@ -47,6 +55,7 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload() {
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 	sampgdk_process_timers();
+	Streamer_ProcessTick();
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
@@ -63,6 +72,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	try {
+		Streamer_OnPlayerConnect(playerid);
 		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
 		try {
 			ProfileMgr.Add(playerid);
@@ -100,6 +110,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 	try {
+		Streamer_OnPlayerDisconnect(playerid, reason);
 		Profile& player =  ProfileMgr[playerid];
 		if(reason != 0 /* timeout */ && player.IsSignedIn())
 			player.Sync();
@@ -185,4 +196,16 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	SetPlayerChatBubble(playerid, text, GetPlayerColor(playerid), 100.0f, 5000);
 	return true;
+}
+
+__declspec(dllexport) void OnPlayerEnterDynamicArea(int playerid, int areaid) {
+	LOG_DEBUG("OnPlayerEnterDynamicArea");
+}
+
+__declspec(dllexport) void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
+	LOG_DEBUG("OnPlayerLeaveDynamicArea");
+}
+
+__declspec(dllexport) void OnDynamicObjectMoved(int objectid) {
+	LOG_DEBUG("OnDynamicObjectMoved");
 }
