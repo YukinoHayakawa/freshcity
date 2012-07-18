@@ -73,7 +73,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁.");
 					player.KickNow();
 				} else {
-					//player.SetColor(RandomRGBAColor());
+					player.SetColor(RandomRGBAColor());
 					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
 				}
 			} else {
@@ -82,9 +82,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			player.SetTeamFixed(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器.").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
-			player.SendChatMessage(COLOR_INFO, "/teamjoin Cops 加入警察");
-			player.SendChatMessage(COLOR_INFO, "/teamjoin Criminals 加入罪犯");
-			player.SendChatMessage(COLOR_WARN, "请注意大小写");
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
 			throw;
@@ -182,5 +179,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "Cops\nCriminals", "确定", "");
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
+	SetPlayerChatBubble(playerid, text, GetPlayerColor(playerid), 100.0f, 5000);
 	return true;
 }

@@ -46,6 +46,10 @@ Waypoint::Waypoint(const mongo::OID& id)
 	: SingleObject(CONFIG_STRING("Database.waypoint"), id) {
 		_LoadData();
 }
+
+Waypoint::Waypoint(const Coordinate5D& target)
+	: SingleObject(CONFIG_STRING("Database.waypoint")), _waypoint(target) {}
+
 Coordinate5D Waypoint::Get() const {
 	return _waypoint;
 }
@@ -61,6 +65,12 @@ void Waypoint::ApplyToVehicle(int vid) const {
 	SetVehicleVirtualWorld(vid, _waypoint.virtualworld);
 	LinkVehicleToInterior(vid, _waypoint.interior);
 	SetVehiclePos(vid, _waypoint.x, _waypoint.y, _waypoint.z);
+}
+
+void Waypoint::PerformTeleport(int playerid) const {
+	ApplyToPlayer(playerid);
+	if(GetPlayerVehicleSeat(playerid) == 0)
+		ApplyToVehicle(GetPlayerVehicleID(playerid));
 }
 
 mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, const mongo::OID& creator) {

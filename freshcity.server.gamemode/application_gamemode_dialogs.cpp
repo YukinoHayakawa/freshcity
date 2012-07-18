@@ -18,13 +18,18 @@
 #include "application_gamemode_manager_dialog.h"
 #include "application_gamemode_manager_team.h"
 #include "application_gamemode_dialogdefinitions.h"
+#include "application_data_waypoint.h"
 
 #define DIALOG(x) void Dlg##x(Profile& player, bool response, int listitem, const char* inputtext)
 
 DIALOG(SelectTeam) {
-	if(player.GetTeamFixed() != NO_TEAM)
-		TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
-	TeamManager::GetInstance()[inputtext].Join(player);
+	if(player.GetTeamFixed() != TeamManager::GetInstance()[inputtext].GetIngameID()) {
+		if(player.GetTeamFixed() != NO_TEAM)
+			TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
+		TeamManager::GetInstance()[inputtext].Join(player);
+	}
+	Waypoint spawnpoint("_map_spawnpoint_" + std::string(inputtext));
+	spawnpoint.PerformTeleport(player.GetId());
 }
 
 #define REGDLG(x, y) DlgMgr.Add(x, y)

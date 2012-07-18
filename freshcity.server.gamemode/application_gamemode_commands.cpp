@@ -89,9 +89,7 @@ CMD(CreateWaypoint) {
 CMD(UseWaypoint) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
-	point.ApplyToPlayer(player.GetId());
-	if(player.GetVehicleSeat() == 0)
-		point.ApplyToVehicle(player.GetVehicleID());
+	point.PerformTeleport(player.GetId());
 	player.SendChatMessage(COLOR_SUCC, "已传送到 \"" + std::string(cmdline) + "\" .");
 }
 
@@ -101,6 +99,22 @@ CMD(TeamJoin) {
 
 CMD(TeamQuit) {
 	TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
+}
+
+CMD(GoToPlayer) {
+	int targetid(-1);
+	sscanf(cmdline, "%d", &targetid);
+	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
+	Waypoint point(ProfileManager::GetInstance()[targetid].GetDetailedPos());
+	point.PerformTeleport(player.GetId());
+}
+
+CMD(GetPlayer) {
+	int targetid(-1);
+	sscanf(cmdline, "%d", &targetid);
+	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
+	Waypoint point(player.GetDetailedPos());
+	point.PerformTeleport(targetid);
 }
 
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
@@ -116,8 +130,10 @@ bool RegisterPlayerCmds() {
 	REGCMD("v",					CmdGetVehicle,			0, NO_REQUIREMENT);
 	REGCMD("ctp",				CmdCreateWaypoint,		0, NEED_SIGNED_IN);
 	REGCMD("tp",				CmdUseWaypoint,			0, NO_REQUIREMENT);
-	REGCMD("teamjoin",			CmdTeamJoin,			0, NEED_SIGNED_IN);
-	REGCMD("teamquit",			CmdTeamQuit,			0, NEED_SIGNED_IN);
+	REGCMD("teamjoin",			CmdTeamJoin,			5, NEED_SIGNED_IN);
+	REGCMD("teamquit",			CmdTeamQuit,			5, NEED_SIGNED_IN);
+	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
+	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
 	return true;
 }
 

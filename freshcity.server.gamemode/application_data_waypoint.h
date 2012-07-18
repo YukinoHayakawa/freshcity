@@ -29,9 +29,11 @@ protected:
 public:
 	Waypoint(const std::string& title);
 	Waypoint(const mongo::OID& id);
+	Waypoint(const Coordinate5D& target);
 	Coordinate5D Get() const;
 	void ApplyToPlayer(int playerid) const;
 	void ApplyToVehicle(int vid) const;
+	void PerformTeleport(int playerid) const;
 };
 
 mongo::OID CreateWaypoint(const std::string& title, const Coordinate5D& point, const mongo::OID& creator);
