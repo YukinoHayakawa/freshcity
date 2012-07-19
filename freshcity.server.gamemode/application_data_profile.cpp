@@ -17,7 +17,6 @@
 #include "application_database.h"
 #include "application_data_profile.h"
 #include "application_config.h"
-#include "basic_debug_logging.h"
 #include "application_algorithm_auth.h"
 #include "basic_algorithm_gbkencoder.h"
 
@@ -31,8 +30,7 @@ void Profile::_LoadMemberData() {
 		_nickname		= _gamearchive["reginfo"]["nickname"].String();
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
-	} catch(mongo::UserException &e) {
-		LOG_ERROR(e.what());
+	} catch(mongo::UserException) {
 		throw std::runtime_error("玩家基本数据不完整");
 	}
 }
@@ -64,20 +62,19 @@ void Profile::ApplyDataToPlayer() {
 		ResetMoney();
 		GiveMoney((int)attribute["money"].Number());
 		SetScore((int)attribute["score"].Number());
-	} catch(mongo::UserException &e) {
-		LOG_ERROR(e.what());
+	} catch(mongo::UserException) {
 		throw std::runtime_error("玩家游戏数据不完整");
 	}
 }
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
-	: SingleObject(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
+	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
 	_adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
 		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
-	: SingleObject(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
+	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
 	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
 		if(_existsindatabase)
 			_LoadMemberData();
@@ -109,7 +106,8 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 					"ip"		<< GetIp()) <<
 				"banned"	<< false <<
 				"mgmtlevel"	<< 0)));
-	SingleObject::Create(submit, true);
+	SaveableItem::SetData(submit);
+	SaveableItem::Create(true);
 	Sync();
 }
 
@@ -150,7 +148,7 @@ bool Profile::AuthPassword(const std::string& input) const {
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
-	if(newpassword.empty()) throw std::runtime_error("密码不能为空.");
+	if(newpassword.empty()) throw std::runtime_error("密码不能为空");
 	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
 	Sync();
 }

@@ -27,40 +27,40 @@
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
 CMD(Register) {
-	if(cmdline[0] == 0) throw std::runtime_error("密码不能为空.");
+	if(cmdline[0] == 0) throw std::runtime_error("密码不能为空");
 	try {
 		player.Create(player.GetName(), cmdline);
-		player.SendChatMessage(COLOR_SUCC, "注册成功. 登录名: " + player.GetName() + ", 密码(引号内): \"" + cmdline + "\".");
+		player.SendChatMessage(COLOR_SUCC, "注册成功");
 		player.SetSignedIn(true);
 	} catch(std::runtime_error) {
 		throw;
 	} catch(...) {
-		throw std::runtime_error("注册失败.");
+		throw std::runtime_error("注册失败");
 	}
 }
 
 CMD(Login) {
-	if(!player.AuthPassword(cmdline)) throw std::runtime_error("密码错误.");
+	if(!player.AuthPassword(cmdline)) throw std::runtime_error("密码错误");
 	player.SetSignedIn(true);
 	player.ApplyDataToPlayer();
-	player.SendChatMessage(COLOR_SUCC, "登录成功.");
+	player.SendChatMessage(COLOR_SUCC, "登录成功");
 }
 
 CMD(LogOut) {
 	player.SetSignedIn(false);
-	player.SendChatMessage(COLOR_SUCC, "您已登出.");
+	player.SendChatMessage(COLOR_SUCC, "您已登出");
 }
 
 CMD(SaveData) {
 	player.Sync();
-	player.SendChatMessage(COLOR_SUCC, "数据已保存.");
+	player.SendChatMessage(COLOR_SUCC, "数据已保存");
 }
 
 CMD(SetSkin) {
 	int skinid(-1);
 	if(sscanf(cmdline, "%d", &skinid) == 0 || skinid == -1) throw std::runtime_error("用法: /setskin <皮肤ID>");
 	player.SetSkin(skinid);
-	player.SendChatMessage(COLOR_SUCC, "皮肤已更改.");
+	player.SendChatMessage(COLOR_SUCC, "皮肤已更改");
 }
 
 CMD(GiveWeapon) {
@@ -84,15 +84,15 @@ CMD(GetVehicle) {
 CMD(CreateWaypoint) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
 	Waypoint create(player.GetDetailedPos());
-	create.Create(cmdline, player.GetID());
-	player.SendChatMessage(COLOR_SUCC, "已创建传送点 \"" + std::string(cmdline) + "\" .");
+	create.Create(cmdline, player.GetUniqueID());
+	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
 }
 
 CMD(UseWaypoint) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
 	point.PerformTeleport(player.GetId());
-	player.SendChatMessage(COLOR_SUCC, "已传送到 \"" + std::string(cmdline) + "\" .");
+	player.SendChatMessage(COLOR_SUCC, "已传送到 " + std::string(cmdline));
 }
 
 CMD(TeamJoin) {
@@ -119,13 +119,6 @@ CMD(GetPlayer) {
 	point.PerformTeleport(targetid);
 }
 
-CMD(CreatePickupHere) {
-	int pickupid(-1);
-	sscanf(cmdline, "%d", &pickupid);
-	Coordinate3D playerpos = player.GetPos();
-	CreateDynamicPickup(pickupid, 1, playerpos.x, playerpos.y, playerpos.z);
-}
-
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -143,7 +136,6 @@ bool RegisterPlayerCmds() {
 	REGCMD("teamquit",			CmdTeamQuit,			5, NEED_SIGNED_IN);
 	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
-	REGCMD("pickup",			CmdCreatePickupHere,	0, NO_REQUIREMENT);
 	return true;
 }
 

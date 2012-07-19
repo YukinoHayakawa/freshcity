@@ -19,23 +19,33 @@
 
 #include "application_database.h"
 
-class SingleObject {
+/* 用于数据库对象的基类 抛出异常均为 std::runtime_error */
+class SaveableItem {
 protected:
+	/* 对象所在的集合 如: freshcity.profile 建议通过Config获取 */
 	std::string _collection;
+	/* 对象原始数据 可由 SetData() 更改 */
 	mongo::BSONObj _rawdata;
 	mongo::OID _uniqueid;
 	bool _existsindatabase;
 
 public:
-	SingleObject(const std::string& collection, const mongo::BSONObj& query);
-	SingleObject(const std::string& collection, const mongo::OID& uniqueid);
-	SingleObject(const std::string& collection);
-	void Refresh();
-	void Create(const mongo::BSONObj& newdoc, bool refresh);
-	void Update(const mongo::BSONObj& modifier, bool refresh);
-	void SetCollection(const std::string& collection);
+	/* 用于通过ID获取的构造函数 */
+	SaveableItem(const std::string& collection, const mongo::OID& uniqueid);
+	/* 用于特殊条件查询的构造函数 */
+	SaveableItem(const std::string& collection, const mongo::BSONObj& query);
+	/* 用于创建新对象(并可能稍后保存)的构造函数 */
+	SaveableItem(const std::string& collection);
+	/* 重新获取对象内容 若 IsExistInDatabase() == false 则抛出异常 */
+	void Refetch();
+	/* 设置对象内容 仅在为空对象时才可用 */
+	void SetData(const mongo::BSONObj& data);
+	/* 将对象内容保存至数据库 若已存在/内容为空/插入失败则抛出异常 可选是否重新获取 */
+	void Create(bool refetch);
+	/* 更新对象数据 可选是否重新获取 */
+	void Update(const mongo::BSONObj& modifier, bool refetch);
 	bool IsExistInDatabase() const;
-	mongo::OID GetID() const;
+	mongo::OID GetUniqueID() const;
 };
 
 #endif

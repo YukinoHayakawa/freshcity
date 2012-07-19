@@ -22,7 +22,7 @@
 #include <boost/unordered_map.hpp>
 #include "application_data_profile.h"
 
-class Team : public SingleObject {
+class Team : public SaveableItem {
 protected:
 	typedef boost::unordered_map<int, mongo::OID> TeamMemberMap;
 	std::string _name;

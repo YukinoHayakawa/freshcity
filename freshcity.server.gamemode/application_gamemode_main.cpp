@@ -80,17 +80,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			Profile& player = ProfileMgr[playerid];
 			if(!player.IsExistInDatabase()) {
 				if(player.IsBannedForGame()) {
-					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁.");
+					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁");
 					player.KickNow();
 				} else {
 					player.SetColor(RandomRGBAColor());
-					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户.");
+					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户");
 				}
 			} else {
-				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录.");
+				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录");
 			}
 			player.SetTeamFixed(NO_TEAM);
-			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器.").c_str());
+			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
@@ -102,7 +102,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			throw;
 		}
 	} catch(...) {
-		SendClientMessage(playerid, COLOR_ERROR, "初始化玩家数据时发生错误, 请联系服务器管理员.");
+		SendClientMessage(playerid, COLOR_ERROR, "初始化玩家数据时发生错误, 请联系服务器管理员");
 		return false;
 	}
 	return true;
@@ -118,7 +118,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 		if(playerteamid != NO_TEAM)
 			TeamMgr[TeamMgr.GetNameByID(playerteamid)].Quit(ProfileMgr[playerid]);
 		ProfileMgr.Remove(playerid);
-		SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器.").c_str());
+		SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器").c_str());
 		SendDeathMessage(INVALID_PLAYER_ID, playerid, 201);
 	} catch(...) {
 		return false;
@@ -145,7 +145,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 		return true;
 	} catch(...) {
-		SendClientMessage(playerid, COLOR_ERROR, "处理命令时发生未知错误, 请联系服务器管理员.");
+		SendClientMessage(playerid, COLOR_ERROR, "处理命令时发生未知错误, 请联系服务器管理员");
 		return true;
 	}
 	return false;
@@ -166,7 +166,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 		return true;
 	} catch(...) {
-		SendClientMessage(playerid, COLOR_ERROR, "处理对话框时发生未知错误, 请联系服务器管理员.");
+		SendClientMessage(playerid, COLOR_ERROR, "处理对话框时发生未知错误, 请联系服务器管理员");
 		return true;
 	}
 	return true;

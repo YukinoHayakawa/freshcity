@@ -18,5 +18,5 @@
 #include "application_gamemode_manager_profile.h"
 
 bool ProfileManager::Add(int playerid) {
-	return BaseManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
+	return ItemManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
 }

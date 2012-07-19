@@ -24,7 +24,7 @@
 typedef void (*DIALOG_CALLBACK)(Profile& player, bool response, int listitem, const char* inputtext);
 typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
 
-class DialogManager : public BaseManager<DialogManager, int, DialogPtr> {
+class DialogManager : public ItemManager<DialogManager, int, DialogPtr> {
 public:
 	bool Add(int dialogid, DIALOG_CALLBACK function);
 	void Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext);

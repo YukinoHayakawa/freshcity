@@ -20,7 +20,7 @@
 #include "application_gamemode_manager_base.h"
 #include "application_data_profile.h"
 
-class ProfileManager : public BaseManager<ProfileManager, int, Profile> {
+class ProfileManager : public ItemManager<ProfileManager, int, Profile> {
 public:
 	bool Add(int playerid);
 };

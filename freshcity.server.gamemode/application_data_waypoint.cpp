@@ -38,17 +38,17 @@ void Waypoint::_LoadData() {
 }
 
 Waypoint::Waypoint(const std::string& title)
-	: SingleObject(CONFIG_STRING("Database.waypoint"), BSON("title" << GBKToUTF8(title))) {
+	: SaveableItem(CONFIG_STRING("Database.waypoint"), BSON("title" << GBKToUTF8(title))) {
 		_LoadData();
 }
 
 Waypoint::Waypoint(const mongo::OID& id)
-	: SingleObject(CONFIG_STRING("Database.waypoint"), id) {
+	: SaveableItem(CONFIG_STRING("Database.waypoint"), id) {
 		_LoadData();
 }
 
 Waypoint::Waypoint(const Coordinate5D& target)
-	: SingleObject(CONFIG_STRING("Database.waypoint")), _waypoint(target) {}
+	: SaveableItem(CONFIG_STRING("Database.waypoint")), _waypoint(target) {}
 
 Coordinate5D Waypoint::Get() const {
 	return _waypoint;
@@ -82,5 +82,6 @@ void Waypoint::Create(const std::string& title, const mongo::OID& creator) {
 		"world"		<< _waypoint.virtualworld <<
 		"interior"	<< _waypoint.interior <<
 		"facing"	<< _waypoint.facingangle);
-	SingleObject::Create(submit, false);
+	SaveableItem::SetData(submit);
+	SaveableItem::Create(false);
 }

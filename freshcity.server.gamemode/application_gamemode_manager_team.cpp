@@ -16,22 +16,20 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_team.h"
-#include "basic_debug_logging.h"
 
 TeamManager::TeamManager() : _teamidcounter(0) {}
 
 bool TeamManager::Add(const std::string& teamname) {
 	MemberPtr ptr(new Team(teamname, ++_teamidcounter));
-	LOG_DEBUG("AddTeam Name: " << teamname.c_str() << " ID: " << _teamidcounter);
-	if(BaseManager::Add(teamname, ptr)) {
+	if(ItemManager::Add(teamname, ptr)) {
 		_idtoname.insert(std::make_pair(_teamidcounter, teamname));
 		return true;
 	} else return false;
 }
 
 bool TeamManager::Remove(const std::string& teamname) {
-	int tid = BaseManager::Get(teamname).GetIngameID();
-	if(BaseManager::Remove(teamname)) {
+	int tid = ItemManager::Get(teamname).GetIngameID();
+	if(ItemManager::Remove(teamname)) {
 		_idtoname.erase(_idtoname.find(tid));
 		return true;
 	} return false;

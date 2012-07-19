@@ -22,7 +22,7 @@
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
 
-class Profile : public SingleObject, public Player {
+class Profile : public SaveableItem, public Player {
 private:
 	void _LoadMemberData();
 	std::string _nickname;

@@ -21,13 +21,11 @@
 #include <sampgdk/a_players.h>
 #include "application_gamemode_colordefinitions.h"
 #include "basic_algorithm_random.h"
-#include "basic_debug_logging.h"
 
-Team::Team(const std::string& name, int teamid) : SingleObject(CONFIG_STRING("Database.team")),
+Team::Team(const std::string& name, int teamid) : SaveableItem(CONFIG_STRING("Database.team")),
 	_name(name), _score(0), _ingameteamid(teamid), _color(RandomRGBAColor()), _level(0) {}
 
 void Team::Join(Profile& player) {
-	LOG_DEBUG("Playerteam: " << player.GetTeamFixed());
 	if(IsMember(player.GetId()))
 		throw std::runtime_error("您已经是该团队的成员了");
 	if(player.GetTeamFixed() != NO_TEAM)
@@ -35,8 +33,7 @@ void Team::Join(Profile& player) {
 	player.SetTeamFixed(_ingameteamid);
 	player.SetColor(_color);
 	player.SendChatMessage(COLOR_SUCC, "您已加入团队 " + _name);
-	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetID()));
-	LOG_DEBUG("Player joined team: " << _ingameteamid);
+	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetUniqueID()));
 }
 
 void Team::Quit(Profile& player) {

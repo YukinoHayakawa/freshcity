@@ -31,7 +31,7 @@ struct CommandCallbackCell {
 	CommandCallbackCell(CommandPtr ptr, int reqlevel, unsigned int flags) : ptr(ptr), reqlevel(reqlevel), flags(flags) {}
 };
 
-class CommandManager : public BaseManager<CommandManager, std::string, CommandCallbackCell> {
+class CommandManager : public ItemManager<CommandManager, std::string, CommandCallbackCell> {
 public:
 	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags);
 	void Exec(int playerid, const std::string& cmd, const char* cmdline);

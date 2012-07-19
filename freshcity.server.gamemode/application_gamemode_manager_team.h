@@ -20,7 +20,7 @@
 #include "application_gamemode_manager_base.h"
 #include "application_data_team.h"
 
-class TeamManager : public BaseManager<TeamManager, std::string, Team> {
+class TeamManager : public ItemManager<TeamManager, std::string, Team> {
 private:
 	int _teamidcounter;
 	typedef boost::unordered_map<int, std::string> IDNameMap;
@@ -30,7 +30,7 @@ protected:
 	TeamManager();
 
 public:
-	friend class BaseManager<TeamManager, std::string, Team>;
+	friend class ItemManager<TeamManager, std::string, Team>;
 	bool Add(const std::string& teamname);
 	bool Remove(const std::string& teamname);
 	std::string GetNameByID(int teamid) const;

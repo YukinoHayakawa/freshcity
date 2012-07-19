@@ -22,7 +22,7 @@
 #include <boost/noncopyable.hpp>
 
 template<class mgr, typename key, typename value>
-class BaseManager : private boost::noncopyable {
+class ItemManager : private boost::noncopyable {
 protected:
 	typedef boost::shared_ptr<value> MemberPtr;
 	typedef boost::unordered_map<key, MemberPtr> MemberMap;
@@ -39,7 +39,7 @@ public:
 		return _members.find(memberid) != _members.end();
 	}
 
-	bool Remove(const key& memberid) {
+	bool virtual Remove(const key& memberid) {
 		MemberMap::iterator iter(_members.find(memberid));
 		if(iter == _members.end()) return false;
 		_members.erase(iter);

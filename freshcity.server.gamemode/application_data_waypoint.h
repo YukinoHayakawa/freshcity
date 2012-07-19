@@ -21,7 +21,7 @@
 #include "application_struct_coordinate.h"
 #include <string>
 
-class Waypoint : protected SingleObject {
+class Waypoint : public SaveableItem {
 protected:
 	Coordinate5D _waypoint;
 	void _LoadData();
