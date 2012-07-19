@@ -38,8 +38,11 @@ void Profile::_LoadMemberData() {
 void Profile::ApplyDataToPlayer() {
 	if(_gamearchive.isEmpty()) _LoadMemberData();
 	try {
+		/*
 		mongo::BSONObj geo			= _gamearchive["geo"].Obj();
+		*/
 		mongo::BSONObj attribute	= _gamearchive["attribute"].Obj();
+		/*
 		std::vector<mongo::BSONElement> coordinate
 									= geo["coordinate"].Array();
 		std::vector<mongo::BSONElement> weapons
@@ -60,6 +63,7 @@ void Profile::ApplyDataToPlayer() {
 		SetInterior((int)geo["interior"].Number());
 		SetVirtualWorld((int)geo["world"].Number());
 		ResetMoney();
+		*/
 		GiveMoney((int)attribute["money"].Number());
 		SetScore((int)attribute["score"].Number());
 	} catch(mongo::UserException) {

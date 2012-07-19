@@ -28,8 +28,7 @@ DIALOG(SelectTeam) {
 			TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
 		TeamManager::GetInstance()[inputtext].Join(player);
 	}
-	Waypoint spawnpoint("_map_spawnpoint_" + std::string(inputtext));
-	spawnpoint.PerformTeleport(player.GetId());
+	player.Spawn();
 }
 
 #define REGDLG(x, y) DlgMgr.Add(x, y)

@@ -69,8 +69,11 @@ void Waypoint::ApplyToVehicle(int vid) const {
 
 void Waypoint::PerformTeleport(int playerid) const {
 	ApplyToPlayer(playerid);
-	if(GetPlayerVehicleSeat(playerid) == 0)
-		ApplyToVehicle(GetPlayerVehicleID(playerid));
+	if(GetPlayerVehicleSeat(playerid) == 0) {
+		int vid = GetPlayerVehicleID(playerid);
+		ApplyToVehicle(vid);
+		PutPlayerInVehicle(playerid, vid, 0);
+	}
 }
 
 void Waypoint::Create(const std::string& title, const mongo::OID& creator) {

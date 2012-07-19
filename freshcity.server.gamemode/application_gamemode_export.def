@@ -13,5 +13,6 @@ EXPORTS
 	OnDialogResponse
 	OnPlayerClickMap
 	OnPlayerDeath
+	OnPlayerRequestSpawn
 	OnPlayerSpawn
 	OnPlayerText

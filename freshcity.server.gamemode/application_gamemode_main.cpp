@@ -29,13 +29,16 @@
 #include "application_gamemode_manager_dialog.h"
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_dependency_streamer.h"
+#include "application_data_waypoint.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
 
-__declspec(dllexport) void OnPlayerEnterDynamicArea(int playerid, int areaid);
-__declspec(dllexport) void OnPlayerLeaveDynamicArea(int playerid, int areaid);
-__declspec(dllexport) void OnDynamicObjectMoved(int objectid);
+#define STREAMER_CALLBACK __declspec(dllexport)
+
+STREAMER_CALLBACK void OnPlayerEnterDynamicArea(int playerid, int areaid);
+STREAMER_CALLBACK void OnPlayerLeaveDynamicArea(int playerid, int areaid);
+STREAMER_CALLBACK void OnDynamicObjectMoved(int objectid);
 
 PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 	return SUPPORTS_VERSION | SUPPORTS_PROCESS_TICK;
@@ -61,7 +64,7 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
 	for(int i = 1; i < 299; i++) 
-		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 16, 3, 27, 100, 31, 100);
+		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 27, 100, 31, 100, 16, 3);
 	TeamMgr.Add("Cops");
 	TeamMgr["Cops"].SetColor(COLOR_BLUE);
 	TeamMgr.Add("Criminals");
@@ -178,7 +181,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, 
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason) {
-	LOG_DEBUG("Killer: " << killerid << " Victim: " << playerid << " Reason: " << reason);
 	GivePlayerMoney(playerid, -500);
 	if(killerid != INVALID_PLAYER_ID) {
 		SetPlayerScore(killerid, GetPlayerScore(killerid) + 1);
@@ -188,8 +190,20 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "Cops\nCriminals", "确定", "");
+	return false;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
+	try {
+		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
+			spawnpoint.PerformTeleport(playerid);
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "无法出生在团队出生点");
+	}
 	return true;
 }
 
@@ -198,14 +212,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	return true;
 }
 
-__declspec(dllexport) void OnPlayerEnterDynamicArea(int playerid, int areaid) {
-	LOG_DEBUG("OnPlayerEnterDynamicArea");
+STREAMER_CALLBACK void OnPlayerEnterDynamicArea(int playerid, int areaid) {
+	return;
 }
 
-__declspec(dllexport) void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
-	LOG_DEBUG("OnPlayerLeaveDynamicArea");
+STREAMER_CALLBACK void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
+	return;
 }
 
-__declspec(dllexport) void OnDynamicObjectMoved(int objectid) {
-	LOG_DEBUG("OnDynamicObjectMoved");
+STREAMER_CALLBACK void OnDynamicObjectMoved(int objectid) {
+	return;
 }
