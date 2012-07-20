@@ -15,18 +15,23 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_effectiveitem.h"
+#include "application_gamemode_role_medic.h"
+#include "application_gamemode_colordefinitions.h"
+#include <sampgdk/a_players.h>
 
-EffectiveItem::EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {}
+Medic::Medic() : Role(180, true) {}
 
-void EffectiveItem::Effect(Profile& player) {
-	throw std::runtime_error("该物品没有特殊效果");
+void Medic::OnSpawn(int playerid) {
+	SendClientMessage(playerid, COLOR_CYAN, "你的职业为 医师");
+	SetPlayerHealth(playerid, 100.0f);
+	GivePlayerWeapon(playerid, 24, 100);
+	GivePlayerWeapon(playerid, 25, 100);
+	GivePlayerWeapon(playerid, 29, 100);
 }
 
-bool EffectiveItem::IsDisposable() {
-	return _disposable;
-}
-
-int EffectiveItem::GetID() {
-	return _id;
+void Medic::PerformSpecialSkill(int targetid) {
+	float health;
+	GetPlayerHealth(targetid, &health);
+	SetPlayerHealth(targetid, health + 50.0f);
+	Role::PerformSpecialSkill(targetid);
 }

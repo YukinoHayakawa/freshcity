@@ -21,8 +21,12 @@
 #include "application_data_base.h"
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
+#include "application_gamemode_role_base.h"
 
 class Profile : public SaveableItem, public Player {
+public:
+	typedef boost::shared_ptr<Role> RolePtr;
+
 private:
 	void _LoadMemberData();
 	std::string _nickname;
@@ -35,6 +39,7 @@ private:
 	int _team;
 	time_t _lastkill;
 	int _killcounter;
+	RolePtr _role;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -65,6 +70,8 @@ public:
 	int KillCounter();
 	void inline GiveScore(int score);
 	void PlaySound(int soundid);
+	void SetRole(RolePtr& role);
+	Role& GetRole();
 };
 
 #endif

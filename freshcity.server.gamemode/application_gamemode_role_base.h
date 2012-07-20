@@ -14,18 +14,24 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_data_pickup_medic.h"
-#include "application_config.h"
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ROLE_BASE
+#define FRESHCITY_APPLICATION_GAMEMODE_ROLE_BASE
 
-MedicalPickup::MedicalPickup(float health, float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true), _health(health) {}
+#include <time.h>
 
-void MedicalPickup::Effect(Profile& player) {
-	float difference = 100 - player.GetHealth();
-	if(difference > _health)
-		player.SetHealth(player.GetHealth() + _health);
-	else if(difference <= _health)
-		player.SetHealth(100.0f);
-	player.PlaySound(5201);
-}
+class Role {
+protected:
+	time_t _skilllastuse;
+	int _timelimit;
+	bool _musthavetarget;
+
+public:
+	Role(int timelimit, bool musthavetarget) : _timelimit(timelimit),
+		_skilllastuse(0), _musthavetarget(musthavetarget) {}
+	void virtual OnSpawn(int playerid) {}
+	void virtual PerformSpecialSkill(int targetid) { _skilllastuse = time(0); }
+	bool CanPerformSkill() { return (time(0) - _skilllastuse) >= _timelimit; }
+	bool MustHaveTarget() { return _musthavetarget; }
+};
+
+#endif

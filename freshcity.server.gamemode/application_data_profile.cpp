@@ -256,3 +256,14 @@ void Profile::PlaySound(int soundid) {
 	Coordinate3D pos = GetPos();
 	Player::PlaySound(soundid, pos.x, pos.y, pos.z);
 }
+
+void Profile::SetRole(RolePtr& role) {
+	_role = role;
+}
+
+Role& Profile::GetRole() {
+	if(_role.get())
+		return *_role.get();
+	else
+		throw std::runtime_error("Íæ¼ÒÎ´Ñ¡Ôñ½ÇÉ«");
+}

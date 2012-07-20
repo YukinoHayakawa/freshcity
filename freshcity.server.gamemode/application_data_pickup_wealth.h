@@ -20,8 +20,12 @@
 #include "application_data_pickup.h"
 
 class WealthPickup : public Pickup {
+private:
+	int _money;
+	int _score;
+
 public:
-	WealthPickup(float x, float y, float z);
+	WealthPickup(int money, int score, float x, float y, float z);
 	void Effect(Profile& player);
 };
 

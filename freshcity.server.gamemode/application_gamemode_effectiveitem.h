@@ -26,12 +26,12 @@ protected:
 
 public:
 	/* 是否一次性 */
-	EffectiveItem(int id, bool disposable);
+	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {}
 	/* 执行其特殊效果 */
-	void virtual Effect(Profile& player);
+	void virtual Effect(Profile& player) {}
 	/* 是否一次性 */
-	bool IsDisposable();
-	int GetID();
+	bool IsDisposable() { return _disposable; }
+	int GetID() { return _id; }
 };
 
 #endif

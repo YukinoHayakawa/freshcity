@@ -20,8 +20,11 @@
 #include "application_data_pickup.h"
 
 class MedicalPickup : public Pickup {
+private:
+	float _health;
+
 public:
-	MedicalPickup(float x, float y, float z);
+	MedicalPickup(float health, float x, float y, float z);
 	void Effect(Profile& player);
 };
 

@@ -37,7 +37,7 @@ LONG WINAPI ExceptionFilter(struct _EXCEPTION_POINTERS *pExceptionInfo) {
 		exceptioninfo.ExceptionPointers = pExceptionInfo;
 		exceptioninfo.ClientPointers = NULL;
 
-		BOOL bOK = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), dumpfile, MiniDumpWithFullMemory, &exceptioninfo, NULL, NULL);
+		BOOL bOK = MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), dumpfile, MiniDumpNormal, &exceptioninfo, NULL, NULL);
 		ret = EXCEPTION_EXECUTE_HANDLER;
 
 		CloseHandle(dumpfile);

@@ -18,8 +18,8 @@
 #include "application_data_pickup_wealth.h"
 #include "application_config.h"
 
-WealthPickup::WealthPickup(float x, float y, float z)
-	: Pickup(1212, 1, x, y, z, true) {}
+WealthPickup::WealthPickup(int money, int score, float x, float y, float z)
+	: Pickup(1212, 1, x, y, z, true), _money(money), _score(score) {}
 
 void WealthPickup::Effect(Profile& player) {
 	player.GiveMoney(CONFIG_INT("EffectiveItem.wealthpickupmoney"));

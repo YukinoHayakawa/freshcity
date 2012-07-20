@@ -38,6 +38,7 @@
 #include "application_data_pickup_wealth.h"
 #include "application_data_pickup_weapon.h"
 #include <boost/random.hpp>
+#include "application_gamemode_role_medic.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -100,6 +101,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
 			}
 			player.SetTeamFixed(NO_TEAM);
+			player.SetRole(Profile::RolePtr(new Medic()));
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 		} catch(std::runtime_error& e) {
@@ -161,11 +163,31 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 	return false;
 }
 
+#define KEY_HOLDING(x) ((newkeys & (x)) == (x))
+#define KEY_PRESSED(x) (((newkeys & (x)) == (x)) && ((oldkeys & (x)) != (x)))
+#define KEY_RELEASED(x) (((newkeys & (x)) != (x)) && ((oldkeys & (x)) == (x)))
+
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys) {
-	if((newkeys & KEY_FIRE) == KEY_FIRE || (newkeys & KEY_ACTION) == KEY_ACTION)
-		if(IsPlayerInAnyVehicle(playerid))
+	try {
+		Profile& player = ProfileMgr[playerid];
+		if((KEY_PRESSED(KEY_FIRE) || KEY_PRESSED(KEY_ACTION)) && IsPlayerInAnyVehicle(playerid))
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
-	return true;	
+		if(KEY_PRESSED(KEY_NO)) {
+			int target = GetPlayerTargetPlayer(playerid);
+			if(!player.GetRole().MustHaveTarget() || target != INVALID_PLAYER_ID)
+				if(player.GetRole().CanPerformSkill())
+					player.GetRole().PerformSpecialSkill(target);
+				else
+					throw std::runtime_error("技能尚在冷却");
+		}
+	} catch(std::runtime_error& e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+		return true;
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "处理按键时发生未知错误, 请联系服务器管理员");
+		return true;
+	}
+	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char *inputtext) {
@@ -208,7 +230,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			Profile& killer = ProfileMgr[killerid];
 			killer.GiveScore(1);
 			killer.GiveMoney(1000);
-			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
+			Coordinate3D pos = GenerateDirectionalPoint(killer, 3.0f);
 			PickupManager::MemberPtr ptr;
 			int kills = killer.KillCounter();
 			switch(kills) {
@@ -216,7 +238,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 				return true;
 
 			case 2:
-				ptr.reset(new MedicalPickup(pos.x, pos.y, pos.z));
+				ptr.reset(new MedicalPickup(30.0f, pos.x, pos.y, pos.z));
 				break;
 
 			case 3:
@@ -224,7 +246,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 				break;
 
 			case 4:
-				ptr.reset(new WealthPickup(pos.x, pos.y, pos.z));
+				ptr.reset(new WealthPickup(2500, 5, pos.x, pos.y, pos.z));
 				break;
 
 			default:
@@ -252,6 +274,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
+		ProfileMgr[playerid].GetRole().OnSpawn(ProfileMgr[playerid]);
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
 			spawnpoint.PerformTeleport(playerid);
 	} catch(std::runtime_error& e) {

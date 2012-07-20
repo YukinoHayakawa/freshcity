@@ -102,7 +102,6 @@
     <ClCompile Include="application_data_team.cpp" />
     <ClCompile Include="application_data_waypoint.cpp" />
     <ClCompile Include="application_gamemode_dialogs.cpp" />
-    <ClCompile Include="application_gamemode_effectiveitem.cpp" />
     <ClCompile Include="application_gamemode_lib.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -111,6 +110,7 @@
     <ClCompile Include="application_gamemode_manager_effectiveitem.cpp" />
     <ClCompile Include="application_gamemode_manager_profile.cpp" />
     <ClCompile Include="application_gamemode_manager_team.cpp" />
+    <ClCompile Include=".\application_gamemode_role_medic.cpp" />
     <ClCompile Include="basic_algorithm_random.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -151,6 +151,8 @@
     <ClInclude Include="application_gamemode_manager_effectiveitem.h" />
     <ClInclude Include="application_gamemode_manager_team.h" />
     <ClInclude Include=".\application_algorithm_weaponidmap.h" />
+    <ClInclude Include="application_gamemode_role_base.h" />
+    <ClInclude Include="application_gamemode_role_medic.h" />
     <ClInclude Include="basic_algorithm_random.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />
