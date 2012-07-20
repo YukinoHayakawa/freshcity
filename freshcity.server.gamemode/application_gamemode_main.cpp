@@ -31,6 +31,12 @@
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
 #include "application_gamemode_manager_effectiveitem.h"
+#include "application_gamemode_manager_effectiveitem.h"
+#include "application_data_pickup_medic.h"
+#include "application_algorithm_position.h"
+#include "application_config.h"
+#include "application_data_pickup_wealth.h"
+#include "application_data_pickup_weapon.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -182,11 +188,46 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, 
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason) {
 	GivePlayerMoney(playerid, -500);
-	if(killerid != INVALID_PLAYER_ID) {
-		SetPlayerScore(killerid, GetPlayerScore(killerid) + 1);
-		GivePlayerMoney(killerid, 1000);
-	}
 	SendDeathMessage(killerid, playerid, reason);
+	try {
+		if(killerid != INVALID_PLAYER_ID) {
+			Profile& killer = ProfileMgr[killerid];
+			killer.GiveScore(1);
+			killer.GiveMoney(1000);
+			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
+			PickupManager::MemberPtr ptr;
+			int kills = killer.KillCounter();
+			switch(kills) {
+			case 1:
+				return true;
+
+			case 2:
+				ptr.reset(new MedicalPickup(pos.x, pos.y, pos.z));
+				break;
+
+			case 3:
+				ptr.reset(new WeaponPickup(16, 3, pos.x, pos.y, pos.z));
+				break;
+
+			case 4:
+				ptr.reset(new WealthPickup(pos.x, pos.y, pos.z));
+				break;
+
+			default:
+				ptr.reset(new WeaponPickup(38, 15, pos.x, pos.y, pos.z));
+				break;
+			}
+			PickupManager::GetInstance().Add(ptr);
+			SendClientMessageToAll(COLOR_BLUE, std::string("玩家 " + killer.GetName() + " 连续杀敌 "
+				+ boost::lexical_cast<std::string>(kills) + " 人").c_str());
+		}
+	} catch(std::runtime_error& e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+		return true;
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "处理杀敌信息时发生未知错误, 请联系服务器管理员");
+		return true;
+	}
 	return true;
 }
 

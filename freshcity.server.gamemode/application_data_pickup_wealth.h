@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_data_pickup_medic.h"
-#include "application_config.h"
+#ifndef FRESHCITY_APPLICATION_DATA_PICKUP_WEALTH
+#define FRESHCITY_APPLICATION_DATA_PICKUP_WEALTH
 
-MedicalPickup::MedicalPickup(float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true) {}
+#include "application_data_pickup.h"
 
-void MedicalPickup::Effect(Profile& player) {
-	float value = CONFIG_FLOAT("EffectiveItem.medicalpickup");
-	float difference = 100 - player.GetHealth();
-	if(difference > value)
-		player.SetHealth(player.GetHealth() + value);
-	else if(difference <= value)
-		player.SetHealth(100.0f);
-	player.PlaySound(5201);
-}
+class WealthPickup : public Pickup {
+public:
+	WealthPickup(float x, float y, float z);
+	void Effect(Profile& player);
+};
+
+#endif

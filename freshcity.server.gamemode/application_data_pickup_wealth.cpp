@@ -15,18 +15,14 @@
  */
 
 #include "application_database.h"
-#include "application_data_pickup_medic.h"
+#include "application_data_pickup_wealth.h"
 #include "application_config.h"
 
-MedicalPickup::MedicalPickup(float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true) {}
+WealthPickup::WealthPickup(float x, float y, float z)
+	: Pickup(1212, 1, x, y, z, true) {}
 
-void MedicalPickup::Effect(Profile& player) {
-	float value = CONFIG_FLOAT("EffectiveItem.medicalpickup");
-	float difference = 100 - player.GetHealth();
-	if(difference > value)
-		player.SetHealth(player.GetHealth() + value);
-	else if(difference <= value)
-		player.SetHealth(100.0f);
+void WealthPickup::Effect(Profile& player) {
+	player.GiveMoney(CONFIG_INT("EffectiveItem.wealthpickupmoney"));
+	player.GiveScore(CONFIG_INT("EffectiveItem.wealthpickupscore"));
 	player.PlaySound(5201);
 }

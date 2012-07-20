@@ -33,6 +33,8 @@ private:
 	bool _banned;
 	bool _signedin;
 	int _team;
+	time_t _lastkill;
+	int _killcounter;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -59,6 +61,10 @@ public:
 	Coordinate5D GetDetailedPos() const;
 	int GetTeamFixed() const;
 	bool SetTeamFixed(int teamid);
+	/* 连杀计数器 返回当前连杀人数 */
+	int KillCounter();
+	void inline GiveScore(int score);
+	void PlaySound(int soundid);
 };
 
 #endif

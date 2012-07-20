@@ -15,18 +15,14 @@
  */
 
 #include "application_database.h"
-#include "application_data_pickup_medic.h"
-#include "application_config.h"
+#include "application_data_pickup_weapon.h"
+#include "application_algorithm_weaponidmap.h"
 
-MedicalPickup::MedicalPickup(float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true) {}
+WeaponPickup::WeaponPickup(int weaponid, int ammo, float x, float y, float z)
+	: _weaponid(weaponid), _ammo(ammo),
+	Pickup(ConvertWeaponIDToModelID(weaponid), 1, x, y, z, true) {}
 
-void MedicalPickup::Effect(Profile& player) {
-	float value = CONFIG_FLOAT("EffectiveItem.medicalpickup");
-	float difference = 100 - player.GetHealth();
-	if(difference > value)
-		player.SetHealth(player.GetHealth() + value);
-	else if(difference <= value)
-		player.SetHealth(100.0f);
+void WeaponPickup::Effect(Profile& player) {
+	player.GiveWeapon(_weaponid, _ammo);
 	player.PlaySound(5201);
 }

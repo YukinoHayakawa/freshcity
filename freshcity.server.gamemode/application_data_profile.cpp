@@ -64,7 +64,7 @@ void Profile::ApplyDataToPlayer() {
 		SetVirtualWorld((int)geo["world"].Number());
 		*/
 		GiveMoney((int)attribute["money"].Number());
-		SetScore(GetScore() + (int)attribute["score"].Number());
+		GiveScore((int)attribute["score"].Number());
 	} catch(mongo::UserException) {
 		throw std::runtime_error("玩家游戏数据不完整");
 	}
@@ -72,13 +72,14 @@ void Profile::ApplyDataToPlayer() {
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
 	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
-	_adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
+	_adminlevel(0), _deleted(false), _banned(false), _signedin(false), _killcounter(0), _lastkill(0) {
 		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
 	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
-	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false) {
+	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false),
+	_killcounter(0), _lastkill(0) {
 		if(_existsindatabase)
 			_LoadMemberData();
 }
@@ -230,4 +231,28 @@ int Profile::GetTeamFixed() const {
 bool Profile::SetTeamFixed(int teamid) {
 	_team = teamid;
 	return Player::SetTeam(teamid);
+}
+
+int Profile::KillCounter() {
+	int interval = CONFIG_INT("Gaming.killinterval");
+	time_t now = time(0);
+	if(_killcounter == 0)
+		++_killcounter;
+	else {
+		if((now - _lastkill) > interval)
+			_killcounter = 1;
+		else 
+			++_killcounter;
+	}
+	_lastkill = now;
+	return _killcounter;
+}
+
+void inline Profile::GiveScore(int score) {
+	SetScore(GetScore() + score);
+}
+
+void Profile::PlaySound(int soundid) {
+	Coordinate3D pos = GetPos();
+	Player::PlaySound(soundid, pos.x, pos.y, pos.z);
 }

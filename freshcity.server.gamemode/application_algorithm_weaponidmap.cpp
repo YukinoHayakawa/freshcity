@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_data_pickup_medic.h"
-#include "application_config.h"
+#include "application_algorithm_weaponidmap.h"
 
-MedicalPickup::MedicalPickup(float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true) {}
+int WeaponModelToID[] = {
+	0,		331,	333,	334,	335,
+	336,	337,	338,	339,	341,
+	321,	322,	323,	324,	325,
+	326,	342,	343,	344,	0,
+	0,		0,		346,	347,	348,
+	349,	350,	351,	352,	353,
+	355,	356,	372,	357,	358,
+	359,	360,	361,	362,	363,
+	364,	365,	366,	367,	368,
+	369,	371
+};
 
-void MedicalPickup::Effect(Profile& player) {
-	float value = CONFIG_FLOAT("EffectiveItem.medicalpickup");
-	float difference = 100 - player.GetHealth();
-	if(difference > value)
-		player.SetHealth(player.GetHealth() + value);
-	else if(difference <= value)
-		player.SetHealth(100.0f);
-	player.PlaySound(5201);
+int ConvertWeaponIDToModelID(int weaponid) {
+	if(weaponid > (sizeof(WeaponModelToID) / sizeof(int) - 1))
+		return 0;
+	return WeaponModelToID[weaponid];
 }

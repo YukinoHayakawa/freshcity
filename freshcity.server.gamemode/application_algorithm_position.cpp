@@ -26,23 +26,23 @@ Coordinate3D GenerateDirectionalPoint(Profile& player, float distance) {
 	float angle = player.GetFacingAngle();
 	Coordinate3D result = player.GetPos();
 	if(angle > 0 && angle < 90) {
-		result.x -= sin(AngleToRadian(angle)) * distance;
-		result.y += cos(AngleToRadian(angle)) * distance;
+		result.x -= (float)(sin(AngleToRadian(angle)) * distance);
+		result.y += (float)(cos(AngleToRadian(angle)) * distance);
 		return result;
 	} else if(angle > 90 && angle < 180) {
 		angle -= 90;
-		result.x -= cos(AngleToRadian(angle)) * distance;
-		result.y -= sin(AngleToRadian(angle)) * distance;
+		result.x -= (float)(cos(AngleToRadian(angle)) * distance);
+		result.y -= (float)(sin(AngleToRadian(angle)) * distance);
 		return result;
 	} else if(angle > 180 && angle < 270) {
 		angle -= 180;
-		result.x += sin(AngleToRadian(angle)) * distance;
-		result.y -= cos(AngleToRadian(angle)) * distance;
+		result.x += (float)(sin(AngleToRadian(angle)) * distance);
+		result.y -= (float)(cos(AngleToRadian(angle)) * distance);
 		return result;
 	} else if(angle > 270 && angle < 360) {
 		angle -= 270;
-		result.x += cos(AngleToRadian(angle)) * distance;
-		result.y += sin(AngleToRadian(angle)) * distance;
+		result.x += (float)(cos(AngleToRadian(angle)) * distance);
+		result.y += (float)(sin(AngleToRadian(angle)) * distance);
 		return result;
 	} else if(angle == 0) {
 		result.y += distance;
