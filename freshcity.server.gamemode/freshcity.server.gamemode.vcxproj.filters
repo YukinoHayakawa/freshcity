@@ -90,6 +90,9 @@
     <ClInclude Include="application_data_pickup_medic.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_algorithm_position.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -168,6 +171,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_data_pickup_medic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_algorithm_position.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

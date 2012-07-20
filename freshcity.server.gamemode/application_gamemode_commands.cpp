@@ -25,6 +25,7 @@
 #include "application_dependency_streamer.h"
 #include "application_gamemode_manager_effectiveitem.h"
 #include "application_data_pickup_medic.h"
+#include "application_algorithm_position.h"
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
@@ -97,8 +98,8 @@ CMD(GetPlayer) {
 }
 
 CMD(CreateMedicalPickup) {
-	Coordinate3D playerpos = player.GetPos();
-	PickupManager::GetInstance().Add(PickupManager::MemberPtr(new MedicalPickup(playerpos.x + 5, playerpos.y + 5, playerpos.z)));
+	Coordinate3D pos = GenerateDirectionalPoint(player, 3.0f);
+	PickupManager::GetInstance().Add(PickupManager::MemberPtr(new MedicalPickup(pos.x, pos.y, pos.z)));
 }
 
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
