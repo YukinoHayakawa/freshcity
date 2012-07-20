@@ -23,7 +23,10 @@
 boost::property_tree::ptree& GetConfig();
 
 #define CONFIG_STRING(path) GetConfig().get<std::string>(path)
-#define CONFIG_NUMBER(path) GetConfig().get<double>(path)
+#define CONFIG_DOUBLE(path) GetConfig().get<double>(path)
+#define CONFIG_FLOAT(path) GetConfig().get<float>(path)
+#define CONFIG_INT(path) GetConfig().get<int>(path)
+#define CONFIG_LONG(path) GetConfig().get<long>(path)
 #define CONFIG_BOOLEAN(path) GetConfig().get<bool>(path)
 
 #endif

@@ -22,7 +22,9 @@
 #include <boost/function.hpp>
 
 enum {
-	DIALOG_TEAM_SELECT
+	DIALOG_TEAM_SELECT,
+	DIALOG_PROFILE_REGISTER,
+	DIALOG_PROFILE_LOGIN
 };
 
 #endif

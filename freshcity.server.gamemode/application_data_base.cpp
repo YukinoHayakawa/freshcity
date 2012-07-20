@@ -19,11 +19,11 @@
 
 SaveableItem::SaveableItem(const std::string& collection, const mongo::OID& uniqueid)
 	: _collection(collection), _rawdata(GetDB().findOne(_collection, BSON("_id" << uniqueid))),
-	_existsindatabase(_rawdata.isEmpty() ? false : true), _uniqueid(_existsindatabase ? _rawdata["_id"].OID() : mongo::OID()) {}
+	_existsindatabase(_rawdata.isEmpty() ? false : true), _uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {}
 
 SaveableItem::SaveableItem(const std::string& collection, const mongo::BSONObj& query)
 	: _collection(collection), _rawdata(GetDB().findOne(_collection, query)),
-	_existsindatabase(_rawdata.isEmpty() ? false : true), _uniqueid(_existsindatabase ? _rawdata["_id"].OID() : mongo::OID()) {}
+	_existsindatabase(_rawdata.isEmpty() ? false : true), _uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {}
 
 SaveableItem::SaveableItem(const std::string& collection) : _collection(collection), _existsindatabase(false) {}
 

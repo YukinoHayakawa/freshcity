@@ -83,15 +83,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			ProfileMgr[playerid].SetSignedIn(false);
 			Profile& player = ProfileMgr[playerid];
 			if(!player.IsExistInDatabase()) {
+				player.SetColor(RandomRGBAColor());
+				ShowPlayerDialog(playerid, DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "注册", "请输入您的密码:", "注册", "");
+			} else {
 				if(player.IsBannedForGame()) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁");
 					player.KickNow();
-				} else {
-					player.SetColor(RandomRGBAColor());
-					player.SendChatMessage(COLOR_INFO, "你还没有注册, 请 /register <密码> 来创建新用户");
-				}
-			} else {
-				player.SendChatMessage(COLOR_WARN, "欢迎回来, " + player.GetName() + " . 请执行 /login <密码> 以登录");
+				} else
+					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
 			}
 			player.SetTeamFixed(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());

@@ -19,6 +19,7 @@
 #include "application_gamemode_manager_team.h"
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_data_waypoint.h"
+#include "application_gamemode_colordefinitions.h"
 
 #define DIALOG(x) void Dlg##x(Profile& player, bool response, int listitem, const char* inputtext)
 
@@ -31,11 +32,33 @@ DIALOG(SelectTeam) {
 	player.Spawn();
 }
 
+DIALOG(Register) {
+	if(inputtext[0] == 0) throw std::runtime_error("ÃÜÂë²»ÄÜÎª¿Õ");
+	try {
+		player.Create(player.GetName(), inputtext);
+		player.SendChatMessage(COLOR_SUCC, "×¢²á³É¹¦");
+		player.SetSignedIn(true);
+	} catch(std::runtime_error) {
+		throw;
+	} catch(...) {
+		throw std::runtime_error("×¢²áÊ§°Ü");
+	}
+}
+
+DIALOG(Login) {
+	if(!player.AuthPassword(inputtext)) throw std::runtime_error("ÃÜÂë´íÎó");
+	player.SetSignedIn(true);
+	player.ApplyDataToPlayer();
+	player.SendChatMessage(COLOR_SUCC, "µÇÂ¼³É¹¦");
+}
+
 #define REGDLG(x, y) DlgMgr.Add(x, y)
 
 bool RegisterPlayerDlgs() {
 	DialogManager& DlgMgr = DialogManager::GetInstance();
-	REGDLG(DIALOG_TEAM_SELECT,		DlgSelectTeam);
+	REGDLG(DIALOG_TEAM_SELECT,			DlgSelectTeam);
+	REGDLG(DIALOG_PROFILE_REGISTER,		DlgRegister);
+	REGDLG(DIALOG_PROFILE_LOGIN,		DlgLogin);
 	return true;
 }
 

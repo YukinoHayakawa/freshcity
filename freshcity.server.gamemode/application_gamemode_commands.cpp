@@ -28,31 +28,6 @@
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
-CMD(Register) {
-	if(cmdline[0] == 0) throw std::runtime_error("密码不能为空");
-	try {
-		player.Create(player.GetName(), cmdline);
-		player.SendChatMessage(COLOR_SUCC, "注册成功");
-		player.SetSignedIn(true);
-	} catch(std::runtime_error) {
-		throw;
-	} catch(...) {
-		throw std::runtime_error("注册失败");
-	}
-}
-
-CMD(Login) {
-	if(!player.AuthPassword(cmdline)) throw std::runtime_error("密码错误");
-	player.SetSignedIn(true);
-	player.ApplyDataToPlayer();
-	player.SendChatMessage(COLOR_SUCC, "登录成功");
-}
-
-CMD(LogOut) {
-	player.SetSignedIn(false);
-	player.SendChatMessage(COLOR_SUCC, "您已登出");
-}
-
 CMD(SaveData) {
 	player.Sync();
 	player.SendChatMessage(COLOR_SUCC, "数据已保存");
@@ -130,9 +105,6 @@ CMD(CreateMedicalPickup) {
 
 bool RegisterPlayerCmds() {
 	CommandManager& CmdMgr = CommandManager::GetInstance();
-	REGCMD("register",			CmdRegister,			0, DONOT_REGISTERED);
-	REGCMD("login",				CmdLogin,				0, NEED_REGISTERED | DONOT_SIGNED_IN);
-	REGCMD("logout",			CmdLogOut,				0, NEED_SIGNED_IN);
 	REGCMD("sync",				CmdSaveData,			0, NEED_SIGNED_IN);
 	REGCMD("setskin",			CmdSetSkin,				1, NEED_SIGNED_IN);
 	REGCMD("giveweapon",		CmdGiveWeapon,			1, NEED_SIGNED_IN);
