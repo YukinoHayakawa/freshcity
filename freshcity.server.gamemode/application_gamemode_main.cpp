@@ -37,6 +37,7 @@
 #include "application_config.h"
 #include "application_data_pickup_wealth.h"
 #include "application_data_pickup_weapon.h"
+#include <boost/random.hpp>
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -190,6 +191,19 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	GivePlayerMoney(playerid, -500);
 	SendDeathMessage(killerid, playerid, reason);
 	try {
+		// 掉落武器
+		int dropweapon[2];
+		Coordinate3D deadpos = ProfileMgr[playerid].GetPos();
+		boost::mt19937 engine;
+		boost::uniform_real<float> range(-2.5, 2.5);
+		boost::variate_generator<boost::mt19937&, boost::uniform_real<float>> genoffset(engine, range);
+		for(int i = 0; i < 13; i++) {
+			GetPlayerWeaponData(playerid, i, &dropweapon[0], &dropweapon[1]);
+			if(dropweapon[0] != 0)
+				PickupManager::GetInstance().Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],
+				deadpos.x + genoffset(), deadpos.y + genoffset(), deadpos.z)));
+		}
+		// 连杀奖励
 		if(killerid != INVALID_PLAYER_ID) {
 			Profile& killer = ProfileMgr[killerid];
 			killer.GiveScore(1);
@@ -218,7 +232,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 				break;
 			}
 			PickupManager::GetInstance().Add(ptr);
-			SendClientMessageToAll(COLOR_BLUE, std::string("玩家 " + killer.GetName() + " 连续杀敌 "
+			SendClientMessageToAll(COLOR_POWDERBLUE, std::string("玩家 " + killer.GetName() + " 连续杀敌 "
 				+ boost::lexical_cast<std::string>(kills) + " 人").c_str());
 		}
 	} catch(std::runtime_error& e) {

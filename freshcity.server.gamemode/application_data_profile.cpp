@@ -118,12 +118,12 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 void Profile::Sync() {
 	Coordinate5D pos = GetDetailedPos();
 
-	int weapon[13][2];
+	int weapon[2];
 	std::list<mongo::BSONObj> weapons;
 	for(int i = 0; i < 13; i++) {
-		GetWeaponData(i, &weapon[i][0], &weapon[i][1]);
-		if(weapon[i][0] != 0)
-			weapons.push_back(BSON("id" << weapon[i][0] << "ammo" << weapon[i][1]));
+		GetWeaponData(i, &weapon[0], &weapon[1]);
+		if(weapon[0] != 0)
+			weapons.push_back(BSON("id" << weapon[0] << "ammo" << weapon[1]));
 	}
 
 	mongo::BSONObj submit = BSON(
