@@ -23,8 +23,10 @@
 
 template<class mgr, typename key, typename value>
 class ItemManager : private boost::noncopyable {
-protected:
+public:
 	typedef boost::shared_ptr<value> MemberPtr;
+
+protected:
 	typedef boost::unordered_map<key, MemberPtr> MemberMap;
 	MemberMap _members;
 

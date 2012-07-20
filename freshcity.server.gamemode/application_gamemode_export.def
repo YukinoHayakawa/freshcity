@@ -16,3 +16,4 @@ EXPORTS
 	OnPlayerRequestSpawn
 	OnPlayerSpawn
 	OnPlayerText
+	OnPlayerPickUpPickup

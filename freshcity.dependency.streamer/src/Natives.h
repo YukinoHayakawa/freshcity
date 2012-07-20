@@ -23,7 +23,7 @@
 #endif
 
 #include <sampgdk/a_objects.h>
-#include <boost/function.hpp>
+
 #define FLOAT_INFINITY 0x7F800000
 
 #define STREAMER_TYPE_OBJECT (0)

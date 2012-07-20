@@ -89,16 +89,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="application_data_base.cpp" />
+    <ClCompile Include="application_data_pickup.cpp" />
+    <ClCompile Include="application_data_pickup_medic.cpp" />
     <ClCompile Include="application_data_profile.cpp" />
     <ClCompile Include=".\application_gamemode_commands.cpp" />
     <ClCompile Include="application_data_team.cpp" />
     <ClCompile Include="application_data_waypoint.cpp" />
     <ClCompile Include="application_gamemode_dialogs.cpp" />
+    <ClCompile Include="application_gamemode_effectiveitem.cpp" />
     <ClCompile Include="application_gamemode_lib.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="application_gamemode_manager_command.cpp" />
     <ClCompile Include="application_gamemode_manager_dialog.cpp" />
+    <ClCompile Include="application_gamemode_manager_effectiveitem.cpp" />
     <ClCompile Include="application_gamemode_manager_profile.cpp" />
     <ClCompile Include="application_gamemode_manager_team.cpp" />
     <ClCompile Include="basic_algorithm_random.cpp">
@@ -120,6 +124,7 @@
     <ClInclude Include="application_database.h" />
     <ClInclude Include="application_data_base.h" />
     <ClInclude Include=".\application_data_team.h" />
+    <ClInclude Include="application_data_pickup_medic.h" />
     <ClInclude Include="application_data_profile.h" />
     <ClInclude Include=".\application_struct_coordinate.h" />
     <ClInclude Include=".\application_gamemode_manager_profile.h">
@@ -130,8 +135,11 @@
     <ClInclude Include=".\application_gamemode_manager_base.h" />
     <ClInclude Include="application_dependency_streamer.h" />
     <ClInclude Include="application_gamemode_dialogdefinitions.h" />
+    <ClInclude Include=".\application_data_pickup.h" />
+    <ClInclude Include="application_gamemode_effectiveitem.h" />
     <ClInclude Include="application_gamemode_manager_command.h" />
     <ClInclude Include="application_gamemode_manager_dialog.h" />
+    <ClInclude Include="application_gamemode_manager_effectiveitem.h" />
     <ClInclude Include="application_gamemode_manager_team.h" />
     <ClInclude Include="basic_algorithm_random.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />

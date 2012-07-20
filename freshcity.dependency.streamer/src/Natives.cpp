@@ -509,7 +509,7 @@ STREAMER_EXPORT int CreateDynamicPickup(int modelid, int type, float x, float y,
 {
 	if (core->getData()->getMaxItems(STREAMER_TYPE_PICKUP) == core->getData()->pickups.size())
 	{
-		return false;
+		return 0;
 	}
 	int pickupID = Element::Pickup::identifier.get();
 	Element::SharedPickup pickup(new Element::Pickup);

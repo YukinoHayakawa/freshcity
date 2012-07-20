@@ -30,6 +30,7 @@
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
+#include "application_gamemode_manager_effectiveitem.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -199,7 +200,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
 			spawnpoint.PerformTeleport(playerid);
-	} catch(std::runtime_error &e) {
+	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
 		SendClientMessage(playerid, COLOR_ERROR, "无法出生在团队出生点");
@@ -222,4 +223,17 @@ STREAMER_CALLBACK void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
 
 STREAMER_CALLBACK void OnDynamicObjectMoved(int objectid) {
 	return;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid) {
+	try {
+		int streamerid = Streamer_OnPlayerPickUpPickup(playerid, pickupid);
+		if(streamerid != 0)
+			PickupManager::GetInstance().Exec(playerid, streamerid);
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "处理 Pickup 时发生错误");
+	}
+	return true;
 }

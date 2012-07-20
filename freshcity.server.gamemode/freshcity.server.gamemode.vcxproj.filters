@@ -78,6 +78,18 @@
     <ClInclude Include="application_dependency_streamer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include=".\application_data_pickup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_gamemode_manager_effectiveitem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_gamemode_effectiveitem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_data_pickup_medic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -144,6 +156,18 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_gamemode_dialogs.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_data_pickup.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_effectiveitem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_manager_effectiveitem.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_data_pickup_medic.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -62,10 +62,9 @@ void Profile::ApplyDataToPlayer() {
 		SetFacingAngle((float)geo["direction"].Number());
 		SetInterior((int)geo["interior"].Number());
 		SetVirtualWorld((int)geo["world"].Number());
-		ResetMoney();
 		*/
 		GiveMoney((int)attribute["money"].Number());
-		SetScore((int)attribute["score"].Number());
+		SetScore(GetScore() + (int)attribute["score"].Number());
 	} catch(mongo::UserException) {
 		throw std::runtime_error("玩家游戏数据不完整");
 	}
