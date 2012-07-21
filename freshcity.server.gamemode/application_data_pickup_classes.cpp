@@ -29,7 +29,7 @@ void MedicalPickup::Effect(Profile& player) {
 
 // WealthPickup
 WealthPickup::WealthPickup(int money, int score, float x, float y, float z)
-	: Pickup(1212, 1, x, y, z, true), _money(money), _score(score) {}
+	: Pickup(1550, 1, x, y, z, true), _money(money), _score(score) {}
 
 void WealthPickup::Effect(Profile& player) {
 	player.GiveMoney(_money);

@@ -226,7 +226,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 		int dropweapon[2];
 		Coordinate3D deadpos = player.GetPos();
 		boost::mt19937 engine;
-		boost::uniform_real<float> range(-2.5, 2.5);
+		boost::uniform_real<float> range(-1.5, 1.5);
 		boost::variate_generator<boost::mt19937&, boost::uniform_real<float>> genoffset(engine, range);
 		for(int i = 0; i < 13; i++) {
 			GetPlayerWeaponData(playerid, i, &dropweapon[0], &dropweapon[1]);
