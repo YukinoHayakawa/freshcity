@@ -18,6 +18,7 @@
 #define FRESHCITY_APPLICATION_GAMEMODE_ROLE_CLASSES
 
 #include "application_data_profile.h"
+#include "application_data_object.h"
 
 // Assault
 class Assault : public Profile::Role {
@@ -40,6 +41,18 @@ class Mechanic : public Profile::Role {
 public:
 	Mechanic(Profile& player);
 	void OnSpawn();
+	void PerformSpecialSkill(Profile& target);
+};
+
+// Engineer
+class Engineer : public Profile::Role {
+private:
+	boost::shared_ptr<DynamicObject> _obj;
+
+public:
+	Engineer(Profile& player);
+	void OnSpawn();
+	void OnDeath();
 	void PerformSpecialSkill(Profile& target);
 };
 

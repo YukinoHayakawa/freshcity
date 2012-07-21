@@ -93,6 +93,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="application_data_base.cpp" />
+    <ClCompile Include="application_data_object.cpp" />
     <ClCompile Include="application_data_pickup.cpp" />
     <ClCompile Include=".\application_data_pickup_classes.cpp" />
     <ClCompile Include="application_data_profile.cpp" />
@@ -130,6 +131,7 @@
     <ClInclude Include="application_data_base.h" />
     <ClInclude Include=".\application_data_team.h" />
     <ClInclude Include=".\application_data_pickup_classes.h" />
+    <ClInclude Include="application_data_object.h" />
     <ClInclude Include="application_data_profile.h" />
     <ClInclude Include=".\application_struct_coordinate.h" />
     <ClInclude Include=".\application_gamemode_manager_profile.h">
@@ -145,6 +147,7 @@
     <ClInclude Include="application_gamemode_manager_command.h" />
     <ClInclude Include="application_gamemode_manager_dialog.h" />
     <ClInclude Include="application_gamemode_manager_effectiveitem.h" />
+    <ClInclude Include="application_gamemode_manager_object.h" />
     <ClInclude Include="application_gamemode_manager_team.h" />
     <ClInclude Include=".\application_algorithm_weaponidmap.h" />
     <ClInclude Include=".\application_gamemode_role_classes.h" />

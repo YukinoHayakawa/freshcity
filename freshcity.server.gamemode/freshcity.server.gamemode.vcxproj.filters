@@ -99,6 +99,12 @@
     <ClInclude Include=".\application_data_pickup_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_data_object.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="application_gamemode_manager_object.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -183,6 +189,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include=".\application_data_pickup_classes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_data_object.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

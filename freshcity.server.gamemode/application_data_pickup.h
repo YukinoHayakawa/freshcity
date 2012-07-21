@@ -18,7 +18,6 @@
 #define FRESHCITY_APPLICATION_DATA_PICKUP
 
 #include "application_dependency_streamer.h"
-#include "application_data_profile.h"
 #include "application_gamemode_effectiveitem.h"
 
 class Pickup : public EffectiveItem {

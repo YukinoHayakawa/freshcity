@@ -17,3 +17,4 @@ EXPORTS
 	OnPlayerSpawn
 	OnPlayerText
 	OnPlayerPickUpPickup
+	OnPlayerEditObject

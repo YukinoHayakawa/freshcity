@@ -23,6 +23,9 @@
 #include <sampgdk/a_vehicles.h>
 #include "application_gamemode_manager_team.h"
 #include "application_dependency_streamer.h"
+#include "application_gamemode_manager_object.h"
+#include "application_data_object.h"
+#include "application_algorithm_position.h"
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
@@ -94,6 +97,15 @@ CMD(GetPlayer) {
 	point.PerformTeleport(targetid);
 }
 
+CMD(CreateDynObject) {
+	int modelid(-1);
+	sscanf(cmdline, "%d", &modelid);
+	Coordinate3D pos = GenerateDirectionalPoint(player, 10.0f);
+	ObjectManager::MemberPtr ptr(new DynamicObject(
+		modelid, pos.x, pos.y, pos.z - 1, 0.0f, 0.0f, 0.0f));
+	ObjectManager::GetInstance().Add(ptr);
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -108,6 +120,7 @@ bool RegisterPlayerCmds() {
 	REGCMD("teamquit",			CmdTeamQuit,			5, NEED_SIGNED_IN);
 	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
+	REGCMD("object",			CmdCreateDynObject,		0, NO_REQUIREMENT);
 	return true;
 }
 

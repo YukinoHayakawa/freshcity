@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_EFFECTIVEITEM
-#define FRESHCITY_APPLICATION_GAMEMODE_EFFECTIVEITEM
+#ifndef FRESHCITY_APPLICATION_DATA_OBJECT
+#define FRESHCITY_APPLICATION_DATA_OBJECT
 
-#include "application_data_profile.h"
+#include "application_dependency_streamer.h"
+#include "application_gamemode_effectiveitem.h"
 
-class EffectiveItem {
-protected:
-	bool _disposable;
-	int _id;
-
+class DynamicObject : public EffectiveItem {
 public:
-	/* 是否一次性 */
-	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {
-		if(_id == 0) throw std::runtime_error("物品创建失败");
-	}
-	/* 执行其特殊效果 */
-	void virtual Effect(Profile& player) {}
-	/* 是否一次性 */
-	bool IsDisposable() { return _disposable; }
-	int GetID() { return _id; }
+	DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz,
+		int worldid = -1, int interiorid = -1, int playerid = -1, float streamdistance = 100.0);
+	~DynamicObject();
+	void Edit(int playerid);
 };
 
 #endif

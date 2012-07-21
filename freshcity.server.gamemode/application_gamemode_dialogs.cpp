@@ -48,10 +48,8 @@ DIALOG(SelectRole) {
 		player.SetRole(Profile::RolePtr(new Mechanic(player)));
 		break;
 
-	default:
-		player.SendChatMessage(COLOR_ERROR, "其他职业还在开发中");
-		ShowPlayerDialog(player.GetId(), DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业",
-			"Assault\nMedic\nMechanic\nEngineer", "确定", "");
+	case 3:
+		player.SetRole(Profile::RolePtr(new Engineer(player)));
 		break;
 	}
 	player.Spawn();

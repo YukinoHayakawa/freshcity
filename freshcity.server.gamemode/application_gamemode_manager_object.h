@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_EFFECTIVEITEM
-#define FRESHCITY_APPLICATION_GAMEMODE_EFFECTIVEITEM
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_MANAGER_OBJECT
+#define FRESHCITY_APPLICATION_GAMEMODE_MANAGER_OBJECT
 
-#include "application_data_profile.h"
+#include "application_gamemode_manager_base.h"
+#include "application_data_object.h"
 
-class EffectiveItem {
-protected:
-	bool _disposable;
-	int _id;
-
+class ObjectManager : public ItemManager<ObjectManager, int, DynamicObject> {
 public:
-	/* 是否一次性 */
-	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {
-		if(_id == 0) throw std::runtime_error("物品创建失败");
+	bool Add(MemberPtr& item) {
+		return ItemManager::Add(item->GetID(), item);
 	}
-	/* 执行其特殊效果 */
-	void virtual Effect(Profile& player) {}
-	/* 是否一次性 */
-	bool IsDisposable() { return _disposable; }
-	int GetID() { return _id; }
 };
 
 #endif

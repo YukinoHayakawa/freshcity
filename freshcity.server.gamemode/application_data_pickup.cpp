@@ -18,11 +18,8 @@
 #include "application_data_pickup.h"
 
 Pickup::Pickup(int modelid, int type, float x, float y, float z, bool disposable, int worldid, int interiorid, int playerid, float distance)
-	: EffectiveItem(CreateDynamicPickup(modelid, type, x, y, z, worldid, interiorid, playerid, distance), disposable) {
-		if(_id == 0) throw std::runtime_error("Pickup ´´½¨Ê§°Ü");
-}
+	: EffectiveItem(CreateDynamicPickup(modelid, type, x, y, z, worldid, interiorid, playerid, distance), disposable) {}
 
 Pickup::~Pickup() {
-	if(_id != 0)
-		DestroyDynamicPickup(_id);
+	DestroyDynamicPickup(_id);
 }

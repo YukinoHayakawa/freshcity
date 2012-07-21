@@ -21,6 +21,7 @@
 #include "application_data_profile.h"
 #include "application_algorithm_position.h"
 #include <sampgdk/a_vehicles.h>
+#include "application_data_object.h"
 
 // Assault
 Assault::Assault(Profile& player) : Role(player, 60, true) {}
@@ -59,7 +60,7 @@ void Medic::PerformSpecialSkill(Profile& target) {
 	Role::PerformSpecialSkill(target);
 }
 
-// Medic
+// Mechanic
 Mechanic::Mechanic(Profile& player) : Role(player, 180, false) {}
 
 void Mechanic::OnSpawn() {
@@ -76,5 +77,30 @@ void Mechanic::PerformSpecialSkill(Profile& target) {
 	if(!IsPlayerInAnyVehicle(_player.GetId()))
 		throw std::runtime_error("必须在车内才能进行维修");
 	RepairVehicle(_player.GetVehicleID());
+	Role::PerformSpecialSkill(target);
+}
+
+// Engineer
+Engineer::Engineer(Profile& player) : Role(player, 60, false) {}
+
+void Engineer::OnSpawn() {
+	_player.SendChatMessage(COLOR_CYAN,
+		"你的职业为[工程师], 徒步时按下~k~~CONVERSATION_NO~键可在面前修建哨塔一座并会清除上次的建筑, 施放间隔1分钟");
+	_player.SetHealth(100.0f);
+	_player.SetArmour(0.0f);
+	_player.GiveWeapon(16, 3);
+	_player.GiveWeapon(25, 100);
+	_player.GiveWeapon(22, 100);
+}
+
+void Engineer::OnDeath() {
+	_obj.reset();
+}
+
+void Engineer::PerformSpecialSkill(Profile& target) {
+	if(IsPlayerInAnyVehicle(_player.GetId()))
+		throw std::runtime_error("不能在车内进行建设");
+	Coordinate3D pos = GenerateDirectionalPoint(_player, 10.0f);
+	_obj.reset(new DynamicObject(3279, pos.x, pos.y, pos.z - 1, 0.0f, 0.0f, 0.0f));
 	Role::PerformSpecialSkill(target);
 }
