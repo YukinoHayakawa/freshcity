@@ -21,11 +21,26 @@
 #include "application_data_base.h"
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
-#include "application_gamemode_role_base.h"
 
 class Profile : public SaveableItem, public Player {
 public:
-	typedef boost::shared_ptr<Role> RolePtr;
+	class Role {
+	protected:
+		time_t _skilllastuse;
+		int _timelimit;
+		bool _musthavetarget;
+		Profile& _player;
+
+	public:
+		Role(Profile& player, int timelimit, bool musthavetarget);
+		void virtual OnSpawn();
+		void virtual OnDeath();
+		void virtual PerformSpecialSkill(Profile& target);
+		bool CanPerformSkill();
+		bool MustHaveTarget();
+	};
+
+	typedef boost::shared_ptr<Profile::Role> RolePtr;
 
 private:
 	void _LoadMemberData();
@@ -68,10 +83,16 @@ public:
 	bool SetTeamFixed(int teamid);
 	/* 连杀计数器 返回当前连杀人数 */
 	int KillCounter();
-	void inline GiveScore(int score);
+	void inline GiveScore(int score) {
+		SetScore(GetScore() + score);
+	}
 	void PlaySound(int soundid);
 	void SetRole(RolePtr& role);
-	Role& GetRole();
+	Profile::Role& GetRole();
+	/* 玩家HP上限为100 */
+	void inline GiveHealth(float health) {
+		SetHealth(((100 - GetHealth()) > health) ? GetHealth() + health : 100);
+	}
 };
 
 #endif

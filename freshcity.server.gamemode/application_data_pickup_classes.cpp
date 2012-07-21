@@ -15,9 +15,29 @@
  */
 
 #include "application_database.h"
-#include "application_data_pickup_weapon.h"
+#include "application_data_pickup_classes.h"
 #include "application_algorithm_weaponidmap.h"
 
+// MedicalPickup
+MedicalPickup::MedicalPickup(float health, float x, float y, float z)
+	: Pickup(1240, 1, x, y, z, true), _health(health) {}
+
+void MedicalPickup::Effect(Profile& player) {
+	player.GiveHealth(_health);
+	player.PlaySound(5201);
+}
+
+// WealthPickup
+WealthPickup::WealthPickup(int money, int score, float x, float y, float z)
+	: Pickup(1212, 1, x, y, z, true), _money(money), _score(score) {}
+
+void WealthPickup::Effect(Profile& player) {
+	player.GiveMoney(_money);
+	player.GiveScore(_score);
+	player.PlaySound(5201);
+}
+
+// WeaponPickup
 WeaponPickup::WeaponPickup(int weaponid, int ammo, float x, float y, float z)
 	: _weaponid(weaponid), _ammo(ammo),
 	Pickup(ConvertWeaponIDToModelID(weaponid), 1, x, y, z, true) {}

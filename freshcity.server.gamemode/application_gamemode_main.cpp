@@ -32,13 +32,11 @@
 #include "application_data_waypoint.h"
 #include "application_gamemode_manager_effectiveitem.h"
 #include "application_gamemode_manager_effectiveitem.h"
-#include "application_data_pickup_medic.h"
+#include "application_data_pickup_classes.h"
 #include "application_algorithm_position.h"
 #include "application_config.h"
-#include "application_data_pickup_wealth.h"
-#include "application_data_pickup_weapon.h"
 #include <boost/random.hpp>
-#include "application_gamemode_role_medic.h"
+#include "application_gamemode_role_classes.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -73,7 +71,7 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
 	for(int i = 1; i < 299; i++) 
-		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 27, 100, 31, 100, 16, 3);
+		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	TeamMgr.Add("Cops");
 	TeamMgr["Cops"].SetColor(COLOR_BLUE);
 	TeamMgr.Add("Criminals");
@@ -101,7 +99,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
 			}
 			player.SetTeamFixed(NO_TEAM);
-			player.SetRole(Profile::RolePtr(new Medic()));
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 		} catch(std::runtime_error& e) {
@@ -170,15 +167,25 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys, int oldkeys) {
 	try {
 		Profile& player = ProfileMgr[playerid];
+		// 车辆加速
 		if((KEY_PRESSED(KEY_FIRE) || KEY_PRESSED(KEY_ACTION)) && IsPlayerInAnyVehicle(playerid))
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
+		// 角色技能
 		if(KEY_PRESSED(KEY_NO)) {
 			int target = GetPlayerTargetPlayer(playerid);
-			if(!player.GetRole().MustHaveTarget() || target != INVALID_PLAYER_ID)
-				if(player.GetRole().CanPerformSkill())
-					player.GetRole().PerformSpecialSkill(target);
-				else
-					throw std::runtime_error("技能尚在冷却");
+			if(player.GetRole().CanPerformSkill()) {
+				if(player.GetRole().MustHaveTarget()) {
+					if(target != INVALID_PLAYER_ID)
+						player.GetRole().PerformSpecialSkill(ProfileMgr[target]);
+					else
+						throw std::runtime_error("该技能必须有施放对象");
+				} else {
+					player.GetRole().PerformSpecialSkill(player);
+				}
+				player.SendChatMessage(COLOR_SUCC, "技能施放成功");
+			} else {
+				throw std::runtime_error("技能尚在冷却");
+			}
 		}
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
@@ -213,9 +220,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	GivePlayerMoney(playerid, -500);
 	SendDeathMessage(killerid, playerid, reason);
 	try {
+		Profile& player = ProfileMgr[playerid];
+		player.GetRole().OnDeath();
 		// 掉落武器
 		int dropweapon[2];
-		Coordinate3D deadpos = ProfileMgr[playerid].GetPos();
+		Coordinate3D deadpos = player.GetPos();
 		boost::mt19937 engine;
 		boost::uniform_real<float> range(-2.5, 2.5);
 		boost::variate_generator<boost::mt19937&, boost::uniform_real<float>> genoffset(engine, range);
@@ -274,7 +283,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
-		ProfileMgr[playerid].GetRole().OnSpawn(ProfileMgr[playerid]);
+		ProfileMgr[playerid].GetRole().OnSpawn();
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
 			spawnpoint.PerformTeleport(playerid);
 	} catch(std::runtime_error& e) {

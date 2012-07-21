@@ -20,6 +20,7 @@
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_data_waypoint.h"
 #include "application_gamemode_colordefinitions.h"
+#include "application_gamemode_role_classes.h"
 
 #define DIALOG(x) void Dlg##x(Profile& player, bool response, int listitem, const char* inputtext)
 
@@ -28,6 +29,30 @@ DIALOG(SelectTeam) {
 		if(player.GetTeamFixed() != NO_TEAM)
 			TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
 		TeamManager::GetInstance()[inputtext].Join(player);
+	}
+	ShowPlayerDialog(player.GetId(), DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业",
+		"Assault\nMedic\nMechanic\nEngineer", "确定", "");
+}
+
+DIALOG(SelectRole) {
+	switch(listitem) {
+	case 0:
+		player.SetRole(Profile::RolePtr(new Assault(player)));
+		break;
+
+	case 1:
+		player.SetRole(Profile::RolePtr(new Medic(player)));
+		break;
+
+	case 2:
+		player.SetRole(Profile::RolePtr(new Mechanic(player)));
+		break;
+
+	default:
+		player.SendChatMessage(COLOR_ERROR, "其他职业还在开发中");
+		ShowPlayerDialog(player.GetId(), DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业",
+			"Assault\nMedic\nMechanic\nEngineer", "确定", "");
+		break;
 	}
 	player.Spawn();
 }
@@ -57,6 +82,7 @@ DIALOG(Login) {
 bool RegisterPlayerDlgs() {
 	DialogManager& DlgMgr = DialogManager::GetInstance();
 	REGDLG(DIALOG_TEAM_SELECT,			DlgSelectTeam);
+	REGDLG(DIALOG_ROLE_SELECT,			DlgSelectRole);
 	REGDLG(DIALOG_PROFILE_REGISTER,		DlgRegister);
 	REGDLG(DIALOG_PROFILE_LOGIN,		DlgLogin);
 	return true;

@@ -20,6 +20,26 @@
 #include "application_algorithm_auth.h"
 #include "basic_algorithm_gbkencoder.h"
 
+Profile::Role::Role(Profile& player, int timelimit, bool musthavetarget)
+	: _timelimit(timelimit), _skilllastuse(0), _musthavetarget(musthavetarget),
+	_player(player) {}
+
+void Profile::Role::OnSpawn() {}
+
+void Profile::Role::OnDeath() {}
+
+void Profile::Role::PerformSpecialSkill(Profile& target) {
+	_skilllastuse = time(0);
+}
+
+bool Profile::Role::CanPerformSkill() {
+	return (time(0) - _skilllastuse) >= _timelimit;
+}
+
+bool Profile::Role::MustHaveTarget() {
+	return _musthavetarget;
+}
+
 void Profile::_LoadMemberData() {
 	if(!_existsindatabase)
 		throw std::runtime_error("玩家没有注册信息");
@@ -248,10 +268,6 @@ int Profile::KillCounter() {
 	return _killcounter;
 }
 
-void inline Profile::GiveScore(int score) {
-	SetScore(GetScore() + score);
-}
-
 void Profile::PlaySound(int soundid) {
 	Coordinate3D pos = GetPos();
 	Player::PlaySound(soundid, pos.x, pos.y, pos.z);
@@ -261,7 +277,7 @@ void Profile::SetRole(RolePtr& role) {
 	_role = role;
 }
 
-Role& Profile::GetRole() {
+Profile::Role& Profile::GetRole() {
 	if(_role.get())
 		return *_role.get();
 	else

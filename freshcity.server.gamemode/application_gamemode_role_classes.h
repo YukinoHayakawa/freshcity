@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_ROLE_BASE
-#define FRESHCITY_APPLICATION_GAMEMODE_ROLE_BASE
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ROLE_CLASSES
+#define FRESHCITY_APPLICATION_GAMEMODE_ROLE_CLASSES
 
-#include <time.h>
+#include "application_data_profile.h"
 
-class Role {
-protected:
-	time_t _skilllastuse;
-	int _timelimit;
-	bool _musthavetarget;
-
+// Assault
+class Assault : public Profile::Role {
 public:
-	Role(int timelimit, bool musthavetarget) : _timelimit(timelimit),
-		_skilllastuse(0), _musthavetarget(musthavetarget) {}
-	void virtual OnSpawn(int playerid) {}
-	void virtual PerformSpecialSkill(int targetid) { _skilllastuse = time(0); }
-	bool CanPerformSkill() { return (time(0) - _skilllastuse) >= _timelimit; }
-	bool MustHaveTarget() { return _musthavetarget; }
+	Assault(Profile& player);
+	void OnSpawn();
+	void PerformSpecialSkill(Profile& target);
+};
+
+// Medic
+class Medic : public Profile::Role {
+public:
+	Medic(Profile& player);
+	void OnSpawn();
+	void PerformSpecialSkill(Profile& target);
+};
+
+// Mechanic
+class Mechanic : public Profile::Role {
+public:
+	Mechanic(Profile& player);
+	void OnSpawn();
+	void PerformSpecialSkill(Profile& target);
 };
 
 #endif

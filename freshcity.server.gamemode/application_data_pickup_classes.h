@@ -14,11 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_PICKUP_WEALTH
-#define FRESHCITY_APPLICATION_DATA_PICKUP_WEALTH
+#ifndef FRESHCITY_APPLICATION_DATA_PICKUP_CLASSES
+#define FRESHCITY_APPLICATION_DATA_PICKUP_CLASSES
 
 #include "application_data_pickup.h"
 
+// MedicalPickup
+class MedicalPickup : public Pickup {
+private:
+	float _health;
+
+public:
+	MedicalPickup(float health, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
+// WealthPickup
 class WealthPickup : public Pickup {
 private:
 	int _money;
@@ -26,6 +37,16 @@ private:
 
 public:
 	WealthPickup(int money, int score, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
+// WeaponPickup
+class WeaponPickup : public Pickup {
+private:
+	int _weaponid, _ammo;
+
+public:
+	WeaponPickup(int weaponid, int ammo, float x, float y, float z);
 	void Effect(Profile& player);
 };
 

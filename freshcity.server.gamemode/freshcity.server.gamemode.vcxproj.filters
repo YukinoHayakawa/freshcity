@@ -87,25 +87,16 @@
     <ClInclude Include="application_gamemode_effectiveitem.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_data_pickup_medic.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="application_algorithm_position.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_data_pickup_wealth.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_algorithm_weaponidmap.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_data_pickup_weapon.h">
+    <ClInclude Include=".\application_gamemode_role_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_gamemode_role_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_gamemode_role_medic.h">
+    <ClInclude Include=".\application_data_pickup_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,22 +173,16 @@
     <ClCompile Include="application_gamemode_manager_effectiveitem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_data_pickup_medic.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="application_algorithm_position.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_data_pickup_wealth.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_algorithm_weaponidmap.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_data_pickup_weapon.cpp">
+    <ClCompile Include=".\application_gamemode_role_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include=".\application_gamemode_role_medic.cpp">
+    <ClCompile Include=".\application_data_pickup_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
