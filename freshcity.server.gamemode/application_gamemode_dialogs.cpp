@@ -56,20 +56,28 @@ DIALOG(SelectRole) {
 }
 
 DIALOG(Register) {
-	if(inputtext[0] == 0) throw std::runtime_error("密码不能为空");
-	try {
-		player.Create(player.GetName(), inputtext);
-		player.SendChatMessage(COLOR_SUCC, "注册成功");
-		player.SetSignedIn(true);
-	} catch(std::runtime_error) {
-		throw;
-	} catch(...) {
-		throw std::runtime_error("注册失败");
+	if(inputtext[0] == 0) {
+		player.SendChatMessage(COLOR_ERROR, "密码不能为空");
+	} else {
+		try {
+			player.Create(player.GetName(), inputtext);
+			player.SendChatMessage(COLOR_SUCC, "注册成功");
+			player.SetSignedIn(true);
+			return;
+		} catch(std::runtime_error& e) {
+			player.SendChatMessage(COLOR_ERROR, e.what());
+		} catch(...) {
+			player.SendChatMessage(COLOR_ERROR, "由于未知原因注册失败, 请联系服务器管理员");
+		}
 	}
+	ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "注册", "请输入您的密码:", "注册", "");
 }
 
 DIALOG(Login) {
-	if(!player.AuthPassword(inputtext)) throw std::runtime_error("密码错误");
+	if(!player.AuthPassword(inputtext)) {
+		ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "请输入您的密码以登录:", "登录", "");
+		throw std::runtime_error("密码错误");
+	}
 	player.SetSignedIn(true);
 	player.ApplyDataToPlayer();
 	player.SendChatMessage(COLOR_SUCC, "登录成功");
