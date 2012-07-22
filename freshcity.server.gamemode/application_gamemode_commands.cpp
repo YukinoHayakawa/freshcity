@@ -106,6 +106,13 @@ CMD(CreateDynObject) {
 	ObjectManager::GetInstance().Add(ptr);
 }
 
+CMD(IteratorTest) {
+	TeamManager::MemberMap::iterator iter = TeamManager::GetInstance().GetIterator(), end;
+	for(;iter != end; iter++) {
+		player.SendChatMessage(COLOR_YELLOW, iter->first);
+	}
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -121,6 +128,7 @@ bool RegisterPlayerCmds() {
 	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("object",			CmdCreateDynObject,		0, NO_REQUIREMENT);
+	REGCMD("iterator",			CmdIteratorTest,		0, NO_REQUIREMENT);
 	return true;
 }
 

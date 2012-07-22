@@ -25,9 +25,9 @@ template<class mgr, typename key, typename value>
 class ItemManager : private boost::noncopyable {
 public:
 	typedef boost::shared_ptr<value> MemberPtr;
+	typedef boost::unordered_map<key, MemberPtr> MemberMap;
 
 protected:
-	typedef boost::unordered_map<key, MemberPtr> MemberMap;
 	MemberMap _members;
 
 public:
@@ -63,6 +63,10 @@ public:
 	static mgr& GetInstance() {
 		static mgr inst;
 		return inst;
+	}
+
+	typename MemberMap::iterator GetIterator() {
+		return MemberMap::iterator(_members.begin());
 	}
 };
 
