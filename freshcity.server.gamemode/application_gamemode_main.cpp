@@ -306,10 +306,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 }
 
 STREAMER_CALLBACK void OnPlayerEnterDynamicArea(int playerid, int areaid) {
+	DynamicAreaManager::GetInstance()[areaid].OnPlayerEnter(ProfileMgr[playerid]);
 	return;
 }
 
 STREAMER_CALLBACK void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
+	DynamicAreaManager::GetInstance()[areaid].OnPlayerExit(ProfileMgr[playerid]);
 	return;
 }
 

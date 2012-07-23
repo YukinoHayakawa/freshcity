@@ -50,7 +50,8 @@ CMD(GetVehicle) {
 	int mid(-1);
 	sscanf(cmdline, "%d", &mid);
 	Coordinate3D playerpos = player.GetPos();
-	int vid = CreateVehicle(mid, (float)playerpos.x, (float)playerpos.y, (float)playerpos.z + 0.5f, 0, 1, 1, -1);
+	int vid = CreateVehicle(mid, (float)playerpos.x, (float)playerpos.y, (float)playerpos.z + 0.5f,
+		player.GetFacingAngle(), 1, 1, -1);
 	LinkVehicleToInterior(vid, player.GetInterior());
 	SetVehicleVirtualWorld(vid, player.GetVirtualWorld());
 	PutPlayerInVehicle(player.GetId(), vid, 0);

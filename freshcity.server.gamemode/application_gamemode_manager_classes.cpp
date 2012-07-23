@@ -116,3 +116,8 @@ void GangZoneManager::LoadAllFromDatabase() {
 		ItemManager::Add(_item->Get().GetId(), _item);
 	}
 }
+
+// DynamicAreaManager
+bool DynamicAreaManager::Add(MemberPtr& item) {
+	return ItemManager::Add(item->GetID(), item);
+}

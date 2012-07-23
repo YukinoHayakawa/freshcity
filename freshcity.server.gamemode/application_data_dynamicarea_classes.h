@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
-#define FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
+#ifndef FRESHCITY_APPLICATION_DATA_DYNAMICAREA_CLASSES
+#define FRESHCITY_APPLICATION_DATA_DYNAMICAREA_CLASSES
 
-enum DialogID {
-	DIALOG_TEAM_SELECT,
-	DIALOG_PROFILE_REGISTER,
-	DIALOG_PROFILE_LOGIN,
-	DIALOG_ROLE_SELECT
+#include "application_data_dynamicarea.h"
+
+// GangZoneArea
+class GangZoneArea : public DynamicRectangle {
+private:
+	int _zoneid;
+
+public:
+	GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy);
+	void OnPlayerEnter(Profile& player);
+	void OnPlayerExit(Profile& player);
 };
 
 #endif

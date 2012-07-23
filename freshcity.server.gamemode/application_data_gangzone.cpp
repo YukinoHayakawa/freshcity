@@ -20,19 +20,14 @@
 #include "basic_algorithm_gbkencoder.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
+#include "application_data_dynamicarea_classes.h"
 
-void GangZoneItem::_LoadData() {
+void GangZoneItem::_LoadOwnerData() {
 	if(!_rawdata.isEmpty()) {
 		try {
 			_name	= UTF8ToGBK(_rawdata["name"].String());
 			_owner	= UTF8ToGBK(_rawdata["owner"].String());
 			_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
-			_zone.reset(new GangZone(
-				(float)_rawdata["minx"].Number(),
-				(float)_rawdata["miny"].Number(),
-				(float)_rawdata["maxx"].Number(),
-				(float)_rawdata["maxy"].Number()));
-			_zone->ShowForAll(_color);
 		} catch(mongo::UserException) {
 			throw std::runtime_error("无效领地文档");
 		}
@@ -41,20 +36,31 @@ void GangZoneItem::_LoadData() {
 	}
 }
 
+void GangZoneItem::_InitArea() {
+	float minx((float)_rawdata["minx"].Number()), miny((float)_rawdata["miny"].Number()),
+		maxx((float)_rawdata["maxx"].Number()), maxy((float)_rawdata["maxy"].Number());
+	_zone.reset(new GangZone(minx, miny, maxx, maxy));
+	_zone->ShowForAll(_color);
+	DynamicAreaManager::GetInstance().Add(DynamicAreaManager::MemberPtr(
+		new GangZoneArea(_zone->GetId(), minx, miny, maxx, maxy)));
+}
+
 GangZoneItem::GangZoneItem(const std::string& name)
 	: SaveableItem(CONFIG_STRING("Database.gangzone"), BSON("name" << GBKToUTF8(name))) {
-		_LoadData();
+		_InitArea();
+		_LoadOwnerData();
 }
 
 GangZoneItem::GangZoneItem(const mongo::BSONObj& data)
 	: SaveableItem(CONFIG_STRING("Database.gangzone")) {
 		SetData(data);
-		_LoadData();
+		_InitArea();
+		_LoadOwnerData();
 }
 
 void GangZoneItem::SetName(const std::string& name) {
 	Update(BSON("$set" << BSON("name" << GBKToUTF8(name))), true);
-	_LoadData();
+	_LoadOwnerData();
 }
 
 std::string GangZoneItem::GetName() const {
@@ -63,7 +69,7 @@ std::string GangZoneItem::GetName() const {
 
 void GangZoneItem::SetOwner(const std::string& owner) {
 	Update(BSON("$set" << BSON("owner" << GBKToUTF8(owner))), true);
-	_LoadData();
+	_LoadOwnerData();
 }
 
 std::string GangZoneItem::GetOwner() const {

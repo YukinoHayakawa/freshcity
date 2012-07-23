@@ -27,7 +27,10 @@ protected:
 	std::string _name;
 	std::string _owner;
 	int _color;
-	void _LoadData();
+
+private:
+	void _LoadOwnerData();
+	void _InitArea();
 
 public:
 	GangZoneItem(const std::string& name);

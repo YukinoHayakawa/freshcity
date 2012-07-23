@@ -112,4 +112,12 @@ public:
 	void LoadAllFromDatabase();
 };
 
+// DynamicAreaManager
+#include "application_data_dynamicarea.h"
+
+class DynamicAreaManager : public ItemManager<DynamicAreaManager, int, DynamicArea> {
+public:
+	bool Add(MemberPtr& item);
+};
+
 #endif
