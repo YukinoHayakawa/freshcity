@@ -45,12 +45,6 @@
     <ClInclude Include=".\application_struct_coordinate.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include=".\application_gamemode_manager_profile.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_gamemode_manager_command.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include=".\application_gamemode_colordefinitions.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -63,13 +57,7 @@
     <ClInclude Include=".\application_data_team.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_gamemode_manager_team.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include=".\application_gamemode_manager_base.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_gamemode_manager_dialog.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="application_gamemode_dialogdefinitions.h">
@@ -79,9 +67,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_data_pickup.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_gamemode_manager_effectiveitem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="application_gamemode_effectiveitem.h">
@@ -102,13 +87,10 @@
     <ClInclude Include="application_data_object.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_gamemode_manager_object.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="application_data_gangzone.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_gamemode_manager_gangzone.h">
+    <ClInclude Include=".\application_gamemode_manager_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -152,9 +134,6 @@
     <ClCompile Include=".\application_gamemode_main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_gamemode_manager_command.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include=".\application_gamemode_commands.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -167,22 +146,10 @@
     <ClCompile Include="application_data_team.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_gamemode_manager_profile.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_gamemode_manager_team.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_gamemode_manager_dialog.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="application_gamemode_dialogs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_data_pickup.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_gamemode_manager_effectiveitem.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_algorithm_position.cpp">
@@ -203,7 +170,7 @@
     <ClCompile Include="application_data_gangzone.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_gamemode_manager_gangzone.cpp">
+    <ClCompile Include=".\application_gamemode_manager_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

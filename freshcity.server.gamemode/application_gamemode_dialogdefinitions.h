@@ -17,10 +17,6 @@
 #ifndef FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
 #define FRESHCITY_APPLICATION_GAMEMODE_DIALOGDEFINITIONS
 
-#include "application_gamemode_manager_base.h"
-#include "application_gamemode_manager_profile.h"
-#include <boost/function.hpp>
-
 enum {
 	DIALOG_TEAM_SELECT,
 	DIALOG_PROFILE_REGISTER,

@@ -18,7 +18,7 @@
 #include "application_data_gangzone.h"
 #include "application_config.h"
 #include "basic_algorithm_gbkencoder.h"
-#include "application_gamemode_manager_team.h"
+#include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
 
 void GangZoneItem::_LoadData() {

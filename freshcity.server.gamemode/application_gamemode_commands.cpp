@@ -15,15 +15,12 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_manager_command.h"
-#include "application_gamemode_manager_profile.h"
+#include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
 #include "application_data_waypoint.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
-#include "application_gamemode_manager_team.h"
 #include "application_dependency_streamer.h"
-#include "application_gamemode_manager_object.h"
 #include "application_data_object.h"
 #include "application_algorithm_position.h"
 

@@ -15,8 +15,7 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_manager_dialog.h"
-#include "application_gamemode_manager_team.h"
+#include "application_gamemode_manager_classes.h"
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_data_waypoint.h"
 #include "application_gamemode_colordefinitions.h"

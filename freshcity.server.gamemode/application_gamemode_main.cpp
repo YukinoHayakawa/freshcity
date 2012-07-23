@@ -20,24 +20,18 @@
 #include <sampgdk/a_vehicles.h>
 #include <sampgdk/plugin.h>
 #include "basic_debug_logging.h"
-#include "application_gamemode_manager_profile.h"
-#include "application_gamemode_manager_command.h"
+#include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
-#include "application_gamemode_manager_team.h"
-#include "application_gamemode_manager_dialog.h"
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
-#include "application_gamemode_manager_effectiveitem.h"
-#include "application_gamemode_manager_effectiveitem.h"
 #include "application_data_pickup_classes.h"
 #include "application_algorithm_position.h"
 #include "application_config.h"
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"
-#include "application_gamemode_manager_gangzone.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
