@@ -27,7 +27,6 @@ protected:
 	/* 对象原始数据 可由 SetData() 更改 */
 	mongo::BSONObj _rawdata;
 	mongo::OID _uniqueid;
-	bool _existsindatabase;
 
 public:
 	/* 用于通过ID获取的构造函数 */
@@ -44,8 +43,8 @@ public:
 	void Create(bool refetch);
 	/* 更新对象数据 可选是否重新获取 */
 	void Update(const mongo::BSONObj& modifier, bool refetch);
-	bool IsExistInDatabase() const;
 	mongo::OID GetUniqueID() const;
+	bool IsEmpty() const;
 };
 
 #endif

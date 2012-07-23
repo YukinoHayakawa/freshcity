@@ -28,13 +28,13 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 	if(iter == _members.end()) throw std::runtime_error("不存在的命令");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	if(!MATCHREQ(NO_REQUIREMENT)) {
-		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsExistInDatabase() == false)
+		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限已注册玩家使用");
-		if(MATCHREQ(NEED_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == false)
+		if(MATCHREQ(NEED_SIGNED_IN) && !ProfileManager::GetInstance()[playerid].IsSignedIn())
 			throw std::runtime_error("此命令仅限已登录玩家使用");
-		if(MATCHREQ(DONOT_REGISTERED) && ProfileManager::GetInstance()[playerid].IsExistInDatabase() == true)
+		if(MATCHREQ(DONOT_REGISTERED) && !ProfileManager::GetInstance()[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限未注册玩家使用");
-		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn() == true)
+		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn())
 			throw std::runtime_error("此命令仅限未登录玩家使用");
 	}
 	if(iter->second->reqlevel > player.GetAdminLevel())

@@ -22,7 +22,7 @@
 #include "basic_algorithm_gbkencoder.h"
 
 void Waypoint::_LoadData() {
-	if(_existsindatabase) {
+	if(!_rawdata.isEmpty()) {
 		try {
 			std::vector<mongo::BSONElement> coordinate = _rawdata["xy"].Array();
 			_waypoint = Coordinate5D((float)coordinate[0].Number(),

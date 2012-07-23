@@ -37,6 +37,7 @@
 #include "application_config.h"
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"
+#include "application_gamemode_manager_gangzone.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -72,10 +73,19 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	SetGameModeText("Freshcity");
 	for(int i = 1; i < 299; i++) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
-	TeamMgr.Add("Cops");
-	TeamMgr["Cops"].SetColor(COLOR_BLUE);
-	TeamMgr.Add("Criminals");
-	TeamMgr["Criminals"].SetColor(COLOR_GREEN);
+	try {
+		TeamMgr.Add("Cops");
+		TeamMgr["Cops"].SetColor(COLOR_BLUE);
+		TeamMgr.Add("Criminals");
+		TeamMgr["Criminals"].SetColor(COLOR_GREEN);
+		GangZoneManager::GetInstance().LoadAllFromDatabase();
+	} catch(std::runtime_error& e) {
+		LOG_ERROR(e.what());
+	} catch(mongo::UserException& e) {
+		LOG_ERROR(e.what());
+	} catch(...) {
+		LOG_ERROR("·¢ÉúÎ´Öª´íÎó");
+	}
 	LOG_INFO("Freshcity Gamemode ÒÑÔØÈë");
 	return true;
 }
@@ -88,7 +98,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			ProfileMgr.Add(playerid);
 			ProfileMgr[playerid].SetSignedIn(false);
 			Profile& player = ProfileMgr[playerid];
-			if(!player.IsExistInDatabase()) {
+			if(player.IsEmpty()) {
 				player.SetColor(RandomRGBAColor());
 				ShowPlayerDialog(playerid, DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "×¢²á", "ÇëÊäÈëÄúµÄÃÜÂë:", "×¢²á", "");
 			} else {
@@ -285,7 +295,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
 		ProfileMgr[playerid].GetRole().OnSpawn();
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
-			spawnpoint.PerformTeleport(playerid);
+		spawnpoint.PerformTeleport(playerid);
+		GangZoneManager::MemberMap::iterator gziter = GangZoneManager::GetInstance().GetIterator(), end;
+		for(;gziter != end; gziter++) gziter->second->ShowForAll();
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {

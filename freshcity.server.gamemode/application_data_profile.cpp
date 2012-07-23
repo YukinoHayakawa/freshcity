@@ -41,7 +41,7 @@ bool Profile::Role::MustHaveTarget() {
 }
 
 void Profile::_LoadMemberData() {
-	if(!_existsindatabase)
+	if(_rawdata.isEmpty())
 		throw std::runtime_error("玩家没有注册信息");
 	try {
 		_passwordhash	= _rawdata["auth"]["password"].String();
@@ -100,7 +100,7 @@ Profile::Profile(int playerid, const std::string& logname)
 	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
 	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false),
 	_killcounter(0), _lastkill(0) {
-		if(_existsindatabase)
+		if(!_rawdata.isEmpty())
 			_LoadMemberData();
 }
 
@@ -113,7 +113,7 @@ bool Profile::IsBannedForGame() {
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
-	if(IsExistInDatabase())
+	if(!_rawdata.isEmpty())
 		throw std::runtime_error("玩家注册资料已存在");
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"auth"		<< BSON(
