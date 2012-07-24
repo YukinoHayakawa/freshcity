@@ -77,12 +77,13 @@ void EffectiveItemManager::Exec(int playerid, int itemid) {
 }
 
 // TeamManager
-TeamManager::TeamManager() : _teamidcounter(0) {}
+TeamManager::TeamManager() : _idgen(255) {}
 
 bool TeamManager::Add(const std::string& teamname) {
-	MemberPtr ptr(new Team(teamname, ++_teamidcounter));
+	int id = _idgen.Get();
+	MemberPtr ptr(new Team(teamname, id));
 	if(ItemManager::Add(teamname, ptr)) {
-		_idtoname.insert(std::make_pair(_teamidcounter, teamname));
+		_idtoname.insert(std::make_pair(id, teamname));
 		return true;
 	} else return false;
 }
@@ -91,6 +92,7 @@ bool TeamManager::Remove(const std::string& teamname) {
 	int tid = ItemManager::Get(teamname).GetIngameID();
 	if(ItemManager::Remove(teamname)) {
 		_idtoname.erase(_idtoname.find(tid));
+		_idgen.Return(tid);
 		return true;
 	} return false;
 }

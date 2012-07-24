@@ -86,10 +86,11 @@ public:
 
 // TeamManager
 #include "application_data_team.h"
+#include "basic_algorithm_identifier.h"
 
 class TeamManager : public ItemManager<TeamManager, std::string, Team> {
 private:
-	int _teamidcounter;
+	IdentifierGenerator _idgen;
 	typedef boost::unordered_map<int, std::string> IDNameMap;
 	IDNameMap _idtoname;
 

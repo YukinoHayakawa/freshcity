@@ -147,6 +147,7 @@
     <ClInclude Include="application_gamemode_effectiveitem.h" />
     <ClInclude Include=".\application_algorithm_weaponidmap.h" />
     <ClInclude Include=".\application_gamemode_role_classes.h" />
+    <ClInclude Include="basic_algorithm_identifier.h" />
     <ClInclude Include="basic_algorithm_random.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />

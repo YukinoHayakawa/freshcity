@@ -287,8 +287,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
-		ProfileMgr[playerid].GetRole().OnSpawn();
-		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(ProfileMgr[playerid].GetTeamFixed()));
+		Profile& player = ProfileMgr[playerid];
+		player.GetRole().OnSpawn();
+		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(player.GetTeamFixed()));
 		spawnpoint.PerformTeleport(playerid);
 		GangZoneManager::MemberMap::iterator gziter = GangZoneManager::GetInstance().GetIterator(), end;
 		for(;gziter != end; gziter++) gziter->second->ShowForAll();
