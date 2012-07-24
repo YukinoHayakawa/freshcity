@@ -30,7 +30,7 @@ int WeaponModelToID[] = {
 };
 
 int ConvertWeaponIDToModelID(int weaponid) {
-	if(weaponid > (sizeof(WeaponModelToID) / sizeof(int) - 1))
+	if(weaponid > (sizeof(WeaponModelToID) / sizeof(int) - 1) || weaponid < 0)
 		return 0;
 	return WeaponModelToID[weaponid];
 }
