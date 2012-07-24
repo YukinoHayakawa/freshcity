@@ -24,6 +24,7 @@
 class GangZoneItem : public SaveableItem {
 protected:
 	boost::shared_ptr<GangZone> _zone;
+	int _areaid, _triggerid;
 	std::string _name;
 	std::string _owner;
 	int _color;
@@ -35,6 +36,7 @@ private:
 public:
 	GangZoneItem(const std::string& name);
 	GangZoneItem(const mongo::BSONObj& data);
+	~GangZoneItem();
 	void SetName(const std::string& name);
 	std::string GetName() const;
 	void SetOwner(const std::string& owner);

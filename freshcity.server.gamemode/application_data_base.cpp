@@ -39,6 +39,7 @@ void SaveableItem::InitData(const mongo::BSONObj& data) {
 	if(!_rawdata.isEmpty())
 		throw std::runtime_error("不能更改非空对象的内容");
 	_rawdata = data;
+	_uniqueid = _rawdata["_id"].OID();
 }
 
 void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {

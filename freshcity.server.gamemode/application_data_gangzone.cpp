@@ -21,6 +21,7 @@
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
 #include "application_data_dynamicarea_classes.h"
+#include "application_data_pickup_classes.h"
 
 void GangZoneItem::_LoadOwnerData() {
 	if(!_rawdata.isEmpty()) {
@@ -40,9 +41,16 @@ void GangZoneItem::_LoadOwnerData() {
 void GangZoneItem::_InitArea() {
 	float minx((float)_rawdata["minx"].Number()), miny((float)_rawdata["miny"].Number()),
 		maxx((float)_rawdata["maxx"].Number()), maxy((float)_rawdata["maxy"].Number());
+	mongo::BSONObj marker(_rawdata["trigger"].Obj());
+	float triggerx((float)marker["x"].Number()), triggery((float)marker["y"].Number()),
+		triggerz((float)marker["z"].Number());
 	_zone.reset(new GangZone(minx, miny, maxx, maxy));
-	DynamicAreaManager::GetInstance().Add(DynamicAreaManager::MemberPtr(
-		new GangZoneArea(_zone->GetId(), minx, miny, maxx, maxy)));
+	DynamicAreaManager::MemberPtr gzitem(new GangZoneArea(_zone->GetId(), minx, miny, maxx, maxy));
+	_areaid = gzitem->GetID();
+	DynamicAreaManager::GetInstance().Add(gzitem);
+	PickupManager::MemberPtr trigger(new TurfWarTrigger(_zone->GetId(), triggerx, triggery, triggerz));
+	_triggerid = trigger->GetID();
+	PickupManager::GetInstance().Add(trigger);
 }
 
 GangZoneItem::GangZoneItem(const std::string& name)
@@ -56,6 +64,11 @@ GangZoneItem::GangZoneItem(const mongo::BSONObj& data)
 		InitData(data);
 		_InitArea();
 		_LoadOwnerData();
+}
+
+GangZoneItem::~GangZoneItem() {
+	DynamicAreaManager::GetInstance().Remove(_areaid);
+	PickupManager::GetInstance().Remove(_triggerid);
 }
 
 void GangZoneItem::SetName(const std::string& name) {

@@ -50,4 +50,14 @@ public:
 	void Effect(Profile& player);
 };
 
+// TurfWarTrigger
+class TurfWarTrigger : public Pickup {
+private:
+	int _zoneid;
+
+public:
+	TurfWarTrigger(int zoneid, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
 #endif

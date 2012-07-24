@@ -17,6 +17,8 @@
 #include "application_database.h"
 #include "application_data_pickup_classes.h"
 #include "application_algorithm_weaponidmap.h"
+#include "application_gamemode_manager_classes.h"
+#include "application_gamemode_colordefinitions.h"
 
 // MedicalPickup
 MedicalPickup::MedicalPickup(float health, float x, float y, float z)
@@ -45,4 +47,17 @@ WeaponPickup::WeaponPickup(int weaponid, int ammo, float x, float y, float z)
 void WeaponPickup::Effect(Profile& player) {
 	player.GiveWeapon(_weaponid, _ammo);
 	player.PlaySound(5201);
+}
+
+// TurfWarTrigger
+TurfWarTrigger::TurfWarTrigger(int zoneid, float x, float y, float z)
+	: _zoneid(zoneid), Pickup(1314, 1, x, y, z, false) {}
+
+void TurfWarTrigger::Effect(Profile& player) {
+	std::string pteam(TeamManager::GetInstance().GetNameByID(player.GetTeam()));
+	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	if(pteam.compare(gz.GetOwner()) != 0) {
+		gz.SetOwner(pteam);
+		player.SendChatMessage(COLOR_SUCC, "ÄúÒÑ¶áÈ¡ " + gz.GetName());
+	}
 }
