@@ -28,6 +28,7 @@ void GangZoneItem::_LoadOwnerData() {
 			_name	= UTF8ToGBK(_rawdata["name"].String());
 			_owner	= UTF8ToGBK(_rawdata["owner"].String());
 			_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
+			_zone->ShowForAll(_color);
 		} catch(mongo::UserException) {
 			throw std::runtime_error("无效领地文档");
 		}
@@ -40,7 +41,6 @@ void GangZoneItem::_InitArea() {
 	float minx((float)_rawdata["minx"].Number()), miny((float)_rawdata["miny"].Number()),
 		maxx((float)_rawdata["maxx"].Number()), maxy((float)_rawdata["maxy"].Number());
 	_zone.reset(new GangZone(minx, miny, maxx, maxy));
-	_zone->ShowForAll(_color);
 	DynamicAreaManager::GetInstance().Add(DynamicAreaManager::MemberPtr(
 		new GangZoneArea(_zone->GetId(), minx, miny, maxx, maxy)));
 }

@@ -40,7 +40,7 @@ public:
 	void SetOwner(const std::string& owner);
 	std::string GetOwner() const;
 	GangZone& Get();
-	void ShowForAll() ;
+	void ShowForAll();
 };
 
 #endif
