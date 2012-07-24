@@ -38,9 +38,9 @@ public:
 	/* 重新获取对象内容 若 IsExistInDatabase() == false 则抛出异常 */
 	void Refetch();
 	/* 设置对象内容 仅在为空对象时才可用 */
-	void SetData(const mongo::BSONObj& data);
+	void InitData(const mongo::BSONObj& data);
 	/* 将对象内容保存至数据库 若已存在/内容为空/插入失败则抛出异常 可选是否重新获取 */
-	void Create(bool refetch);
+	void Create(const mongo::BSONObj& data, bool refetch);
 	/* 更新对象数据 可选是否重新获取 */
 	void Update(const mongo::BSONObj& modifier, bool refetch);
 	mongo::OID GetUniqueID() const;

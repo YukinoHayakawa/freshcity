@@ -85,6 +85,5 @@ void Waypoint::Create(const std::string& title, const mongo::OID& creator) {
 		"world"		<< _waypoint.virtualworld <<
 		"interior"	<< _waypoint.interior <<
 		"facing"	<< _waypoint.facingangle);
-	SaveableItem::SetData(submit);
-	SaveableItem::Create(false);
+	SaveableItem::Create(submit, false);
 }

@@ -130,8 +130,7 @@ void Profile::Create(const std::string& logname, const std::string& password) {
 					"ip"		<< GetIp()) <<
 				"banned"	<< false <<
 				"mgmtlevel"	<< 0)));
-	SaveableItem::SetData(submit);
-	SaveableItem::Create(true);
+	SaveableItem::Create(submit, true);
 	Sync();
 }
 

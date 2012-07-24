@@ -53,7 +53,7 @@ GangZoneItem::GangZoneItem(const std::string& name)
 
 GangZoneItem::GangZoneItem(const mongo::BSONObj& data)
 	: SaveableItem(CONFIG_STRING("Database.gangzone")) {
-		SetData(data);
+		InitData(data);
 		_InitArea();
 		_LoadOwnerData();
 }
