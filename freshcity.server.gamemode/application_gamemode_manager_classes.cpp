@@ -119,6 +119,15 @@ void GangZoneManager::LoadAllFromDatabase() {
 	}
 }
 
+int GangZoneManager::GetPointInWhichZone(Coordinate3D& point) {
+	MemberMap::const_iterator iter = _members.begin();
+	for(; iter != _members.end(); ++iter) {
+		if(DynamicAreaManager::GetInstance()[iter->second->GetAreaID()].IsPointIn(point.x, point.y, point.z))
+			return iter->first;
+	}
+	return -1;
+}
+
 // DynamicAreaManager
 bool DynamicAreaManager::Add(MemberPtr& item) {
 	return ItemManager::Add(item->GetID(), item);

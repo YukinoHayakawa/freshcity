@@ -108,6 +108,7 @@
     </ClCompile>
     <ClCompile Include=".\application_gamemode_manager_classes.cpp" />
     <ClCompile Include=".\application_gamemode_role_classes.cpp" />
+    <ClCompile Include="application_gamemode_timercallbacks.cpp" />
     <ClCompile Include="basic_algorithm_random.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -147,6 +148,7 @@
     <ClInclude Include="application_gamemode_effectiveitem.h" />
     <ClInclude Include=".\application_algorithm_weaponidmap.h" />
     <ClInclude Include=".\application_gamemode_role_classes.h" />
+    <ClInclude Include="application_gamemode_timercallbacks.h" />
     <ClInclude Include="basic_algorithm_identifier.h" />
     <ClInclude Include="basic_algorithm_random.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />

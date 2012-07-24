@@ -102,6 +102,9 @@
     <ClInclude Include="basic_algorithm_identifier.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_gamemode_timercallbacks.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">
@@ -183,6 +186,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_data_dynamicarea_classes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="application_gamemode_timercallbacks.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -19,6 +19,7 @@
 
 #include "application_database.h"
 #include "application_data_base.h"
+#include "application_data_profile.h"
 #include <sampgdk/a_samp.h>
 
 class GangZoneItem : public SaveableItem {
@@ -28,6 +29,13 @@ protected:
 	std::string _name;
 	std::string _owner;
 	int _color;
+
+	struct TurfWarInfo {
+		bool InWar;
+		std::string Attacker;
+		int MemberDeath, EnemyKill;
+		TurfWarInfo() : InWar(false), MemberDeath(0), EnemyKill(0) {}
+	} _warinfo;
 
 private:
 	void _LoadOwnerData();
@@ -42,7 +50,15 @@ public:
 	void SetOwner(const std::string& owner);
 	std::string GetOwner() const;
 	GangZone& Get();
-	void ShowForAll();
+	void Redraw();
+	bool StartWar(Profile& attacker);
+	void CountEnemyKill();
+	void CountMemberDeath();
+	/* true = Ï®»÷Õß¶áÈ¡µØÅÌ */
+	bool EndWar();
+	int GetAreaID();
+	bool InWar();
+	std::string GetAttacker();
 };
 
 #endif

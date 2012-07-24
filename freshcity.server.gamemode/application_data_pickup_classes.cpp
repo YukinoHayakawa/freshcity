@@ -54,10 +54,13 @@ TurfWarTrigger::TurfWarTrigger(int zoneid, float x, float y, float z)
 	: _zoneid(zoneid), Pickup(1314, 1, x, y, z, false) {}
 
 void TurfWarTrigger::Effect(Profile& player) {
-	std::string pteam(TeamManager::GetInstance().GetNameByID(player.GetTeam()));
+	std::string pteamname(TeamManager::GetInstance().GetNameByID(player.GetTeamFixed()));
 	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
-	if(pteam.compare(gz.GetOwner()) != 0) {
-		gz.SetOwner(pteam);
-		player.SendChatMessage(COLOR_SUCC, "您已夺取 " + gz.GetName());
+	if(pteamname.compare(gz.GetOwner()) != 0) {
+		Team& team(TeamManager::GetInstance()[gz.GetOwner()]);
+		if(!team.HasOnlineMember())
+			player.SendChatMessage(COLOR_ERROR, "对方没有玩家在线, 不能发动帮派战争");
+		else
+			gz.StartWar(player);
 	}
 }

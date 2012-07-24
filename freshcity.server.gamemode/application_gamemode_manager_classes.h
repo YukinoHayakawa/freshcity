@@ -111,6 +111,7 @@ class GangZoneManager : public ItemManager<GangZoneManager, int, GangZoneItem> {
 public:
 	bool Add(MemberPtr& item);
 	void LoadAllFromDatabase();
+	int GetPointInWhichZone(Coordinate3D& point);
 };
 
 // DynamicAreaManager

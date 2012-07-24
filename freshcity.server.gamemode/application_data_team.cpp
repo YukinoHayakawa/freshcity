@@ -85,3 +85,7 @@ void Team::IncreaseScore(int amount) {
 int Team::GetIngameID() {
 	return _ingameteamid;
 }
+
+bool Team::HasOnlineMember() {
+	return !_onlineplayers.empty();
+}

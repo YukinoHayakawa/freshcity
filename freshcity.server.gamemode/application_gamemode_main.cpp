@@ -270,6 +270,21 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			SendClientMessageToAll(COLOR_POWDERBLUE, std::string("玩家 " + killer.GetName() + " 连续杀敌 "
 				+ boost::lexical_cast<std::string>(kills) + " 人").c_str());
 		}
+
+		// TurfWar Counter
+		if(IsPlayerInAnyDynamicArea(playerid)) {
+			GangZoneManager& GZMgr = GangZoneManager::GetInstance();
+			int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
+			GangZoneItem& gz = GZMgr[zoneid];
+			if(zoneid != -1) {
+				if(TeamMgr.GetNameByID(player.GetTeamFixed()).compare(gz.GetName()) == 0 &&
+					TeamMgr.GetNameByID(ProfileMgr[killerid].GetTeamFixed()).compare(gz.GetAttacker()) == 0)
+					gz.CountMemberDeath();
+				if(TeamMgr.GetNameByID(player.GetTeamFixed()).compare(gz.GetAttacker()) == 0 &&
+					TeamMgr.GetNameByID(ProfileMgr[killerid].GetTeamFixed()).compare(gz.GetName()) == 0)
+					gz.CountEnemyKill();
+			}
+		}
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 		return true;
@@ -292,7 +307,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(player.GetTeamFixed()));
 		spawnpoint.PerformTeleport(playerid);
 		GangZoneManager::MemberMap::iterator gziter = GangZoneManager::GetInstance().GetIterator(), end;
-		for(;gziter != end; gziter++) gziter->second->ShowForAll();
+		for(;gziter != end; gziter++) gziter->second->Redraw();
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {

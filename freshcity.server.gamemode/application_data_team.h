@@ -47,6 +47,7 @@ public:
 	int GetScore();
 	void IncreaseScore(int amount);
 	int GetIngameID();
+	bool HasOnlineMember();
 };
 
 #endif
