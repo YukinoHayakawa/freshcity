@@ -19,14 +19,14 @@
 
 #include <stack>
 
-class IdentifierGenerator {
+class IdentifierAllocator {
 protected:
 	int _max;
 	int _count;
 	std::stack<int> _returned;
 
 public:
-	IdentifierGenerator(int max = std::numeric_limits<int>::max())
+	IdentifierAllocator(int max = std::numeric_limits<int>::max())
 		: _max(max), _count(0) {}
 
 	int Get() {

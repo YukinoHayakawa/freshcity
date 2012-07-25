@@ -18,7 +18,19 @@
 #include "application_gamemode_timercallbacks.h"
 #include "application_gamemode_manager_classes.h"
 
-TIMER_CALLBACK(EndTurfWar) {
+int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat) {
+	HANDLE timerid = 0;
+	repeat ?
+		CreateTimerQueueTimer(&timerid, 0, (WAITORTIMERCALLBACK)callback, param, period, period, 0) :
+		CreateTimerQueueTimer(&timerid, 0, (WAITORTIMERCALLBACK)callback, param, period, 0, 0);
+	return (int)timerid;
+}
+
+void DestroyTimer(int timerid) {
+	DeleteTimerQueueTimer(0, (HANDLE)timerid, 0);
+}
+
+TIMERCALLBACK(EndTurfWar) {
 	GangZoneItem& gz(*(GangZoneItem*)param);
 	gz.EndWar();
 }

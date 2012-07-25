@@ -90,7 +90,7 @@ public:
 
 class TeamManager : public ItemManager<TeamManager, std::string, Team> {
 private:
-	IdentifierGenerator _idgen;
+	IdentifierAllocator _idgen;
 	typedef boost::unordered_map<int, std::string> IDNameMap;
 	IDNameMap _idtoname;
 

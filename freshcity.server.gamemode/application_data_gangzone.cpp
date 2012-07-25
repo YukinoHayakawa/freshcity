@@ -102,12 +102,13 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 	if(_warinfo.InWar) return false;
 	std::string tname = TeamManager::GetInstance().GetNameByID(attacker.GetTeamFixed());
 	if(tname.compare(_owner) == 0) return false;
-	Redraw();
 	SendClientMessageToAll(COLOR_WARN, std::string(attacker.GetName() + " 带领 " + tname + " 在 " +
 		_name + " 发动了帮派战争").c_str());
 	_warinfo.Attacker = tname;
-	SetTimer(180000, false, TimerCallback_EndTurfWar, this);
-	return _warinfo.InWar = true;
+	CreateTimer(TimerCallback_EndTurfWar, this, 180000, false);
+	_warinfo.InWar = true;
+	Redraw();
+	return true;
 }
 
 void GangZoneItem::CountEnemyKill() {
@@ -127,17 +128,21 @@ bool GangZoneItem::EndWar() {
 	if(_warinfo.InWar) {
 		if(_warinfo.MemberDeath == _warinfo.EnemyKill) {
 			SendClientMessageToAll(COLOR_WARN, "平局, 地盘夺取失败");
-		} else if(_warinfo.EnemyKill > _warinfo.MemberDeath) {
-			SendClientMessageToAll(COLOR_ERROR, "地盘夺取失败");
 		} else {
-			SendClientMessageToAll(COLOR_SUCC, "地盘夺取成功");
-			SetOwner(_warinfo.Attacker);
-			ret = true;
+			if(_warinfo.EnemyKill > _warinfo.MemberDeath) {
+				SendClientMessageToAll(COLOR_ERROR, "地盘夺取失败");
+			} else {
+				SendClientMessageToAll(COLOR_SUCC, "地盘夺取成功");
+				SetOwner(_warinfo.Attacker);
+				ret = true;
+			}
 		}
+		_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
+		_warinfo.Attacker.clear();
+		_warinfo.InWar = false;
+		Redraw();
 	}
-	_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
-	_warinfo.Attacker.clear();
-	return false;
+	return ret;
 }
 
 int GangZoneItem::GetAreaID() {

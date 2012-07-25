@@ -17,10 +17,13 @@
 #ifndef FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
 #define FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
 
-#include <sampgdk/a_samp.h>
+#include <WinBase.h>
 
-#define TIMER_CALLBACK(x) void SAMPGDK_CALL TimerCallback_##x(int timerid, void *param)
+typedef void (CALLBACK*TimerCallbackFunc)(void*, unsigned char);
+#define TIMERCALLBACK(x) void CALLBACK TimerCallback_##x(void* param, unsigned char TimerOrWaitFired)
+int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat);
+void DestroyTimer(int timerid);
 
-TIMER_CALLBACK(EndTurfWar);
+TIMERCALLBACK(EndTurfWar);
 
 #endif
