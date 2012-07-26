@@ -227,7 +227,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 		int dropweapon[2];
 		Coordinate3D deadpos = player.GetPos();
 		boost::mt19937 engine;
-		boost::uniform_real<float> range(-1.5, 1.5);
+		float radius = CONFIG_FLOAT("EffectiveItem.weapondropradius");
+		boost::uniform_real<float> range(radius * -1, radius);
 		boost::variate_generator<boost::mt19937&, boost::uniform_real<float>> genoffset(engine, range);
 		for(int i = 0; i < 13; i++) {
 			GetPlayerWeaponData(playerid, i, &dropweapon[0], &dropweapon[1]);
@@ -241,7 +242,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			Profile& killer = ProfileMgr[killerid];
 			killer.GiveScore(1);
 			killer.GiveMoney(1000);
-			Coordinate3D pos = GenerateDirectionalPoint(killer, 3.0f);
+			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
 			PickupManager::MemberPtr ptr;
 			int kills = killer.KillCounter();
 			std::string killmsg;
@@ -251,7 +252,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 			case 2:
 				killmsg = " double kill";
-				ptr.reset(new MedicalPickup(30.0f, pos.x, pos.y, pos.z));
+				ptr.reset(new MedicalPickup(CONFIG_FLOAT("EffectiveItem.medicalpickup"), pos.x, pos.y, pos.z));
 				break;
 
 			case 3:
@@ -261,7 +262,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 			case 4:
 				killmsg = " quadra kill";
-				ptr.reset(new WealthPickup(2500, 5, pos.x, pos.y, pos.z));
+				ptr.reset(new WealthPickup(CONFIG_INT("EffectiveItem.wealthpickupmoney"),
+					CONFIG_INT("EffectiveItem.wealthpickupscore"), pos.x, pos.y, pos.z));
 				break;
 
 			case 5:

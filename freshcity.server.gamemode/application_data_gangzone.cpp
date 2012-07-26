@@ -105,7 +105,7 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 	if(tname.compare(_owner) == 0) return false;
 	SystemMessageQueue::GetInstance().PushMessage(tname + " has started a turfwar");
 	_warinfo.Attacker = tname;
-	CreateTimer(TimerCallback_EndTurfWar, this, 180000, false);
+	CreateTimer(TimerCallback_EndTurfWar, this, CONFIG_INT("Gaming.turfwarlast") * 60000, false);
 	_warinfo.InWar = true;
 	Redraw();
 	return true;
