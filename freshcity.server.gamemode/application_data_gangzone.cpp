@@ -103,7 +103,7 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 	if(_warinfo.InWar) return false;
 	std::string tname = TeamManager::GetInstance().GetNameByID(attacker.GetTeamFixed());
 	if(tname.compare(_owner) == 0) return false;
-	SystemMessageQueue::GetInstance().PushMessage(attacker.GetName() + " has started a turfwar");
+	SystemMessageQueue::GetInstance().PushMessage(tname + " has started a turfwar");
 	_warinfo.Attacker = tname;
 	CreateTimer(TimerCallback_EndTurfWar, this, 180000, false);
 	_warinfo.InWar = true;
@@ -123,7 +123,7 @@ bool GangZoneItem::EndWar() {
 	bool ret = false;
 	if(_warinfo.InWar) {
 		if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
-			SystemMessageQueue::GetInstance().PushMessage(GetName() + " has won the turfwar");
+			SystemMessageQueue::GetInstance().PushMessage(GetOwner() + " has won the turfwar");
 		} else {
 			SystemMessageQueue::GetInstance().PushMessage(_warinfo.Attacker + " has won the turfwar");
 			SetOwner(_warinfo.Attacker);

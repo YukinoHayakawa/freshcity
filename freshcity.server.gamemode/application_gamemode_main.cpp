@@ -303,7 +303,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
-	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "The S.F.P.D\nFamily Leon", "确定", "");
+	std::string teams;
+	for(TeamManager::MemberMap::iterator teamiter(TeamMgr.GetIterator()), end; teamiter != end; ++teamiter)
+		teams.append(teamiter->second->GetName()).append("\n");
+	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  teams.c_str(), "确定", "");
 	return false;
 }
 
