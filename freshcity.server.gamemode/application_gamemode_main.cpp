@@ -304,8 +304,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 	std::string teams;
-	for(TeamManager::MemberMap::iterator teamiter(TeamMgr.GetIterator()), end; teamiter != end; ++teamiter)
-		teams.append(teamiter->second->GetName()).append("\n");
+	MANAGER_FOREACH(TeamManager) teams.append(iter->second->GetName()).append("\n");
 	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  teams.c_str(), "确定", "");
 	return false;
 }
@@ -316,8 +315,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 		player.GetRole().OnSpawn();
 		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(player.GetTeamFixed()));
 		spawnpoint.PerformTeleport(playerid);
-		GangZoneManager::MemberMap::iterator gziter = GangZoneManager::GetInstance().GetIterator(), end;
-		for(;gziter != end; gziter++) gziter->second->Redraw();
+		MANAGER_FOREACH(GangZoneManager) iter->second->Redraw();
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {

@@ -106,10 +106,7 @@ CMD(CreateDynObject) {
 }
 
 CMD(IteratorTest) {
-	TeamManager::MemberMap::iterator iter = TeamManager::GetInstance().GetIterator(), end;
-	for(;iter != end; iter++) {
-		player.SendChatMessage(COLOR_YELLOW, iter->first);
-	}
+	MANAGER_FOREACH(TeamManager) player.SendChatMessage(COLOR_YELLOW, iter->first);
 }
 
 CMD(MsgQueueTest) {

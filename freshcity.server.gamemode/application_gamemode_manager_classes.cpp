@@ -18,6 +18,10 @@
 #include "application_gamemode_manager_classes.h"
 #include "application_config.h"
 
+#define FETCH_ALL_FROM_DATABASE(col) std::auto_ptr<mongo::DBClientCursor> _cursor = \
+	GetDB().query(CONFIG_STRING(col), mongo::BSONObj());\
+	while(_cursor->more())
+
 // ProfileManager
 bool ProfileManager::Add(int playerid) {
 	return ItemManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
@@ -110,10 +114,8 @@ bool GangZoneManager::Add(MemberPtr& item) {
 }
 
 void GangZoneManager::LoadAllFromDatabase() {
-	std::auto_ptr<mongo::DBClientCursor> _cursor
-		= GetDB().query(CONFIG_STRING("Database.gangzone"), mongo::BSONObj());
 	_members.clear();
-	while(_cursor->more()) {
+	FETCH_ALL_FROM_DATABASE("Database.gangzone") {
 		MemberPtr _item(new GangZoneItem(_cursor->next()));
 		ItemManager::Add(_item->Get().GetId(), _item);
 	}
