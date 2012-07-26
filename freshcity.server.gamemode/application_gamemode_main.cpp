@@ -32,6 +32,7 @@
 #include "application_config.h"
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"
+#include "application_gamemode_sysmsgqueue.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -68,10 +69,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	for(int i = 1; i < 299; i++) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	try {
-		TeamMgr.Add("Cops");
-		TeamMgr["Cops"].SetColor(COLOR_BLUE);
-		TeamMgr.Add("Criminals");
-		TeamMgr["Criminals"].SetColor(COLOR_GREEN);
+		TeamMgr.Add("The S.F.P.D.");
+		TeamMgr["The S.F.P.D."].SetColor(COLOR_STEELBLUE);
+		TeamMgr.Add("Family Leon");
+		TeamMgr["Family Leon"].SetColor(COLOR_GREEN);
 		GangZoneManager::GetInstance().LoadAllFromDatabase();
 	} catch(std::runtime_error& e) {
 		LOG_ERROR(e.what());
@@ -215,17 +216,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 	return true;
 }
 
-PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float x, float y, float z) {
-	SetPlayerPos(playerid, x, y, z);
-	return true;
-}
-
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason) {
 	GivePlayerMoney(playerid, -500);
 	SendDeathMessage(killerid, playerid, reason);
 	try {
 		Profile& player = ProfileMgr[playerid];
 		player.GetRole().OnDeath();
+
 		// 掉落武器
 		int dropweapon[2];
 		Coordinate3D deadpos = player.GetPos();
@@ -238,6 +235,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 				PickupManager::GetInstance().Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],
 				deadpos.x + genoffset(), deadpos.y + genoffset(), deadpos.z)));
 		}
+
 		// 连杀奖励
 		if(killerid != INVALID_PLAYER_ID) {
 			Profile& killer = ProfileMgr[killerid];
@@ -246,35 +244,42 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			Coordinate3D pos = GenerateDirectionalPoint(killer, 3.0f);
 			PickupManager::MemberPtr ptr;
 			int kills = killer.KillCounter();
+			std::string killmsg;
 			switch(kills) {
 			case 1:
 				break;
 
 			case 2:
+				killmsg = " double kill";
 				ptr.reset(new MedicalPickup(30.0f, pos.x, pos.y, pos.z));
 				break;
 
 			case 3:
+				killmsg = " triple kill";
 				ptr.reset(new WeaponPickup(16, 3, pos.x, pos.y, pos.z));
 				break;
 
 			case 4:
+				killmsg = " quadra kill";
 				ptr.reset(new WealthPickup(2500, 5, pos.x, pos.y, pos.z));
 				break;
 
+			case 5:
+				killmsg = " penta kill";
+				ptr.reset(new WeaponPickup(38, 15, pos.x, pos.y, pos.z));
+				break;
+
 			default:
+				killmsg = " kills " + boost::lexical_cast<std::string>(kills) + " in a row";
 				ptr.reset(new WeaponPickup(38, 15, pos.x, pos.y, pos.z));
 				break;
 			}
-			if(kills > 1) {
-				PickupManager::GetInstance().Add(ptr);
-				SendClientMessageToAll(COLOR_POWDERBLUE, std::string("玩家 " + killer.GetName() + " 连续杀敌 "
-					+ boost::lexical_cast<std::string>(kills) + " 人").c_str());
-			}
+			if(kills > 1)
+				SystemMessageQueue::GetInstance().PushMessage(killer.GetName() + killmsg);
 		}
 
 		// TurfWar Counter
-		if(IsPlayerInAnyDynamicArea(playerid)) {
+		if(IsPlayerInAnyDynamicArea(playerid) && killerid != INVALID_PLAYER_ID) {
 			GangZoneManager& GZMgr = GangZoneManager::GetInstance();
 			int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
 			if(zoneid != -1) {
@@ -298,7 +303,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
-	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "Cops\nCriminals", "确定", "");
+	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  "The S.F.P.D\nFamily Leon", "确定", "");
 	return false;
 }
 

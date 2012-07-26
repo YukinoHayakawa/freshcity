@@ -307,19 +307,16 @@ private:
 
 class TextDraw {
 public:
-	TextDraw(int text) : id_(text) {}
-	virtual ~TextDraw() {}
+	TextDraw(float x, float y, const char *text)
+		: id_(::TextDrawCreate(x, y, text)) {}
+
+	TextDraw(float x, float y, const std::string &text)
+		: id_(::TextDrawCreate(x, y, text.c_str())) {}
+
+	~TextDraw() { ::TextDrawDestroy(id_); }
 
 	int GetId() const { return id_; }
-	operator int() const { return id_; }
 
-	static TextDraw Create(float x, float y, const char *text) 
-		{ return ::TextDrawCreate(x, y, text); }
-	static TextDraw Create(float x, float y, const std::string &text) 
-		{ return ::TextDrawCreate(x, y, text.c_str()); }
-
-	bool Destroy() const 
-		{ return ::TextDrawDestroy(id_); }
 	bool SetLetterSize(float x, float y) const
 		{ return ::TextDrawLetterSize(id_, x, y); }
 	bool SetTextSize(float x, float y) const 

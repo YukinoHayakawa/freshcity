@@ -23,6 +23,7 @@
 #include "application_data_dynamicarea_classes.h"
 #include "application_data_pickup_classes.h"
 #include "application_gamemode_timercallbacks.h"
+#include "application_gamemode_sysmsgqueue.h"
 
 void GangZoneItem::_LoadOwnerData() {
 	if(!_rawdata.isEmpty()) {
@@ -102,8 +103,7 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 	if(_warinfo.InWar) return false;
 	std::string tname = TeamManager::GetInstance().GetNameByID(attacker.GetTeamFixed());
 	if(tname.compare(_owner) == 0) return false;
-	SendClientMessageToAll(COLOR_WARN, std::string(attacker.GetName() + " 带领 " + tname + " 在 " +
-		_name + " 发动了帮派战争").c_str());
+	SystemMessageQueue::GetInstance().PushMessage(attacker.GetName() + " has started a turfwar");
 	_warinfo.Attacker = tname;
 	CreateTimer(TimerCallback_EndTurfWar, this, 180000, false);
 	_warinfo.InWar = true;
@@ -113,29 +113,21 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 
 void GangZoneItem::CountEnemyKill() {
 	if(_warinfo.InWar) ++_warinfo.EnemyKill;
-	SendClientMessageToAll(COLOR_INFO, std::string("EnemyKill = " +
-		boost::lexical_cast<std::string>(_warinfo.EnemyKill)).c_str());
 }
 
 void GangZoneItem::CountMemberDeath() {
 	if(_warinfo.InWar) ++_warinfo.MemberDeath;
-	SendClientMessageToAll(COLOR_INFO, std::string("MemberDeath = " +
-		boost::lexical_cast<std::string>(_warinfo.MemberDeath)).c_str());
 }
 
 bool GangZoneItem::EndWar() {
 	bool ret = false;
 	if(_warinfo.InWar) {
-		if(_warinfo.MemberDeath == _warinfo.EnemyKill) {
-			SendClientMessageToAll(COLOR_WARN, "平局, 地盘夺取失败");
+		if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
+			SystemMessageQueue::GetInstance().PushMessage(GetName() + " has won the turfwar");
 		} else {
-			if(_warinfo.EnemyKill > _warinfo.MemberDeath) {
-				SendClientMessageToAll(COLOR_ERROR, "地盘夺取失败");
-			} else {
-				SendClientMessageToAll(COLOR_SUCC, "地盘夺取成功");
-				SetOwner(_warinfo.Attacker);
-				ret = true;
-			}
+			SystemMessageQueue::GetInstance().PushMessage(_warinfo.Attacker + " has won the turfwar");
+			SetOwner(_warinfo.Attacker);
+			ret = true;
 		}
 		_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
 		_warinfo.Attacker.clear();

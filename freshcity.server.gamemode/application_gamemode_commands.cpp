@@ -23,6 +23,7 @@
 #include "application_dependency_streamer.h"
 #include "application_data_object.h"
 #include "application_algorithm_position.h"
+#include "application_gamemode_sysmsgqueue.h"
 
 #define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
 
@@ -111,6 +112,10 @@ CMD(IteratorTest) {
 	}
 }
 
+CMD(MsgQueueTest) {
+	SystemMessageQueue::GetInstance().PushMessage(cmdline);
+}
+
 #define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
 
 bool RegisterPlayerCmds() {
@@ -127,6 +132,7 @@ bool RegisterPlayerCmds() {
 	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
 	REGCMD("object",			CmdCreateDynObject,		0, NO_REQUIREMENT);
 	REGCMD("iterator",			CmdIteratorTest,		0, NO_REQUIREMENT);
+	REGCMD("msg",				CmdMsgQueueTest,		0, NO_REQUIREMENT);
 	return true;
 }
 
