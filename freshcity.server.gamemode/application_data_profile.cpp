@@ -58,31 +58,27 @@ void Profile::_LoadMemberData() {
 void Profile::ApplyDataToPlayer() {
 	if(_gamearchive.isEmpty()) _LoadMemberData();
 	try {
-		/*
-		mongo::BSONObj geo			= _gamearchive["geo"].Obj();
-		*/
+		//mongo::BSONObj geo			= _gamearchive["geo"].Obj();
 		mongo::BSONObj attribute	= _gamearchive["attribute"].Obj();
-		/*
-		std::vector<mongo::BSONElement> coordinate
-									= geo["coordinate"].Array();
-		std::vector<mongo::BSONElement> weapons
-									= attribute["weapon"].Array();
+		//std::vector<mongo::BSONElement> coordinate
+		//							= geo["coordinate"].Array();
+		//std::vector<mongo::BSONElement> weapons
+		//							= attribute["weapon"].Array();
 
-		Spawn();
-		SetHealth((float)attribute["health"].Number());
-		SetArmour((float)attribute["armour"].Number());
-		for(std::vector<mongo::BSONElement>::iterator iter = weapons.begin(); iter != weapons.end(); iter++) {
-			mongo::BSONObj single = iter->Obj();
-			GiveWeapon((int)single["id"].Number(), (int)single["ammo"].Number());
-		}
-		SetSkin((int)attribute["skin"].Number());
+		//Spawn();
+		//SetHealth((float)attribute["health"].Number());
+		//SetArmour((float)attribute["armour"].Number());
+		//for(std::vector<mongo::BSONElement>::iterator iter = weapons.begin(); iter != weapons.end(); iter++) {
+		//	mongo::BSONObj single = iter->Obj();
+		//	GiveWeapon((int)single["id"].Number(), (int)single["ammo"].Number());
+		//}
+		//SetSkin((int)attribute["skin"].Number());
 		SetColor((int)attribute["color"].Number());
 		SetFightingStyle((int)attribute["fightingstyle"].Number());
-		SetPos((float)coordinate[0].Number(), (float)coordinate[1].Number(), (float)geo["height"].Number());
-		SetFacingAngle((float)geo["direction"].Number());
-		SetInterior((int)geo["interior"].Number());
-		SetVirtualWorld((int)geo["world"].Number());
-		*/
+		//SetPos((float)coordinate[0].Number(), (float)coordinate[1].Number(), (float)geo["height"].Number());
+		//SetFacingAngle((float)geo["direction"].Number());
+		//SetInterior((int)geo["interior"].Number());
+		//SetVirtualWorld((int)geo["world"].Number());
 		GiveMoney((int)attribute["money"].Number());
 		GiveScore((int)attribute["score"].Number());
 	} catch(mongo::UserException) {

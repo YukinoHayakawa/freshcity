@@ -31,7 +31,6 @@ void Team::Join(Profile& player) {
 	if(player.GetTeamFixed() != NO_TEAM)
 		throw std::runtime_error("您已加入过别的团队了 请执行 /teamquit 退出先前加入的团队");
 	player.SetTeamFixed(_ingameteamid);
-	player.SetColor(_color);
 	player.SendChatMessage(COLOR_SUCC, "您已加入团队 " + _name);
 	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetUniqueID()));
 }
@@ -41,7 +40,6 @@ void Team::Quit(Profile& player) {
 	if(iter == _onlineplayers.end())
 		throw std::runtime_error("您并未加入此团队");
 	player.SetTeamFixed(NO_TEAM);
-	player.SetColor(COLOR_WHITE);
 	player.SendChatMessage(COLOR_SUCC, "您已退出团队 " + _name);
 	_onlineplayers.erase(iter);
 }

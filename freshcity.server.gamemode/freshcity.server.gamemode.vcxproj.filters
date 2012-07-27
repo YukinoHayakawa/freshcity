@@ -111,6 +111,9 @@
     <ClInclude Include="basic_debug_timer.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="application_algorithm_math.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\basic_debug_minidump.cpp">

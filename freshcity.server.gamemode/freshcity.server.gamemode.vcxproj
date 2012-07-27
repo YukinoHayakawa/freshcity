@@ -131,6 +131,7 @@
     <ClInclude Include=".\basic_algorithm_sha256.h" />
     <ClInclude Include=".\application_algorithm_auth.h" />
     <ClInclude Include=".\application_config.h" />
+    <ClInclude Include="application_algorithm_math.h" />
     <ClInclude Include="application_algorithm_position.h" />
     <ClInclude Include="application_database.h" />
     <ClInclude Include="application_data_base.h" />

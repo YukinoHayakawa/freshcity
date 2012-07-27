@@ -34,6 +34,7 @@
 #include "application_gamemode_role_classes.h"
 #include "application_gamemode_sysmsgqueue.h"
 #include "basic_debug_timer.h"
+#include "application_algorithm_math.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -327,7 +328,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	SetPlayerChatBubble(playerid, text, GetPlayerColor(playerid), 100.0f, 5000);
-	return true;
+	Profile& p(ProfileMgr[playerid]);
+	Team& t(TeamMgr[TeamMgr.GetNameByID(p.GetTeamFixed())]);
+	std::stringstream chat;
+	chat << ColorToEmbeddingString(t.GetColor()) << "[" << t.GetName() << "]" <<
+		ColorToEmbeddingString(p.GetColor()) << p.GetName() << "{ffffff}: " << text;
+	SendClientMessageToAll(COLOR_WHITE, chat.str().c_str());
+	return false;
 }
 
 STREAMER_CALLBACK void OnPlayerEnterDynamicArea(int playerid, int areaid) {

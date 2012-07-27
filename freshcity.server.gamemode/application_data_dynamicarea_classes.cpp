@@ -18,19 +18,22 @@
 #include "application_data_dynamicarea_classes.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
+#include "application_algorithm_math.h"
 
 // GangZoneArea
 GangZoneArea::GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy)
 	: DynamicRectangle(minx, miny, maxx, maxy), _zoneid(zoneid) {}
 
 void GangZoneArea::OnPlayerEnter(Profile& player) {
-	GangZoneItem& gz = GangZoneManager::GetInstance()[_zoneid];
-	player.SendChatMessage(COLOR_INFO, "你进入了 " + gz.GetName());
+	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	player.SendChatMessage(COLOR_INFO, "进入 " + ColorToEmbeddingString(
+		TeamManager::GetInstance()[gz.GetOwner()].GetColor()) + gz.GetName());
 	if(gz.InWar() && TeamManager::GetInstance().GetNameByID(player.GetTeamFixed()).compare(gz.GetOwner()) == 0)
 		gz.MemberArrived();
 }
 
 void GangZoneArea::OnPlayerExit(Profile& player) {
-	player.SendChatMessage(COLOR_INFO, "你离开了 "
-		+ GangZoneManager::GetInstance()[_zoneid].GetName());
+	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	player.SendChatMessage(COLOR_INFO, "离开 " + ColorToEmbeddingString(
+		TeamManager::GetInstance()[gz.GetOwner()].GetColor()) + gz.GetName());
 }
