@@ -33,6 +33,7 @@
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"
 #include "application_gamemode_sysmsgqueue.h"
+#include "basic_debug_timer.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
@@ -65,6 +66,7 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
+	RUN_TIME_COUNTER;
 	SetGameModeText("ShadowBlue");
 	for(int i = 1; i < 299; i++) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
@@ -86,6 +88,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
+	RUN_TIME_COUNTER;
 	try {
 		Streamer_OnPlayerConnect(playerid);
 		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
@@ -123,6 +126,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
+	RUN_TIME_COUNTER;
 	try {
 		Streamer_OnPlayerDisconnect(playerid, reason);
 		Profile& player =  ProfileMgr[playerid];
@@ -149,20 +153,18 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestClass(int playerid, int classid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmdtext) {
+	RUN_TIME_COUNTER;
 	LOG_DEBUG(cmdtext);
 	char cmdname[128] = {0}, cmdline[128] = {0};
 	sscanf(cmdtext, "%s%*[ ]%[^\0]", cmdname, cmdline);
 	try {
 		CommandManager::GetInstance().Exec(playerid, boost::to_lower_copy(std::string(&cmdname[1])), cmdline);
-		return true;
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
-		return true;
 	} catch(...) {
 		SendClientMessage(playerid, COLOR_ERROR, "处理命令时发生未知错误, 请联系服务器管理员");
-		return true;
 	}
-	return false;
+	return true;
 }
 
 #define KEY_HOLDING(x) ((newkeys & (x)) == (x))
@@ -177,6 +179,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 			AddVehicleComponent(GetPlayerVehicleID(playerid), 1010);
 		// 角色技能
 		if(KEY_PRESSED(KEY_NO)) {
+			RUN_TIME_COUNTER;
 			int target = GetPlayerTargetPlayer(playerid);
 			if(player.GetRole().CanPerformSkill()) {
 				if(player.GetRole().MustHaveTarget()) {
@@ -194,29 +197,27 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerKeyStateChange(int playerid, int newkeys,
 		}
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
-		return true;
 	} catch(...) {
 		SendClientMessage(playerid, COLOR_ERROR, "处理按键时发生未知错误, 请联系服务器管理员");
-		return true;
 	}
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int response, int listitem, const char *inputtext) {
+	RUN_TIME_COUNTER;
 	LOG_DEBUG("DialogID: " << dialogid << " Response: " << response << " Listitem: " << listitem << " Input: " << inputtext);
 	try {
 		DialogManager::GetInstance().Exec(playerid, response == 1, dialogid, listitem, inputtext);
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
-		return true;
 	} catch(...) {
 		SendClientMessage(playerid, COLOR_ERROR, "处理对话框时发生未知错误, 请联系服务器管理员");
-		return true;
 	}
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int reason) {
+	RUN_TIME_COUNTER;
 	GivePlayerMoney(playerid, -500);
 	SendDeathMessage(killerid, playerid, reason);
 	try {
@@ -296,10 +297,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 		}
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
-		return true;
 	} catch(...) {
 		SendClientMessage(playerid, COLOR_ERROR, "处理杀敌信息时发生未知错误, 请联系服务器管理员");
-		return true;
 	}
 	return true;
 }
@@ -346,6 +345,7 @@ STREAMER_CALLBACK void OnDynamicObjectMoved(int objectid) {
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid) {
+	RUN_TIME_COUNTER;
 	try {
 		int streamerid = Streamer_OnPlayerPickUpPickup(playerid, pickupid);
 		if(streamerid != 0)

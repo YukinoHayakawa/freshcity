@@ -23,8 +23,10 @@
 #include "application_data_profile.h"
 
 class Team : public SaveableItem {
-protected:
+public:
 	typedef boost::unordered_map<int, mongo::OID> TeamMemberMap;
+
+protected:
 	std::string _name;
 	TeamMemberMap _onlineplayers;
 	int _score;
@@ -48,6 +50,7 @@ public:
 	void IncreaseScore(int amount);
 	int GetIngameID();
 	bool HasOnlineMember();
+	TeamMemberMap::iterator GetMemberIterator();
 };
 
 #endif

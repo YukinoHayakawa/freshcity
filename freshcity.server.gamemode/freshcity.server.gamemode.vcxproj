@@ -122,6 +122,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include=".\application_gamemode_main.cpp" />
+    <ClCompile Include="basic_debug_timer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\basic_algorithm_gbkencoder.h" />
@@ -157,6 +160,7 @@
     <ClInclude Include="basic_algorithm_random.h" />
     <ClInclude Include="basic_algorithm_wchar.h" />
     <ClInclude Include="basic_debug_logging.h" />
+    <ClInclude Include="basic_debug_timer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\application_gamemode_export.def" />

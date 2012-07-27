@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
-#define FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
+#ifndef FRESHCITY_BASIC_DEBUG_TIMER
+#define FRESHCITY_BASIC_DEBUG_TIMER
 
-#include <WinBase.h>
+#include <Windows.h>
+#include <string>
 
-typedef void (CALLBACK*TimerCallbackFunc)(void*, unsigned char);
-#define TIMERCALLBACK(x) void CALLBACK TimerCallback_##x(void* param, unsigned char TimerOrWaitFired)
-int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat);
-void DestroyTimer(int timerid);
+class FunctionRunTime {
+private:
+	std::string _func;
+	__int64 _start;
 
-TIMERCALLBACK(EndTurfWar);
-TIMERCALLBACK(TurfWarWaitTimeout);
+public:
+	FunctionRunTime(const char* funcname);
+	~FunctionRunTime();
+};
+
+#define RUN_TIME_COUNTER FunctionRunTime __timer__##__FUNCTION__(__FUNCTION__)
 
 #endif

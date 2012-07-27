@@ -89,3 +89,7 @@ int Team::GetIngameID() {
 bool Team::HasOnlineMember() {
 	return !_onlineplayers.empty();
 }
+
+Team::TeamMemberMap::iterator Team::GetMemberIterator() {
+	return TeamMemberMap::iterator(_onlineplayers.begin());
+}

@@ -105,7 +105,20 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 	if(tname.compare(_owner) == 0) return false;
 	SystemMessageQueue::GetInstance().PushMessage(tname + " has started a turfwar");
 	_warinfo.Attacker = tname;
-	CreateTimer(TimerCallback_EndTurfWar, this, CONFIG_INT("Gaming.turfwarlast") * 60000, false);
+	_endtimerid = CreateTimer(TimerCallback_EndTurfWar, this,
+		CONFIG_INT("Gaming.turfwarlast") * 60000, false);
+	bool memberinzone = false;
+	for(Team::TeamMemberMap::iterator teammembers(TeamManager::GetInstance()[_owner].GetMemberIterator()), end;
+		teammembers != end; teammembers++) {
+		if(GangZoneManager::GetInstance().GetPointInWhichZone(
+			ProfileManager::GetInstance()[teammembers->first].GetPos()) == _zone->GetId()) {
+				memberinzone = true;
+				break;
+		}
+	}
+	if(!memberinzone)
+		_timeouttimerid = CreateTimer(TimerCallback_TurfWarWaitTimeout, this,
+		CONFIG_INT("Gaming.turfwartimeout") * 60000, false);
 	_warinfo.InWar = true;
 	Redraw();
 	return true;
@@ -119,15 +132,16 @@ void GangZoneItem::CountMemberDeath() {
 	if(_warinfo.InWar) ++_warinfo.MemberDeath;
 }
 
-bool GangZoneItem::EndWar() {
+bool GangZoneItem::EndWar(bool causedbytimeout) {
 	bool ret = false;
 	if(_warinfo.InWar) {
-		if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
-			SystemMessageQueue::GetInstance().PushMessage(GetOwner() + " has won the turfwar");
-		} else {
+		if(causedbytimeout) DestroyTimer(_endtimerid);
+		if(causedbytimeout || _warinfo.EnemyKill < _warinfo.MemberDeath) {
 			SystemMessageQueue::GetInstance().PushMessage(_warinfo.Attacker + " has won the turfwar");
 			SetOwner(_warinfo.Attacker);
 			ret = true;
+		} else if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
+			SystemMessageQueue::GetInstance().PushMessage(GetOwner() + " has won the turfwar");
 		}
 		_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
 		_warinfo.Attacker.clear();
@@ -147,4 +161,11 @@ bool GangZoneItem::InWar() {
 
 std::string GangZoneItem::GetAttacker() {
 	return _warinfo.Attacker;
+}
+
+void GangZoneItem::MemberArrived() {
+	if(_timeouttimerid != 0) {
+		DestroyTimer(_timeouttimerid);
+		_timeouttimerid = 0;
+	}
 }

@@ -14,17 +14,27 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
-#define FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
+#include "basic_debug_timer.h"
+#include "basic_debug_logging.h"
 
-#include <WinBase.h>
+LARGE_INTEGER litmp; 
+__int64 dfFreq;
 
-typedef void (CALLBACK*TimerCallbackFunc)(void*, unsigned char);
-#define TIMERCALLBACK(x) void CALLBACK TimerCallback_##x(void* param, unsigned char TimerOrWaitFired)
-int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat);
-void DestroyTimer(int timerid);
+bool _DebugTimerInit() {
+	QueryPerformanceFrequency(&litmp);
+	dfFreq = litmp.QuadPart;
+	return true;
+}
 
-TIMERCALLBACK(EndTurfWar);
-TIMERCALLBACK(TurfWarWaitTimeout);
+void* _dbgtimerinit((void*)_DebugTimerInit());
 
-#endif
+FunctionRunTime::FunctionRunTime(const char* funcname) : _func(funcname) {
+	QueryPerformanceCounter(&litmp);
+	_start = litmp.QuadPart;
+}
+
+FunctionRunTime::~FunctionRunTime() {
+	QueryPerformanceCounter(&litmp);
+	__int64 _end = litmp.QuadPart;
+	LOG_INFO(_func.c_str() << " runs " << ((_end - _start) / (dfFreq / 1000 / 1000)) << "ns");
+}

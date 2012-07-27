@@ -34,3 +34,8 @@ TIMERCALLBACK(EndTurfWar) {
 	GangZoneItem& gz(*(GangZoneItem*)param);
 	gz.EndWar();
 }
+
+TIMERCALLBACK(TurfWarWaitTimeout) {
+	GangZoneItem& gz(*(GangZoneItem*)param);
+	gz.EndWar(true);
+}

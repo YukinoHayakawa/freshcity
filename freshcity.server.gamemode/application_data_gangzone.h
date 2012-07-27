@@ -29,6 +29,7 @@ protected:
 	std::string _name;
 	std::string _owner;
 	int _color;
+	int _endtimerid, _timeouttimerid;
 
 	struct TurfWarInfo {
 		bool InWar;
@@ -55,10 +56,11 @@ public:
 	void CountEnemyKill();
 	void CountMemberDeath();
 	/* true = Ï®»÷Õß¶áÈ¡µØÅÌ */
-	bool EndWar();
+	bool EndWar(bool causedbytimeout = false);
 	int GetAreaID();
 	bool InWar();
 	std::string GetAttacker();
+	void MemberArrived();
 };
 
 #endif

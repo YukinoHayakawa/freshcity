@@ -24,8 +24,10 @@ GangZoneArea::GangZoneArea(int zoneid, float minx, float miny, float maxx, float
 	: DynamicRectangle(minx, miny, maxx, maxy), _zoneid(zoneid) {}
 
 void GangZoneArea::OnPlayerEnter(Profile& player) {
-	player.SendChatMessage(COLOR_INFO, "你进入了 "
-		+ GangZoneManager::GetInstance()[_zoneid].GetName());
+	GangZoneItem& gz = GangZoneManager::GetInstance()[_zoneid];
+	player.SendChatMessage(COLOR_INFO, "你进入了 " + gz.GetName());
+	if(gz.InWar() && TeamManager::GetInstance().GetNameByID(player.GetTeamFixed()).compare(gz.GetOwner()) == 0)
+		gz.MemberArrived();
 }
 
 void GangZoneArea::OnPlayerExit(Profile& player) {
