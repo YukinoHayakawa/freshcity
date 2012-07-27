@@ -63,31 +63,16 @@
     <ClInclude Include="application_dependency_streamer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include=".\application_data_pickup.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="application_gamemode_effectiveitem.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_gamemode_role_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include=".\application_data_pickup_classes.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_data_object.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="application_data_gangzone.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_gamemode_manager_classes.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include=".\application_data_dynamicarea.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_data_dynamicarea_classes.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="basic_algorithm_identifier.h">
@@ -103,6 +88,21 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_algorithms.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_pickup.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_pickup_classes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_dynamicarea.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_dynamicarea_classes.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include=".\application_gamemode_object.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -158,25 +158,13 @@
     <ClCompile Include="application_gamemode_dialogs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_data_pickup.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include=".\application_gamemode_role_classes.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include=".\application_data_pickup_classes.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_data_object.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_data_gangzone.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include=".\application_gamemode_manager_classes.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_data_dynamicarea_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="application_gamemode_timercallbacks.cpp">
@@ -189,6 +177,15 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include=".\application_algorithms.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_gamemode_pickup_classes.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_gamemode_object.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_gamemode_dynamicarea_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

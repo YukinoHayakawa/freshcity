@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_DYNAMICAREA
-#define FRESHCITY_APPLICATION_DATA_DYNAMICAREA
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA
+#define FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA
 
 #include "application_dependency_streamer.h"
 #include "application_data_profile.h"

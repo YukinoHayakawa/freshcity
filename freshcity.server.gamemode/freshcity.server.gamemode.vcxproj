@@ -87,11 +87,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="application_data_base.cpp" />
-    <ClCompile Include="application_data_dynamicarea_classes.cpp" />
+    <ClCompile Include=".\application_gamemode_dynamicarea_classes.cpp" />
     <ClCompile Include="application_data_gangzone.cpp" />
-    <ClCompile Include="application_data_object.cpp" />
-    <ClCompile Include="application_data_pickup.cpp" />
-    <ClCompile Include=".\application_data_pickup_classes.cpp" />
+    <ClCompile Include=".\application_gamemode_object.cpp" />
+    <ClCompile Include=".\application_gamemode_pickup_classes.cpp" />
     <ClCompile Include="application_data_profile.cpp" />
     <ClCompile Include=".\application_gamemode_commands.cpp" />
     <ClCompile Include="application_data_team.cpp" />
@@ -128,10 +127,10 @@
     <ClInclude Include="application_database.h" />
     <ClInclude Include="application_data_base.h" />
     <ClInclude Include=".\application_data_team.h" />
-    <ClInclude Include=".\application_data_pickup_classes.h" />
-    <ClInclude Include="application_data_dynamicarea_classes.h" />
+    <ClInclude Include=".\application_gamemode_pickup_classes.h" />
+    <ClInclude Include=".\application_gamemode_dynamicarea_classes.h" />
     <ClInclude Include="application_data_gangzone.h" />
-    <ClInclude Include="application_data_object.h" />
+    <ClInclude Include=".\application_gamemode_object.h" />
     <ClInclude Include="application_data_profile.h" />
     <ClInclude Include=".\application_struct_coordinate.h" />
     <ClInclude Include=".\application_gamemode_manager_classes.h">
@@ -141,9 +140,9 @@
     <ClInclude Include="application_data_waypoint.h" />
     <ClInclude Include=".\application_gamemode_manager_base.h" />
     <ClInclude Include="application_dependency_streamer.h" />
-    <ClInclude Include=".\application_data_dynamicarea.h" />
+    <ClInclude Include=".\application_gamemode_dynamicarea.h" />
     <ClInclude Include="application_gamemode_dialogdefinitions.h" />
-    <ClInclude Include=".\application_data_pickup.h" />
+    <ClInclude Include=".\application_gamemode_pickup.h" />
     <ClInclude Include="application_gamemode_effectiveitem.h" />
     <ClInclude Include=".\application_gamemode_role_classes.h" />
     <ClInclude Include="application_gamemode_sysmsgqueue.h" />

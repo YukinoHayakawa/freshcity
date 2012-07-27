@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_PICKUP_CLASSES
-#define FRESHCITY_APPLICATION_DATA_PICKUP_CLASSES
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_PICKUP_CLASSES
+#define FRESHCITY_APPLICATION_GAMEMODE_PICKUP_CLASSES
 
-#include "application_data_pickup.h"
+#include "application_gamemode_pickup.h"
 
 // MedicalPickup
 class MedicalPickup : public Pickup {

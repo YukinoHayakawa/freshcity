@@ -21,7 +21,7 @@
 #include "application_data_profile.h"
 #include "application_algorithms.h"
 #include <sampgdk/a_vehicles.h>
-#include "application_data_object.h"
+#include "application_gamemode_object.h"
 
 // Assault
 Assault::Assault(Profile& player) : Role(player, 60, true) {}

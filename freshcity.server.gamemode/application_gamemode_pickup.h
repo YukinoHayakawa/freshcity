@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_PICKUP
-#define FRESHCITY_APPLICATION_DATA_PICKUP
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_PICKUP
+#define FRESHCITY_APPLICATION_GAMEMODE_PICKUP
 
 #include "application_dependency_streamer.h"
 #include "application_gamemode_effectiveitem.h"
 
 class Pickup : public EffectiveItem {
 public:
-	Pickup(int modelid, int type, float x, float y, float z, bool disposable, int worldid = -1, int interiorid = -1, int playerid = -1, float distance = 100.0f);
-	~Pickup();
+	Pickup(int modelid, int type, float x, float y, float z, bool disposable, int worldid = -1, int interiorid = -1, int playerid = -1, float distance = 100.0f)
+		: EffectiveItem(CreateDynamicPickup(modelid, type, x, y, z, worldid, interiorid, playerid, distance), disposable) {}
+	~Pickup() { DestroyDynamicPickup(_id); }
 };
 
 #endif

@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_OBJECT
-#define FRESHCITY_APPLICATION_DATA_OBJECT
+#include "application_database.h"
+#include "application_gamemode_object.h"
 
-#include "application_dependency_streamer.h"
-#include "application_gamemode_effectiveitem.h"
+DynamicObject::DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz, int worldid, int interiorid, int playerid, float streamdistance)
+	: EffectiveItem(CreateDynamicObject(modelid, x, y, z, rx, ry, rz, worldid, interiorid, playerid, streamdistance), false) {}
 
-class DynamicObject : public EffectiveItem {
-public:
-	DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz,
-		int worldid = -1, int interiorid = -1, int playerid = -1, float streamdistance = 100.0);
-	~DynamicObject();
-	void Edit(int playerid);
-};
+DynamicObject::~DynamicObject() {
+	DestroyDynamicObject(_id);
+}
 
-#endif
+void DynamicObject::Edit(int playerid) {
+	EditDynamicObject(playerid, _id);
+}

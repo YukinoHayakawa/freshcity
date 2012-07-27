@@ -20,8 +20,8 @@
 #include "basic_algorithm_gbkencoder.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
-#include "application_data_dynamicarea_classes.h"
-#include "application_data_pickup_classes.h"
+#include "application_gamemode_dynamicarea_classes.h"
+#include "application_gamemode_pickup_classes.h"
 #include "application_gamemode_timercallbacks.h"
 #include "application_gamemode_sysmsgqueue.h"
 

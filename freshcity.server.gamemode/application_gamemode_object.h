@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_DATA_DYNAMICAREA_CLASSES
-#define FRESHCITY_APPLICATION_DATA_DYNAMICAREA_CLASSES
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_OBJECT
+#define FRESHCITY_APPLICATION_GAMEMODE_OBJECT
 
-#include "application_data_dynamicarea.h"
+#include "application_dependency_streamer.h"
+#include "application_gamemode_effectiveitem.h"
 
-// GangZoneArea
-class GangZoneArea : public DynamicRectangle {
-private:
-	int _zoneid;
-
+class DynamicObject : public EffectiveItem {
 public:
-	GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy);
-	void OnPlayerEnter(Profile& player);
-	void OnPlayerExit(Profile& player);
+	DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz,
+		int worldid = -1, int interiorid = -1, int playerid = -1, float streamdistance = 100.0);
+	~DynamicObject();
+	void Edit(int playerid);
 };
 
 #endif

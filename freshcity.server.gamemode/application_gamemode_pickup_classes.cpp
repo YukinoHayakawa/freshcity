@@ -15,7 +15,7 @@
  */
 
 #include "application_database.h"
-#include "application_data_pickup_classes.h"
+#include "application_gamemode_pickup_classes.h"
 #include "application_algorithms.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"

@@ -75,7 +75,7 @@ public:
 class PickupManager : public EffectiveItemManager {};
 
 // ObjectManager
-#include "application_data_object.h"
+#include "application_gamemode_object.h"
 
 class ObjectManager : public ItemManager<ObjectManager, int, DynamicObject> {
 public:
@@ -115,7 +115,7 @@ public:
 };
 
 // DynamicAreaManager
-#include "application_data_dynamicarea.h"
+#include "application_gamemode_dynamicarea.h"
 
 class DynamicAreaManager : public ItemManager<DynamicAreaManager, int, DynamicArea> {
 public:

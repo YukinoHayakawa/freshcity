@@ -27,7 +27,7 @@
 #include "application_gamemode_dialogdefinitions.h"
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
-#include "application_data_pickup_classes.h"
+#include "application_gamemode_pickup_classes.h"
 #include "application_algorithms.h"
 #include "application_config.h"
 #include <boost/random.hpp>

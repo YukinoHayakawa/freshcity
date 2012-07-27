@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-#include "application_database.h"
-#include "application_data_object.h"
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA_CLASSES
+#define FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA_CLASSES
 
-DynamicObject::DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz, int worldid, int interiorid, int playerid, float streamdistance)
-	: EffectiveItem(CreateDynamicObject(modelid, x, y, z, rx, ry, rz, worldid, interiorid, playerid, streamdistance), false) {}
+#include "application_gamemode_dynamicarea.h"
 
-DynamicObject::~DynamicObject() {
-	DestroyDynamicObject(_id);
-}
+// GangZoneArea
+class GangZoneArea : public DynamicRectangle {
+private:
+	int _zoneid;
 
-void DynamicObject::Edit(int playerid) {
-	EditDynamicObject(playerid, _id);
-}
+public:
+	GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy);
+	void OnPlayerEnter(Profile& player);
+	void OnPlayerExit(Profile& player);
+};
+
+#endif
