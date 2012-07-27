@@ -22,7 +22,7 @@
 #include <sampgdk/a_vehicles.h>
 #include "application_dependency_streamer.h"
 #include "application_data_object.h"
-#include "application_algorithm_position.h"
+#include "application_algorithms.h"
 #include "application_gamemode_sysmsgqueue.h"
 
 class _CmdRegister {

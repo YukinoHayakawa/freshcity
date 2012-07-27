@@ -46,10 +46,10 @@ public:
 	void SetLevel(int level);
 	int GetLevel() const;
 	bool IsMember(int playerid) const;
-	int GetScore();
+	int GetScore() const;
 	void IncreaseScore(int amount);
-	int GetIngameID();
-	bool HasOnlineMember();
+	int GetIngameID() const;
+	bool HasOnlineMember() const;
 	TeamMemberMap::iterator GetMemberIterator();
 };
 

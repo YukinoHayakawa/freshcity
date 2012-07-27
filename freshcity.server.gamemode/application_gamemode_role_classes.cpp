@@ -19,7 +19,7 @@
 #include "application_gamemode_colordefinitions.h"
 #include <sampgdk/a_players.h>
 #include "application_data_profile.h"
-#include "application_algorithm_position.h"
+#include "application_algorithms.h"
 #include <sampgdk/a_vehicles.h>
 #include "application_data_object.h"
 

@@ -15,13 +15,18 @@
  */
 
 #include "application_database.h"
-#include "application_algorithm_position.h"
-#include <math.h>
+#include "application_algorithms.h"
+#include "basic_algorithm_sha256.h"
 
-double inline AngleToRadian(double angle) {
-	return (angle / 180) * 3.14;
+// Auth
+const std::string salt1("Y5Nz.MM;K?xtQkd80V@l?p*RF)I8mH.6n>o`,;`Rlh!3c.?#FZdWMuFPOvnQi#Da");
+const std::string salt2("~MDf|JN3?/0w%WHWYcK@/ZDv4ci/vF|UIZi# ^?J*k0oh0`Dy8X.].Tagm!#^0Wu");
+
+std::string GetPasswordDigest(const std::string& source) {
+	return sha256(salt1 + source + salt2);
 }
 
+// Position
 Coordinate3D GenerateDirectionalPoint(Profile& player, float distance) {
 	float angle = player.GetFacingAngle();
 	Coordinate3D result = player.GetPos();
@@ -58,4 +63,24 @@ Coordinate3D GenerateDirectionalPoint(Profile& player, float distance) {
 		return result;
 	} 
 	throw std::runtime_error("无法解析的坐标");
+}
+
+// Converting
+int WeaponModelToID[] = {
+	0,		331,	333,	334,	335,
+	336,	337,	338,	339,	341,
+	321,	322,	323,	324,	325,
+	326,	342,	343,	344,	0,
+	0,		0,		346,	347,	348,
+	349,	350,	351,	352,	353,
+	355,	356,	372,	357,	358,
+	359,	360,	361,	362,	363,
+	364,	365,	366,	367,	368,
+	369,	371
+};
+
+int ConvertWeaponIDToModelID(int weaponid) {
+	if(weaponid > (sizeof(WeaponModelToID) / sizeof(int) - 1) || weaponid < 0)
+		return 0;
+	return WeaponModelToID[weaponid];
 }

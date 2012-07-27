@@ -57,9 +57,9 @@ public:
 	void CountMemberDeath();
 	/* true = Ï®»÷Õß¶áÈ¡µØÅÌ */
 	bool EndWar(bool causedbytimeout = false);
-	int GetAreaID();
-	bool InWar();
-	std::string GetAttacker();
+	int GetAreaID() const;
+	bool InWar() const;
+	std::string GetAttacker() const;
 	void MemberArrived();
 };
 

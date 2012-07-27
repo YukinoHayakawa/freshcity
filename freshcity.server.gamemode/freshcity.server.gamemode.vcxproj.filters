@@ -36,9 +36,6 @@
     <ClInclude Include="application_data_base.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include=".\application_algorithm_auth.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="application_data_profile.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -70,12 +67,6 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="application_gamemode_effectiveitem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="application_algorithm_position.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include=".\application_algorithm_weaponidmap.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include=".\application_gamemode_role_classes.h">
@@ -111,7 +102,7 @@
     <ClInclude Include="basic_debug_timer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="application_algorithm_math.h">
+    <ClInclude Include=".\application_algorithms.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -143,9 +134,6 @@
     <ClCompile Include="application_data_base.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include=".\application_algorithm_auth.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="application_gamemode_lib.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -173,12 +161,6 @@
     <ClCompile Include="application_data_pickup.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="application_algorithm_position.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="application_algorithm_weaponidmap.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include=".\application_gamemode_role_classes.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -204,6 +186,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="basic_debug_timer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include=".\application_algorithms.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

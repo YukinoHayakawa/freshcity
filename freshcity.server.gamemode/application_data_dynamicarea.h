@@ -29,7 +29,7 @@ public:
 	virtual void OnPlayerEnter(Profile& player) {}
 	virtual void OnPlayerExit(Profile& player) {}
 
-	int GetID() {
+	int GetID() const {
 		return _id;
 	}
 
@@ -41,11 +41,11 @@ public:
 		TogglePlayerDynamicArea(playerid, _id, toggle);
 	}
 
-	bool IsPlayerIn(int playerid) {
+	bool IsPlayerIn(int playerid) const {
 		return IsPlayerInDynamicArea(playerid, _id);
 	}
 
-	bool IsPointIn(float x, float y, float z) {
+	bool IsPointIn(float x, float y, float z) const {
 		return IsPointInDynamicArea(_id, x, y, z);
 	}
 

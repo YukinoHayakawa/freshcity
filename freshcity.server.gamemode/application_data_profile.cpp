@@ -17,7 +17,7 @@
 #include "application_database.h"
 #include "application_data_profile.h"
 #include "application_config.h"
-#include "application_algorithm_auth.h"
+#include "application_algorithms.h"
 #include "basic_algorithm_gbkencoder.h"
 
 Profile::Role::Role(Profile& player, int timelimit, bool musthavetarget)

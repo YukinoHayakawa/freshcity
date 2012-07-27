@@ -18,7 +18,7 @@
 #include "application_data_dynamicarea_classes.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
-#include "application_algorithm_math.h"
+#include "application_algorithms.h"
 
 // GangZoneArea
 GangZoneArea::GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy)

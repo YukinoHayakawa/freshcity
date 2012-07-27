@@ -28,13 +28,12 @@
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
 #include "application_data_pickup_classes.h"
-#include "application_algorithm_position.h"
+#include "application_algorithms.h"
 #include "application_config.h"
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"
 #include "application_gamemode_sysmsgqueue.h"
 #include "basic_debug_timer.h"
-#include "application_algorithm_math.h"
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());

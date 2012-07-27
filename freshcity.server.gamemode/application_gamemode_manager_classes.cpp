@@ -121,8 +121,8 @@ void GangZoneManager::LoadAllFromDatabase() {
 	}
 }
 
-int GangZoneManager::GetPointInWhichZone(Coordinate3D& point) {
-	for(MemberMap::iterator iter = _members.begin(); iter != _members.end(); ++iter) {
+int GangZoneManager::GetPointInWhichZone(Coordinate3D& point) const {
+	for(MemberMap::const_iterator iter = _members.begin(); iter != _members.end(); ++iter) {
 		if(DynamicAreaManager::GetInstance()[iter->second->GetAreaID()].IsPointIn(point.x, point.y, point.z))
 			return iter->first;
 	}

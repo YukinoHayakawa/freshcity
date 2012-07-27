@@ -14,12 +14,32 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_ALGORITHM_POSITION
-#define FRESHCITY_APPLICATION_ALGORITHM_POSITION
+#ifndef FRESHCITY_APPLICATION_ALGORITHMS
+#define FRESHCITY_APPLICATION_ALGORITHMS
 
+#include <string>
 #include "application_data_profile.h"
 #include "application_struct_coordinate.h"
 
+// Auth
+std::string GetPasswordDigest(const std::string& source);
+
+// Position
 Coordinate3D GenerateDirectionalPoint(Profile& player, float distance);
+
+// Converting
+double inline AngleToRadian(double angle) {
+	return (angle / 180) * 3.14;
+}
+
+int ConvertWeaponIDToModelID(int weaponid);
+
+std::string inline ColorToEmbeddingString(int color) {
+	char dest[10];
+	sprintf(dest, "{%08x", color);
+	dest[7] = '}';
+	dest[8] = 0;
+	return dest;
+}
 
 #endif

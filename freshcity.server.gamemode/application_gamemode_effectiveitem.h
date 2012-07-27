@@ -32,8 +32,8 @@ public:
 	/* 执行其特殊效果 */
 	void virtual Effect(Profile& player) {}
 	/* 是否一次性 */
-	bool IsDisposable() { return _disposable; }
-	int GetID() { return _id; }
+	bool IsDisposable() const { return _disposable; }
+	int GetID() const { return _id; }
 };
 
 #endif

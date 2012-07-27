@@ -78,14 +78,8 @@
     <ClCompile Include=".\basic_algorithm_sha256.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include=".\application_algorithm_auth.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include=".\application_algorithms.cpp" />
     <ClCompile Include=".\application_config.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="application_algorithm_position.cpp" />
-    <ClCompile Include="application_algorithm_weaponidmap.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="application_database.cpp" />
@@ -129,10 +123,8 @@
   <ItemGroup>
     <ClInclude Include=".\basic_algorithm_gbkencoder.h" />
     <ClInclude Include=".\basic_algorithm_sha256.h" />
-    <ClInclude Include=".\application_algorithm_auth.h" />
+    <ClInclude Include=".\application_algorithms.h" />
     <ClInclude Include=".\application_config.h" />
-    <ClInclude Include="application_algorithm_math.h" />
-    <ClInclude Include="application_algorithm_position.h" />
     <ClInclude Include="application_database.h" />
     <ClInclude Include="application_data_base.h" />
     <ClInclude Include=".\application_data_team.h" />
@@ -153,7 +145,6 @@
     <ClInclude Include="application_gamemode_dialogdefinitions.h" />
     <ClInclude Include=".\application_data_pickup.h" />
     <ClInclude Include="application_gamemode_effectiveitem.h" />
-    <ClInclude Include=".\application_algorithm_weaponidmap.h" />
     <ClInclude Include=".\application_gamemode_role_classes.h" />
     <ClInclude Include="application_gamemode_sysmsgqueue.h" />
     <ClInclude Include="application_gamemode_timercallbacks.h" />

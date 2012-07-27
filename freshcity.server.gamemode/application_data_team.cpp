@@ -72,7 +72,7 @@ bool Team::IsMember(int playerid) const {
 	return _onlineplayers.find(playerid) != _onlineplayers.end();
 }
 
-int Team::GetScore() {
+int Team::GetScore() const {
 	return _score;
 }
 
@@ -80,11 +80,11 @@ void Team::IncreaseScore(int amount) {
 	_score += amount;
 }
 
-int Team::GetIngameID() {
+int Team::GetIngameID() const {
 	return _ingameteamid;
 }
 
-bool Team::HasOnlineMember() {
+bool Team::HasOnlineMember() const {
 	return !_onlineplayers.empty();
 }
 

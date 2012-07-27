@@ -151,15 +151,15 @@ bool GangZoneItem::EndWar(bool causedbytimeout) {
 	return ret;
 }
 
-int GangZoneItem::GetAreaID() {
+int GangZoneItem::GetAreaID() const {
 	return _areaid;
 }
 
-bool GangZoneItem::InWar() {
+bool GangZoneItem::InWar() const {
 	return _warinfo.InWar;
 }
 
-std::string GangZoneItem::GetAttacker() {
+std::string GangZoneItem::GetAttacker() const {
 	return _warinfo.Attacker;
 }
 
