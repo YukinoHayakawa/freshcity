@@ -25,21 +25,31 @@
 #include "application_algorithm_position.h"
 #include "application_gamemode_sysmsgqueue.h"
 
-#define CMD(x) void Cmd##x(Profile& player, const char* cmdline)
+class _CmdRegister {
+public:
+	_CmdRegister(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags) {
+		CommandManager::GetInstance().Add(cmd, function, reqlevel, flags);
+	}
+};
 
-CMD(SaveData) {
+#define CMD(callback, cmd, levelreq, flags) \
+	void Cmd##callback(Profile& player, const char* cmdline);\
+	_CmdRegister __CmdReg##callback(cmd, Cmd##callback, levelreq, flags);\
+	void Cmd##callback(Profile& player, const char* cmdline)\
+
+CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 	player.Sync();
 	player.SendChatMessage(COLOR_SUCC, "数据已保存");
 }
 
-CMD(SetSkin) {
+CMD(SetSkin, "setskin", 0, NEED_SIGNED_IN) {
 	int skinid(-1);
 	if(sscanf(cmdline, "%d", &skinid) == 0 || skinid == -1) throw std::runtime_error("用法: /setskin <皮肤ID>");
 	player.SetSkin(skinid);
 	player.SendChatMessage(COLOR_SUCC, "皮肤已更改");
 }
 
-CMD(GiveWeapon) {
+CMD(GiveWeapon, "giveweapon", 1, NEED_SIGNED_IN) {
 	int target(-1), weapon(-1), ammo(-1);
 	if(sscanf(cmdline, "%d%d%d", &target, &weapon, &ammo) == 0
 		|| !(target != -1 && weapon != -1 && ammo != -1))
@@ -47,7 +57,7 @@ CMD(GiveWeapon) {
 	GivePlayerWeapon(target, weapon, ammo);
 }
 
-CMD(GetVehicle) {
+CMD(GetVehicle, "v", 0, NO_REQUIREMENT) {
 	int mid(-1);
 	sscanf(cmdline, "%d", &mid);
 	Coordinate3D playerpos = player.GetPos();
@@ -58,29 +68,21 @@ CMD(GetVehicle) {
 	PutPlayerInVehicle(player.GetId(), vid, 0);
 }
 
-CMD(CreateWaypoint) {
+CMD(CreateWaypoint, "ctp", 0, NEED_SIGNED_IN) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
 	Waypoint create(player.GetDetailedPos());
 	create.Create(cmdline, player.GetUniqueID());
 	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
 }
 
-CMD(UseWaypoint) {
+CMD(UseWaypoint, "tp", 0, NO_REQUIREMENT) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
 	point.PerformTeleport(player.GetId());
 	player.SendChatMessage(COLOR_SUCC, "已传送到 " + std::string(cmdline));
 }
 
-CMD(TeamJoin) {
-	TeamManager::GetInstance()[cmdline].Join(player);
-}
-
-CMD(TeamQuit) {
-	TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
-}
-
-CMD(GoToPlayer) {
+CMD(GoToPlayer, "goto", 1, NEED_SIGNED_IN) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
@@ -88,51 +90,10 @@ CMD(GoToPlayer) {
 	point.PerformTeleport(player.GetId());
 }
 
-CMD(GetPlayer) {
+CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
 	Waypoint point(player.GetDetailedPos());
 	point.PerformTeleport(targetid);
 }
-
-CMD(CreateDynObject) {
-	int modelid(-1);
-	sscanf(cmdline, "%d", &modelid);
-	Coordinate3D pos = GenerateDirectionalPoint(player, 10.0f);
-	ObjectManager::MemberPtr ptr(new DynamicObject(
-		modelid, pos.x, pos.y, pos.z - 1, 0.0f, 0.0f, 0.0f));
-	ObjectManager::GetInstance().Add(ptr);
-}
-
-CMD(IteratorTest) {
-	MANAGER_FOREACH(TeamManager) player.SendChatMessage(COLOR_YELLOW, iter->first);
-}
-
-CMD(MsgQueueTest) {
-	SystemMessageQueue::GetInstance().PushMessage(cmdline);
-}
-
-#define REGCMD(x, y, z, t) CmdMgr.Add(x, y, z, t)
-
-bool RegisterPlayerCmds() {
-	CommandManager& CmdMgr = CommandManager::GetInstance();
-	REGCMD("sync",				CmdSaveData,			0, NEED_SIGNED_IN);
-	REGCMD("setskin",			CmdSetSkin,				1, NEED_SIGNED_IN);
-	REGCMD("giveweapon",		CmdGiveWeapon,			1, NEED_SIGNED_IN);
-	REGCMD("v",					CmdGetVehicle,			0, NO_REQUIREMENT);
-	REGCMD("ctp",				CmdCreateWaypoint,		0, NEED_SIGNED_IN);
-	REGCMD("tp",				CmdUseWaypoint,			0, NO_REQUIREMENT);
-	REGCMD("teamjoin",			CmdTeamJoin,			5, NEED_SIGNED_IN);
-	REGCMD("teamquit",			CmdTeamQuit,			5, NEED_SIGNED_IN);
-	REGCMD("goto",				CmdGoToPlayer,			1, NEED_SIGNED_IN);
-	REGCMD("get",				CmdGetPlayer,			1, NEED_SIGNED_IN);
-	REGCMD("object",			CmdCreateDynObject,		0, NO_REQUIREMENT);
-	REGCMD("iterator",			CmdIteratorTest,		0, NO_REQUIREMENT);
-	REGCMD("msg",				CmdMsgQueueTest,		0, NO_REQUIREMENT);
-	return true;
-}
-
-#undef REGCMD
-
-void* PlayerCmdInit((void*)RegisterPlayerCmds());
