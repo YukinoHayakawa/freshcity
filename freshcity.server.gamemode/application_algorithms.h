@@ -17,7 +17,6 @@
 #ifndef FRESHCITY_APPLICATION_ALGORITHMS
 #define FRESHCITY_APPLICATION_ALGORITHMS
 
-#include <string>
 #include "application_data_profile.h"
 #include "application_struct_coordinate.h"
 
@@ -36,7 +35,7 @@ int ConvertWeaponIDToModelID(int weaponid);
 
 std::string inline ColorToEmbeddingString(int color) {
 	char dest[10];
-	sprintf(dest, "{%08x", color);
+	sprintf(dest, "{%08x", (unsigned long)color);
 	dest[7] = '}';
 	dest[8] = 0;
 	return dest;

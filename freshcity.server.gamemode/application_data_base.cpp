@@ -19,36 +19,40 @@
 
 SaveableItem::SaveableItem(const std::string& collection, const mongo::OID& uniqueid)
 	: _collection(collection), _rawdata(GetDB().findOne(_collection, BSON("_id" << uniqueid))),
-	_uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {}
+	_uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {
+		if(_rawdata.isEmpty()) throw std::runtime_error("Empty document.");
+}
 
 SaveableItem::SaveableItem(const std::string& collection, const mongo::BSONObj& query)
 	: _collection(collection), _rawdata(GetDB().findOne(_collection, query)),
-	_uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {}
+	_uniqueid(!_rawdata.isEmpty() ? _rawdata["_id"].OID() : mongo::OID()) {
+		if(_rawdata.isEmpty()) throw std::runtime_error("Empty document.");
+}
 
 SaveableItem::SaveableItem(const std::string& collection) : _collection(collection) {}
 
 void SaveableItem::Refetch() {
 	if(!_uniqueid.isSet())
-		throw std::runtime_error("尝试重新获取的对象不存在");
+		throw std::runtime_error("Object doesn't exist.");
 	_rawdata = GetDB().findOne(_collection, BSON("_id" << _uniqueid));
 	if(_rawdata.isEmpty())
-		throw std::runtime_error("数据库返回空文档: " + GetDB().getLastError());
+		throw std::runtime_error("Received a empty document: " + GetDB().getLastError());
 }
 
 void SaveableItem::InitData(const mongo::BSONObj& data) {
 	if(!_rawdata.isEmpty())
-		throw std::runtime_error("不能更改非空对象的内容");
+		throw std::runtime_error("Data already exists.");
 	_rawdata = data;
 	_uniqueid = _rawdata["_id"].OID();
 }
 
 void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {
 	if(!_rawdata.isEmpty())
-		throw std::runtime_error("尝试保存的对象已经存在");
+		throw std::runtime_error("Object already exists.");
 	GetDB().insert(_collection, data);
 	std::string errormsg = GetDB().getLastError();
 	if(!errormsg.empty())
-		throw std::runtime_error("保存对象失败: " + errormsg);
+		throw std::runtime_error("Failed to insert document: " + errormsg);
 	mongo::BSONElement OID;
 	data.getObjectID(OID);
 	_uniqueid = OID.OID();
@@ -57,11 +61,11 @@ void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {
 
 void SaveableItem::Update(const mongo::BSONObj& modifier, bool refresh) {
 	if(!_uniqueid.isSet())
-		throw std::runtime_error("尝试修改的对象不存在");
+		throw std::runtime_error("Object doesn't exist.");
 	GetDB().update(_collection, BSON("_id" << _uniqueid), modifier);
 	std::string errormsg = GetDB().getLastError();
 	if(!errormsg.empty())
-		throw std::runtime_error("更新对象失败: " + errormsg);
+		throw std::runtime_error("Failed to update document: " + errormsg);
 	if(refresh) Refetch();
 }
 

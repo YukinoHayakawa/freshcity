@@ -44,22 +44,22 @@ Team::Team(const mongo::OID& leader, const std::string& name, int color, int tea
 
 void Team::Join(Profile& player) {
 	if(InGame(player.GetId()))
-		throw std::runtime_error("您已经是该团队的成员了");
+		throw std::runtime_error("You have already been in this team.");
 	if(player.GetTeamId().isSet())
-		throw std::runtime_error("您已加入过别的团队了 请执行 /teamquit 退出先前加入的团队");
+		throw std::runtime_error("You have already been in another team.");
 	player.SetTeam(_ingameteamid);
 	player.SetTeamId(_uniqueid);
-	player.SendChatMessage(COLOR_SUCC, "您已加入团队 " + _name);
+	player.SendChatMessage(COLOR_SUCC, "You have joined " + _name);
 	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetUniqueID()));
 }
 
 void Team::Quit(Profile& player) {
 	TeamMemberMap::iterator iter = _onlineplayers.find(player.GetId());
 	if(iter == _onlineplayers.end())
-		throw std::runtime_error("您并未加入此团队");
+		throw std::runtime_error("You are not the member of this team.");
 	player.SetTeam(NO_TEAM);
 	player.SetTeamId(mongo::OID());
-	player.SendChatMessage(COLOR_SUCC, "您已退出团队 " + _name);
+	player.SendChatMessage(COLOR_SUCC, "You have quit " + _name);
 	_onlineplayers.erase(iter);
 }
 
@@ -101,7 +101,7 @@ Team::TeamMemberMap::iterator Team::GetMemberIterator() {
 
 void Team::Create() {
 	mongo::BSONObj submit(BSON(mongo::GENOID <<
-		"name"		<< _name <<
+		"name"		<< GBKToUTF8(_name) <<
 		"leader"	<< _leader <<
 		"color"		<< _color
 		));

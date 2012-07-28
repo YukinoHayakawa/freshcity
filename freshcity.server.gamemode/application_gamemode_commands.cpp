@@ -24,6 +24,7 @@
 #include "application_gamemode_object.h"
 #include "application_algorithms.h"
 #include "application_gamemode_sysmsgqueue.h"
+#include "application_config.h"
 
 class _CmdRegister {
 public:
@@ -37,11 +38,13 @@ public:
 	_CmdRegister __CmdReg##callback(cmd, Cmd##callback, levelreq, flags);\
 	void Cmd##callback(Profile& player, const char* cmdline)
 
+// Profile
 CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 	player.Sync();
 	player.SendChatMessage(COLOR_SUCC, "数据已保存");
 }
 
+// Gaming
 CMD(SetSkin, "setskin", 0, NEED_SIGNED_IN) {
 	int skinid(-1);
 	if(sscanf(cmdline, "%d", &skinid) == 0 || skinid == -1) throw std::runtime_error("用法: /setskin <皮肤ID>");
@@ -49,6 +52,7 @@ CMD(SetSkin, "setskin", 0, NEED_SIGNED_IN) {
 	player.SendChatMessage(COLOR_SUCC, "皮肤已更改");
 }
 
+// Weapon
 CMD(GiveWeapon, "giveweapon", 1, NEED_SIGNED_IN) {
 	int target(-1), weapon(-1), ammo(-1);
 	if(sscanf(cmdline, "%d%d%d", &target, &weapon, &ammo) == 0
@@ -57,7 +61,8 @@ CMD(GiveWeapon, "giveweapon", 1, NEED_SIGNED_IN) {
 	GivePlayerWeapon(target, weapon, ammo);
 }
 
-CMD(GetVehicle, "v", 0, NO_REQUIREMENT) {
+// Vehicle
+CMD(GetVehicle, "v", 0, NULL) {
 	int mid(-1);
 	sscanf(cmdline, "%d", &mid);
 	Coordinate3D playerpos = player.GetPos();
@@ -68,6 +73,7 @@ CMD(GetVehicle, "v", 0, NO_REQUIREMENT) {
 	PutPlayerInVehicle(player.GetId(), vid, 0);
 }
 
+// Teleporting
 CMD(CreateWaypoint, "ctp", 0, NEED_SIGNED_IN) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
 	Waypoint create(player.GetDetailedPos());
@@ -75,14 +81,14 @@ CMD(CreateWaypoint, "ctp", 0, NEED_SIGNED_IN) {
 	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
 }
 
-CMD(UseWaypoint, "tp", 0, NO_REQUIREMENT) {
+CMD(UseWaypoint, "tp", 0, NULL) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
 	point.PerformTeleport(player.GetId());
 	player.SendChatMessage(COLOR_SUCC, "已传送到 " + std::string(cmdline));
 }
 
-CMD(GoToPlayer, "goto", 1, NEED_SIGNED_IN) {
+CMD(GoToPlayer, "goto", 0, NULL) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
@@ -96,4 +102,25 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
 	Waypoint point(player.GetDetailedPos());
 	point.PerformTeleport(targetid);
+}
+
+CMD(CreateTeleportTrigger, "ctpt", 0, NULL) {
+	Waypoint wp(cmdline);
+	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
+}
+
+// Server Management
+CMD(ReloadTeamList, "reloadteam", 65535, NEED_SIGNED_IN) {
+	TeamManager::GetInstance().LoadAllFromDatabase();
+	player.SendChatMessage(COLOR_SUCC, "已重新载入团队数据");
+}
+
+CMD(ReloadGangZoneList, "reloadgangzone", 65535, NEED_SIGNED_IN) {
+	GangZoneManager::GetInstance().LoadAllFromDatabase();
+	player.SendChatMessage(COLOR_SUCC, "已重新载入地盘数据");
+}
+
+CMD(ReloadConfig, "reloadconfig", 65535, NEED_SIGNED_IN) {
+	ReloadConfig();
+	player.SendChatMessage(COLOR_SUCC, "已重新载入服务器设置");
 }

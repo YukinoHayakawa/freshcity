@@ -24,18 +24,14 @@
 #include "application_gamemode_pickup_classes.h"
 
 void Waypoint::_LoadData() {
-	if(!_rawdata.isEmpty()) {
-		try {
-			std::vector<mongo::BSONElement> coordinate = _rawdata["xy"].Array();
-			_waypoint = Coordinate5D((float)coordinate[0].Number(),
-				(float)coordinate[1].Number(), (float)_rawdata["z"].Number(),
-				(int)_rawdata["world"].Number(), (int)_rawdata["interior"].Number(),
-				(float)_rawdata["facing"].Number());
-		} catch(mongo::UserException) {
-			throw std::runtime_error("无效传送点文档");
-		}
-	} else {
-		throw std::runtime_error("不存在的传送点文档");
+	try {
+		std::vector<mongo::BSONElement> coordinate = _rawdata["xy"].Array();
+		_waypoint = Coordinate5D((float)coordinate[0].Number(),
+			(float)coordinate[1].Number(), (float)_rawdata["z"].Number(),
+			(int)_rawdata["world"].Number(), (int)_rawdata["interior"].Number(),
+			(float)_rawdata["facing"].Number());
+	} catch(mongo::UserException) {
+		throw std::runtime_error("Invalid waypoint document.");
 	}
 }
 

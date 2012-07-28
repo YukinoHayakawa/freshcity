@@ -45,7 +45,7 @@ bool InitLogger() {
 	globalogger.addAppender(consoleappender);
 	globalogger.setLogLevel(ALL_LOG_LEVEL);
 
-	LOG_INFO("Logger “—‘ÿ»Î");
+	LOG_INFO("Logger has been inited.");
 	return true;
 }
 

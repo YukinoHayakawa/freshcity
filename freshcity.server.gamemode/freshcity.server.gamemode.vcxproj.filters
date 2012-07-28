@@ -149,9 +149,6 @@
     <ClCompile Include="application_data_waypoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="basic_algorithm_random.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="application_data_team.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

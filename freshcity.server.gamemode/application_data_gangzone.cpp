@@ -26,17 +26,13 @@
 #include "application_gamemode_sysmsgqueue.h"
 
 void GangZoneItem::_LoadOwnerData() {
-	if(!_rawdata.isEmpty()) {
-		try {
-			_name	= UTF8ToGBK(_rawdata["name"].String());
-			_owner	= _rawdata["owner"].OID();
-			_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
-			_zone->ShowForAll(_color);
-		} catch(mongo::UserException) {
-			throw std::runtime_error("无效领地文档");
-		}
-	} else {
-		throw std::runtime_error("不存在的领地文档");
+	try {
+		_name	= UTF8ToGBK(_rawdata["name"].String());
+		_owner	= _rawdata["owner"].OID();
+		_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
+		_zone->ShowForAll(_color);
+	} catch(mongo::UserException) {
+		throw std::runtime_error("Invalid gangzone data.");
 	}
 }
 

@@ -18,7 +18,6 @@
 #define FRESHCITY_APPLICATION_DATA_TEAM
 
 #include "application_database.h"
-#include "application_data_base.h"
 #include <boost/unordered_map.hpp>
 #include "application_data_profile.h"
 

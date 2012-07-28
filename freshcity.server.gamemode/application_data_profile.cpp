@@ -41,8 +41,6 @@ bool Profile::Role::MustHaveTarget() {
 }
 
 void Profile::_LoadMemberData() {
-	if(_rawdata.isEmpty())
-		throw std::runtime_error("玩家没有注册信息");
 	try {
 		_passwordhash	= _rawdata["auth"]["password"].String();
 		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
@@ -51,7 +49,7 @@ void Profile::_LoadMemberData() {
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
 	} catch(mongo::UserException) {
-		throw std::runtime_error("玩家基本数据不完整");
+		throw std::runtime_error("Invalid player profile.");
 	}
 }
 
@@ -82,7 +80,7 @@ void Profile::ApplyDataToPlayer() {
 		GiveMoney((int)attribute["money"].Number());
 		GiveScore((int)attribute["score"].Number());
 	} catch(mongo::UserException) {
-		throw std::runtime_error("玩家游戏数据不完整");
+		throw std::runtime_error("Imcomplete player gaming record.");
 	}
 }
 
@@ -109,8 +107,6 @@ bool Profile::IsBannedForGame() {
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
-	if(!_rawdata.isEmpty())
-		throw std::runtime_error("玩家注册资料已存在");
 	mongo::BSONObj submit = BSON(mongo::GENOID <<
 		"auth"		<< BSON(
 			"logname"	<< logname	<<
@@ -167,7 +163,7 @@ bool Profile::AuthPassword(const std::string& input) const {
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
-	if(newpassword.empty()) throw std::runtime_error("密码不能为空");
+	if(newpassword.empty()) throw std::runtime_error("Password cannot be blank.");
 	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
 	Sync();
 }
@@ -275,5 +271,5 @@ Profile::Role& Profile::GetRole() {
 	if(_role.get())
 		return *_role.get();
 	else
-		throw std::runtime_error("玩家未选择角色");
+		throw std::runtime_error("Player hasn't chosen role.");
 }

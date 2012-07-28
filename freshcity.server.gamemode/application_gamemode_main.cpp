@@ -81,7 +81,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	} catch(...) {
 		LOG_ERROR("发生未知错误");
 	}
-	LOG_INFO("Freshcity Gamemode 已载入");
+	LOG_INFO("Freshcity Gamemode has been inited.");
 	return true;
 }
 

@@ -21,13 +21,17 @@
 
 boost::property_tree::ptree _config;
 
-bool inline LoadConfig() {
+void ReloadConfig() {
 	try {
 		boost::property_tree::ini_parser::read_ini("freshcity.server.config.ini", _config);
-	} catch(...) {
-		LOG_FATAL("无法打开配置文件 freshcity.server.config.ini");
-		throw std::runtime_error("无法打开配置文件");
+	} catch(std::runtime_error& e) {
+		LOG_FATAL("Can't open freshcity.server.config.ini: " << e.what());
+		throw;
 	}
+}
+
+bool inline LoadConfig() {
+	ReloadConfig();
 	return true;
 }
 

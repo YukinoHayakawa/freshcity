@@ -134,7 +134,7 @@ string sha256(string msg_arr) {
 	vector<Block> M(num_blk, Block());
 	split(M, msg_arr);
 	
-	uint H[]={0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f,  	0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
+	uint H[]={0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 	for(uint i=0; i<num_blk; i++) {
 		vector<uint> W(64, 0);

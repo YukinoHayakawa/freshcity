@@ -17,9 +17,9 @@
 #ifndef FRESHCITY_APPLICATION_CONFIG
 #define FRESHCITY_APPLICATION_CONFIG
 
-#include <boost/shared_ptr.hpp>
 #include <boost/property_tree/ptree.hpp>
 
+void ReloadConfig();
 boost::property_tree::ptree& GetConfig();
 
 #define CONFIG_STRING(path) GetConfig().get<std::string>(path)

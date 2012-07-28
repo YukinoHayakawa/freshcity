@@ -80,9 +80,9 @@ public:
 	void SetSignedIn(bool signedin);
 	Coordinate5D GetDetailedPos() const;
 	mongo::OID GetTeamId() const;
-	/* 只更改玩家团队OID In-Game ID需要用SetTeam更改 */
+	/* Changes OID. Use SetTeam() to set In-Game ID. */
 	void SetTeamId(const mongo::OID& team);
-	/* 连杀计数器 返回当前连杀人数 */
+	/* Returns the amount of killing in a row. */
 	int KillCounter();
 	void inline GiveScore(int score) {
 		SetScore(GetScore() + score);
@@ -90,7 +90,7 @@ public:
 	void PlaySound(int soundid);
 	void SetRole(RolePtr& role);
 	Profile::Role& GetRole();
-	/* 玩家HP上限为100 */
+	/* HP is limited to 100. */
 	void inline GiveHealth(float health) {
 		SetHealth(((100 - GetHealth()) > health) ? GetHealth() + health : 100);
 	}

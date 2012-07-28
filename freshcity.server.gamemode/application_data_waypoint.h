@@ -19,7 +19,6 @@
 
 #include "application_data_base.h"
 #include "application_struct_coordinate.h"
-#include <string>
 
 class Waypoint : public SaveableItem {
 protected:

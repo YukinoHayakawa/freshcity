@@ -18,7 +18,6 @@
 #define FRESHCITY_APPLICATION_DATA_GANGZONE
 
 #include "application_database.h"
-#include "application_data_base.h"
 #include "application_data_profile.h"
 #include <sampgdk/a_samp.h>
 
@@ -55,7 +54,7 @@ public:
 	bool StartWar(Profile& attacker);
 	void CountEnemyKill();
 	void CountMemberDeath();
-	/* true = Ï®»÷Õß¶áÈ¡µØÅÌ */
+	/* true = Attacker wins. */
 	bool EndWar(bool causedbytimeout = false);
 	int GetAreaID() const;
 	bool InWar() const;

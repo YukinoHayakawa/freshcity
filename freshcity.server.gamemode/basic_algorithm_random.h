@@ -17,7 +17,15 @@
 #ifndef FRESHCITY_BASIC_ALGORITHM_RANDOM
 #define FRESHCITY_BASIC_ALGORITHM_RANDOM
 
-long long Random(long long min, long long max);
-int inline RandomRGBAColor() {return (int)Random(0x00000000, 0xFFFFFFFF);}
+#include <boost/random.hpp>
+
+template<typename numbertype>
+numbertype Random(numbertype min, numbertype max) {
+	boost::variate_generator<boost::mt19937&, boost::uniform_real<numbertype>>
+		gen(boost::mt19937((unsigned)clock()), boost::uniform_real<numbertype>(min, max));
+	return gen();
+}
+
+int inline RandomRGBAColor() { return (int)Random<__int64>(0x00000000, 0xFFFFFFFF); }
 
 #endif

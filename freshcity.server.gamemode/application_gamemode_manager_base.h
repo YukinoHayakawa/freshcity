@@ -52,7 +52,7 @@ public:
 		try {
 			return *_members.at(memberid).get();
 		} catch(...) {
-			throw std::runtime_error("尝试获取不存在的对象");
+			throw std::runtime_error("Object doesn't exist.");
 		}
 	}
 

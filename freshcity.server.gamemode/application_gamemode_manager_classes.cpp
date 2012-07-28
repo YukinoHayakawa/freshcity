@@ -32,7 +32,7 @@ bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int 
 
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) {
 	MemberMap::const_iterator iter(_members.find(cmd));
-	if(iter == _members.end()) throw std::runtime_error("不存在的命令");
+	if(iter == _members.end()) throw std::runtime_error("Unregistered command.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	unsigned int flags = iter->second->flags;
 	if(flags != 0) {
@@ -45,8 +45,9 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn())
 			throw std::runtime_error("此命令仅限未登录玩家使用");
 	}
-	if(iter->second->reqlevel > player.GetAdminLevel())
-		throw std::runtime_error("您没有足够管理权限来执行此命令");
+	int levelreq = iter->second->reqlevel;
+	if(levelreq > player.GetAdminLevel())
+		throw std::runtime_error("您至少需要 Level " + boost::lexical_cast<std::string>(levelreq) + " 来执行此命令");
 	iter->second->ptr(player, cmdline);
 }
 
@@ -59,7 +60,7 @@ bool DialogManager::Add(int dialogid, DIALOG_CALLBACK function) {
 
 void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
 	MemberMap::const_iterator iter(_members.find(dialogid));
-	if(iter == _members.end()) throw std::runtime_error("未注册回调的对话框");
+	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	iter->second->operator()(player, response, listitem, inputtext);
 }
@@ -71,7 +72,7 @@ bool EffectiveItemManager::Add(MemberPtr& item) {
 
 void EffectiveItemManager::Exec(int playerid, int itemid) {
 	MemberMap::const_iterator iter(_members.find(itemid));
-	if(iter == _members.end()) throw std::runtime_error("无效对象ID");
+	if(iter == _members.end()) throw std::runtime_error("Invalid object id.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	iter->second->Effect(player);
 	if(iter->second->IsDisposable()) _members.erase(iter);

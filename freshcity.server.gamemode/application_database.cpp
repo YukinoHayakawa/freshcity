@@ -26,13 +26,13 @@ bool _connected;
 mongo::DBClientConnection& GetDB() {
 	if(!_connected) {
 		std::string host(CONFIG_STRING("Database.host"));
-		LOG_INFO("尝试连接到 " << host.c_str() << " 的 mongodb 服务器");
+		LOG_INFO("Trying to connect the mongodb server at " << host.c_str());
 		try {
 			_dbconnection.connect(host);
 			_connected = true;
-			LOG_INFO("已连接");
+			LOG_INFO("Connected.");
 		} catch(mongo::DBException &e) {
-			LOG_FATAL("连接数据库时发生错误: " << e.toString().c_str());
+			LOG_FATAL("Failed to connect: " << e.toString().c_str());
 			throw;
 		}
 	}

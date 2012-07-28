@@ -25,13 +25,8 @@ protected:
 	int _id;
 
 public:
-	/* 是否一次性 */
-	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {
-		if(_id == 0) throw std::runtime_error("物品创建失败");
-	}
-	/* 执行其特殊效果 */
+	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {}
 	void virtual Effect(Profile& player) {}
-	/* 是否一次性 */
 	bool IsDisposable() const { return _disposable; }
 	int GetID() const { return _id; }
 };
