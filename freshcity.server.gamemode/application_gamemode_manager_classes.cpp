@@ -32,12 +32,13 @@ bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int 
 	return ItemManager::Add(cmd, MemberPtr(new CommandCallbackCell(CommandPtr(function), reqlevel, flags)));
 }
 
-#define MATCHREQ(req) ((iter->second->flags & req) == req)
+#define MATCHREQ(req) ((flags & req) == req)
 
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) {
 	MemberMap::const_iterator iter(_members.find(cmd));
 	if(iter == _members.end()) throw std::runtime_error("不存在的命令");
 	Profile& player = ProfileManager::GetInstance()[playerid];
+	unsigned int flags = iter->second->flags;
 	if(!MATCHREQ(NO_REQUIREMENT)) {
 		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限已注册玩家使用");

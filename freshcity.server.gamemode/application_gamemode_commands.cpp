@@ -35,7 +35,7 @@ public:
 #define CMD(callback, cmd, levelreq, flags) \
 	void Cmd##callback(Profile& player, const char* cmdline);\
 	_CmdRegister __CmdReg##callback(cmd, Cmd##callback, levelreq, flags);\
-	void Cmd##callback(Profile& player, const char* cmdline)\
+	void Cmd##callback(Profile& player, const char* cmdline)
 
 CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 	player.Sync();

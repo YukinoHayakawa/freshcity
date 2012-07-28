@@ -21,11 +21,20 @@
 #include "application_gamemode_colordefinitions.h"
 #include "application_gamemode_role_classes.h"
 
-#define DIALOG(x) void Dlg##x(Profile& player, bool response, int listitem, const char* inputtext)
+class _DialogRegister {
+public:
+	_DialogRegister(int dialogid, DIALOG_CALLBACK function) {
+		DialogManager::GetInstance().Add(dialogid, function);
+	}
+};
 
-DIALOG(SelectTeam) {
-	std::string id(inputtext);
-	id = id.substr(0, 24);
+#define DIALOG(id) \
+	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext);\
+	_DialogRegister __DlgReg_##id(id, Dlg##id);\
+	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext)
+
+DIALOG(DIALOG_TEAM_SELECT) {
+	std::string id(inputtext, 24);
 	mongo::OID ptid(player.GetTeamId());
 	if(ptid != mongo::OID(id)) {
 		if(player.GetTeamId().isSet())
@@ -36,7 +45,7 @@ DIALOG(SelectTeam) {
 		"Assault\nMedic\nMechanic\nEngineer", "È·¶¨", "");
 }
 
-DIALOG(SelectRole) {
+DIALOG(DIALOG_ROLE_SELECT) {
 	switch(listitem) {
 	case 0:
 		player.SetRole(Profile::RolePtr(new Assault(player)));
@@ -57,7 +66,7 @@ DIALOG(SelectRole) {
 	player.Spawn();
 }
 
-DIALOG(Register) {
+DIALOG(DIALOG_PROFILE_REGISTER) {
 	if(inputtext[0] == 0) {
 		player.SendChatMessage(COLOR_ERROR, "ÃÜÂë²»ÄÜÎª¿Õ");
 	} else {
@@ -75,7 +84,7 @@ DIALOG(Register) {
 	ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "×¢²á", "ÇëÊäÈëÄúµÄÃÜÂë:", "×¢²á", "");
 }
 
-DIALOG(Login) {
+DIALOG(DIALOG_PROFILE_LOGIN) {
 	if(!player.AuthPassword(inputtext)) {
 		ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "µÇÂ¼", "ÇëÊäÈëÄúµÄÃÜÂëÒÔµÇÂ¼:", "µÇÂ¼", "");
 		throw std::runtime_error("ÃÜÂë´íÎó");
@@ -84,18 +93,3 @@ DIALOG(Login) {
 	player.ApplyDataToPlayer();
 	player.SendChatMessage(COLOR_SUCC, "µÇÂ¼³É¹¦");
 }
-
-#define REGDLG(x, y) DlgMgr.Add(x, y)
-
-bool RegisterPlayerDlgs() {
-	DialogManager& DlgMgr = DialogManager::GetInstance();
-	REGDLG(DIALOG_TEAM_SELECT,			DlgSelectTeam);
-	REGDLG(DIALOG_ROLE_SELECT,			DlgSelectRole);
-	REGDLG(DIALOG_PROFILE_REGISTER,		DlgRegister);
-	REGDLG(DIALOG_PROFILE_LOGIN,		DlgLogin);
-	return true;
-}
-
-#undef REGDLG
-
-void* PlayerDlgInit((void*)RegisterPlayerDlgs());
