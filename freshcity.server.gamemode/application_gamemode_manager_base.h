@@ -74,4 +74,8 @@ public:
 	for(manager::MemberMap::iterator iter = manager::GetInstance().GetIterator(), end; \
 	iter != end; iter++)
 
+#define FETCH_ALL_FROM_DATABASE(col) std::auto_ptr<mongo::DBClientCursor> _cursor = \
+	GetDB().query(CONFIG_STRING(col), mongo::BSONObj());\
+	while(_cursor->more())
+
 #endif

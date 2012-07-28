@@ -37,4 +37,7 @@ public:
 	void Create(const std::string& title, const mongo::OID& creator);
 };
 
+void CreateTeleportTrigger(const mongo::OID& waypoint, const Coordinate3D& pos);
+void LoadAllTeleportTriggerFromDatabase();
+
 #endif

@@ -60,4 +60,14 @@ public:
 	void Effect(Profile& player);
 };
 
+// TeleportTrigger
+class TeleportTrigger : public Pickup {
+private:
+	mongo::OID _waypoint;
+
+public:
+	TeleportTrigger(const mongo::OID& waypoint, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
 #endif

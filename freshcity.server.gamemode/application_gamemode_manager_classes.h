@@ -41,7 +41,7 @@ struct CommandCallbackCell {
 
 class CommandManager : public ItemManager<CommandManager, std::string, CommandCallbackCell> {
 public:
-	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags);
+	bool Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags = 0);
 	void Exec(int playerid, const std::string& cmd, const char* cmdline);
 };
 
@@ -49,8 +49,7 @@ enum CommandRequirement {
 	NEED_REGISTERED = 1,
 	NEED_SIGNED_IN = 2,
 	DONOT_REGISTERED = 4,
-	DONOT_SIGNED_IN = 8,
-	NO_REQUIREMENT = 16
+	DONOT_SIGNED_IN = 8
 };
 
 // DialogManager

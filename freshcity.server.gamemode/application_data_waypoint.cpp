@@ -20,6 +20,8 @@
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
 #include "basic_algorithm_gbkencoder.h"
+#include "application_gamemode_manager_classes.h"
+#include "application_gamemode_pickup_classes.h"
 
 void Waypoint::_LoadData() {
 	if(!_rawdata.isEmpty()) {
@@ -86,4 +88,20 @@ void Waypoint::Create(const std::string& title, const mongo::OID& creator) {
 		"interior"	<< _waypoint.interior <<
 		"facing"	<< _waypoint.facingangle);
 	SaveableItem::Create(submit, false);
+}
+
+void CreateTeleportTrigger(const mongo::OID& waypoint, const Coordinate3D& pos) {
+	GetDB().insert(CONFIG_STRING("Database.tptrigger"), 
+		BSON("waypoint" << waypoint << "xy" << BSON_ARRAY(pos.x << pos.y) << "z" << pos.z));
+	PickupManager::GetInstance().Add(PickupManager::MemberPtr(new TeleportTrigger(
+		waypoint, pos.x, pos.y, pos.z)));
+}
+
+void LoadAllTeleportTriggerFromDatabase() {
+	FETCH_ALL_FROM_DATABASE("Database.tptrigger") {
+		mongo::BSONObj item(_cursor->next());
+		std::vector<mongo::BSONElement> xy(item["xy"].Array());
+		PickupManager::GetInstance().Add(PickupManager::MemberPtr(new TeleportTrigger(
+			item["waypoint"].OID(), (float)xy[0].Number(), (float)xy[1].Number(), (float)item["z"].Number())));
+	}
 }

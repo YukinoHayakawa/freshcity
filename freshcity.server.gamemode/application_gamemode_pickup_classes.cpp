@@ -19,6 +19,7 @@
 #include "application_algorithms.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_gamemode_colordefinitions.h"
+#include "application_data_waypoint.h"
 
 // MedicalPickup
 MedicalPickup::MedicalPickup(float health, float x, float y, float z)
@@ -62,4 +63,13 @@ void TurfWarTrigger::Effect(Profile& player) {
 		else
 			gz.StartWar(player);
 	}
+}
+
+// TeleportTrigger
+TeleportTrigger::TeleportTrigger(const mongo::OID& waypoint, float x, float y, float z)
+	: _waypoint(waypoint), Pickup(1318, 1, x, y, z, false) {}
+
+void TeleportTrigger::Effect(Profile& player) {
+	Waypoint target(_waypoint);
+	target.PerformTeleport(player.GetId());
 }

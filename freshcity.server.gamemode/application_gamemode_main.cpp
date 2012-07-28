@@ -73,6 +73,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	try {
 		TeamMgr.LoadAllFromDatabase();
 		GangZoneManager::GetInstance().LoadAllFromDatabase();
+		LoadAllTeleportTriggerFromDatabase();
 	} catch(std::runtime_error& e) {
 		LOG_ERROR(e.what());
 	} catch(mongo::UserException& e) {

@@ -18,10 +18,6 @@
 #include "application_gamemode_manager_classes.h"
 #include "application_config.h"
 
-#define FETCH_ALL_FROM_DATABASE(col) std::auto_ptr<mongo::DBClientCursor> _cursor = \
-	GetDB().query(CONFIG_STRING(col), mongo::BSONObj());\
-	while(_cursor->more())
-
 // ProfileManager
 bool ProfileManager::Add(int playerid) {
 	return ItemManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
@@ -39,7 +35,7 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 	if(iter == _members.end()) throw std::runtime_error("不存在的命令");
 	Profile& player = ProfileManager::GetInstance()[playerid];
 	unsigned int flags = iter->second->flags;
-	if(!MATCHREQ(NO_REQUIREMENT)) {
+	if(flags != 0) {
 		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限已注册玩家使用");
 		if(MATCHREQ(NEED_SIGNED_IN) && !ProfileManager::GetInstance()[playerid].IsSignedIn())
