@@ -17,6 +17,7 @@
 #include "application_database.h"
 #include "application_gamemode_timercallbacks.h"
 #include "application_gamemode_manager_classes.h"
+#include "application_gamemode_colordefinitions.h"
 
 int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat) {
 	HANDLE timerid = 0;
@@ -30,12 +31,20 @@ void DestroyTimer(int timerid) {
 	DeleteTimerQueueTimer(0, (HANDLE)timerid, 0);
 }
 
+#define REF(cls) cls& ref(*(cls*)param)
+
 TIMERCALLBACK(EndTurfWar) {
-	GangZoneItem& gz(*(GangZoneItem*)param);
-	gz.EndWar();
+	REF(GangZoneItem);
+	ref.EndWar();
 }
 
 TIMERCALLBACK(TurfWarWaitTimeout) {
-	GangZoneItem& gz(*(GangZoneItem*)param);
-	gz.EndWar(true);
+	REF(GangZoneItem);
+	ref.EndWar(true);
+}
+
+TIMERCALLBACK(AutoSaveProfile) {
+	REF(Profile);
+	ref.Sync();
+	ref.SendChatMessage(COLOR_SUCC, "Profile synchronized.");
 }

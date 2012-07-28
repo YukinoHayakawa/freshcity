@@ -55,10 +55,12 @@ private:
 	time_t _lastkill;
 	int _killcounter;
 	RolePtr _role;
+	int _autosavetimer;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
 	Profile(int playerid, const std::string& logname);
+	~Profile();
 	bool IsProfileDeleted();
 	bool IsBannedForGame();
 	void ApplyDataToPlayer();

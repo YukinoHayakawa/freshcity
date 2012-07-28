@@ -19,6 +19,7 @@
 #include "application_config.h"
 #include "application_algorithms.h"
 #include "basic_algorithm_gbkencoder.h"
+#include "application_gamemode_timercallbacks.h"
 
 Profile::Role::Role(Profile& player, int timelimit, bool musthavetarget)
 	: _timelimit(timelimit), _skilllastuse(0), _musthavetarget(musthavetarget),
@@ -85,7 +86,7 @@ void Profile::ApplyDataToPlayer() {
 }
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
-	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid),
+	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid), _autosavetimer(0),
 	_adminlevel(0), _deleted(false), _banned(false), _signedin(false), _killcounter(0), _lastkill(0) {
 		_LoadMemberData();
 }
@@ -93,9 +94,13 @@ Profile::Profile(int playerid, const mongo::OID& uniqueid)
 Profile::Profile(int playerid, const std::string& logname)
 	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
 	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false),
-	_killcounter(0), _lastkill(0) {
+	_killcounter(0), _lastkill(0), _autosavetimer(0) {
 		if(!_rawdata.isEmpty())
 			_LoadMemberData();
+}
+
+Profile::~Profile() {
+	if(_autosavetimer != 0) DestroyTimer(_autosavetimer);
 }
 
 bool Profile::IsProfileDeleted() {
@@ -227,6 +232,8 @@ bool Profile::IsSignedIn() const {
 
 void Profile::SetSignedIn(bool signedin) {
 	_signedin = signedin;
+	if(signedin && _autosavetimer == 0)
+		_autosavetimer = CreateTimer(TimerCallback_AutoSaveProfile, this, CONFIG_INT("Gaming.autosave") * 60000, true);
 }
 
 Coordinate5D Profile::GetDetailedPos() const {
@@ -271,5 +278,5 @@ Profile::Role& Profile::GetRole() {
 	if(_role.get())
 		return *_role.get();
 	else
-		throw std::runtime_error("Player hasn't chosen role.");
+		throw std::runtime_error("Player hasn't chosen a role.");
 }
