@@ -51,7 +51,7 @@ private:
 	bool _deleted;
 	bool _banned;
 	bool _signedin;
-	int _team;
+	mongo::OID _team;
 	time_t _lastkill;
 	int _killcounter;
 	RolePtr _role;
@@ -79,8 +79,9 @@ public:
 	bool IsSignedIn() const;
 	void SetSignedIn(bool signedin);
 	Coordinate5D GetDetailedPos() const;
-	int GetTeamFixed() const;
-	bool SetTeamFixed(int teamid);
+	mongo::OID GetTeamId() const;
+	/* 只更改玩家团队OID In-Game ID需要用SetTeam更改 */
+	void SetTeamId(const mongo::OID& team);
 	/* 连杀计数器 返回当前连杀人数 */
 	int KillCounter();
 	void inline GiveScore(int score) {

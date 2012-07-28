@@ -91,17 +91,16 @@ public:
 class TeamManager : public ItemManager<TeamManager, std::string, Team> {
 private:
 	IdentifierAllocator _idgen;
-	typedef boost::unordered_map<int, std::string> IDNameMap;
-	IDNameMap _idtoname;
 
 protected:
 	TeamManager();
 
 public:
 	friend class ItemManager<TeamManager, std::string, Team>;
-	bool Add(const std::string& teamname);
-	bool Remove(const std::string& teamname);
-	std::string GetNameByID(int teamid) const;
+	bool Add(const mongo::OID& leader, const std::string& name, int color);
+	bool Remove(const mongo::OID& teamid);
+	void LoadAllFromDatabase();
+	Team& operator[](const mongo::OID& teamid);
 };
 
 // GangZoneManager

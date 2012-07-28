@@ -28,7 +28,7 @@ void GangZoneArea::OnPlayerEnter(Profile& player) {
 	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
 	player.SendChatMessage(COLOR_INFO, "½øÈë " + ColorToEmbeddingString(
 		TeamManager::GetInstance()[gz.GetOwner()].GetColor()) + gz.GetName());
-	if(gz.InWar() && TeamManager::GetInstance().GetNameByID(player.GetTeamFixed()).compare(gz.GetOwner()) == 0)
+	if(gz.InWar() && player.GetTeamId() == gz.GetOwner())
 		gz.MemberArrived();
 }
 

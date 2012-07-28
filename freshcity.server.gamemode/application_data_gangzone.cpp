@@ -29,7 +29,7 @@ void GangZoneItem::_LoadOwnerData() {
 	if(!_rawdata.isEmpty()) {
 		try {
 			_name	= UTF8ToGBK(_rawdata["name"].String());
-			_owner	= UTF8ToGBK(_rawdata["owner"].String());
+			_owner	= _rawdata["owner"].OID();
 			_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
 			_zone->ShowForAll(_color);
 		} catch(mongo::UserException) {
@@ -82,12 +82,12 @@ std::string GangZoneItem::GetName() const {
 	return _name;
 }
 
-void GangZoneItem::SetOwner(const std::string& owner) {
-	Update(BSON("$set" << BSON("owner" << GBKToUTF8(owner))), true);
+void GangZoneItem::SetOwner(const mongo::OID& owner) {
+	Update(BSON("$set" << BSON("owner" << owner)), true);
 	_LoadOwnerData();
 }
 
-std::string GangZoneItem::GetOwner() const {
+mongo::OID GangZoneItem::GetOwner() const {
 	return _owner;
 }
 
@@ -101,10 +101,10 @@ void GangZoneItem::Redraw() {
 
 bool GangZoneItem::StartWar(Profile& attacker) {
 	if(_warinfo.InWar) return false;
-	std::string tname = TeamManager::GetInstance().GetNameByID(attacker.GetTeamFixed());
-	if(tname.compare(_owner) == 0) return false;
+	if(attacker.GetTeamId() == _owner) return false;
+	std::string tname = TeamManager::GetInstance()[attacker.GetTeamId()].GetName();
 	SystemMessageQueue::GetInstance().PushMessage(tname + " has started a turfwar");
-	_warinfo.Attacker = tname;
+	_warinfo.Attacker = attacker.GetTeamId();
 	_endtimerid = CreateTimer(TimerCallback_EndTurfWar, this,
 		CONFIG_INT("Gaming.turfwarlast") * 60000, false);
 	bool memberinzone = false;
@@ -137,11 +137,13 @@ bool GangZoneItem::EndWar(bool causedbytimeout) {
 	if(_warinfo.InWar) {
 		if(causedbytimeout) DestroyTimer(_endtimerid);
 		if(causedbytimeout || _warinfo.EnemyKill < _warinfo.MemberDeath) {
-			SystemMessageQueue::GetInstance().PushMessage(_warinfo.Attacker + " has won the turfwar");
+			SystemMessageQueue::GetInstance().PushMessage(
+				TeamManager::GetInstance()[_warinfo.Attacker].GetName() + " has won the turfwar");
 			SetOwner(_warinfo.Attacker);
 			ret = true;
 		} else if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
-			SystemMessageQueue::GetInstance().PushMessage(GetOwner() + " has won the turfwar");
+			SystemMessageQueue::GetInstance().PushMessage(
+				TeamManager::GetInstance()[GetOwner()].GetName() + " has won the turfwar");
 		}
 		_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
 		_warinfo.Attacker.clear();
@@ -159,7 +161,7 @@ bool GangZoneItem::InWar() const {
 	return _warinfo.InWar;
 }
 
-std::string GangZoneItem::GetAttacker() const {
+mongo::OID GangZoneItem::GetAttacker() const {
 	return _warinfo.Attacker;
 }
 

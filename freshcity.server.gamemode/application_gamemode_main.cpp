@@ -71,10 +71,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	for(int i = 1; i < 299; i++) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	try {
-		TeamMgr.Add("The S.F.P.D.");
-		TeamMgr["The S.F.P.D."].SetColor(COLOR_STEELBLUE);
-		TeamMgr.Add("Family Leon");
-		TeamMgr["Family Leon"].SetColor(COLOR_GREEN);
+		TeamMgr.LoadAllFromDatabase();
 		GangZoneManager::GetInstance().LoadAllFromDatabase();
 	} catch(std::runtime_error& e) {
 		LOG_ERROR(e.what());
@@ -106,7 +103,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 				} else
 					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
 			}
-			player.SetTeamFixed(NO_TEAM);
+			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
 		} catch(std::runtime_error& e) {
@@ -132,12 +129,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDisconnect(int playerid, int reason) {
 		Profile& player =  ProfileMgr[playerid];
 		if(reason != 0 /* timeout */ && player.IsSignedIn())
 			player.Sync();
-		int playerteamid = player.GetTeamFixed();
-		if(playerteamid != NO_TEAM)
-			TeamMgr[TeamMgr.GetNameByID(playerteamid)].Quit(ProfileMgr[playerid]);
-		ProfileMgr.Remove(playerid);
-		SendClientMessageToAll(COLOR_INFO, std::string(GetPlayerName(playerid) + " 离开服务器").c_str());
+		mongo::OID playerteamid = player.GetTeamId();
+		if(playerteamid.isSet())
+			TeamMgr[playerteamid].Quit(player);
+		SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 离开服务器").c_str());
 		SendDeathMessage(INVALID_PLAYER_ID, playerid, 201);
+		ProfileMgr.Remove(playerid);
 	} catch(...) {
 		return false;
 	}
@@ -222,6 +219,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	SendDeathMessage(killerid, playerid, reason);
 	try {
 		Profile& player = ProfileMgr[playerid];
+		Profile& killer = ProfileMgr[killerid];
 		player.GetRole().OnDeath();
 
 		// 掉落武器
@@ -240,7 +238,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 		// 连杀奖励
 		if(killerid != INVALID_PLAYER_ID) {
-			Profile& killer = ProfileMgr[killerid];
 			killer.GiveScore(1);
 			killer.GiveMoney(1000);
 			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
@@ -287,11 +284,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
 			if(zoneid != -1) {
 				GangZoneItem& gz = GZMgr[zoneid];
-				if(TeamMgr.GetNameByID(player.GetTeamFixed()).compare(gz.GetOwner()) == 0 &&
-					TeamMgr.GetNameByID(ProfileMgr[killerid].GetTeamFixed()).compare(gz.GetAttacker()) == 0)
+				if(player.GetTeamId() == gz.GetOwner() && killer.GetTeamId() == gz.GetAttacker())
 					gz.CountMemberDeath();
-				if(TeamMgr.GetNameByID(player.GetTeamFixed()).compare(gz.GetAttacker()) == 0 &&
-					TeamMgr.GetNameByID(ProfileMgr[killerid].GetTeamFixed()).compare(gz.GetOwner()) == 0)
+				if(player.GetTeamId() == gz.GetAttacker() && killer.GetTeamId() == gz.GetOwner())
 					gz.CountEnemyKill();
 			}
 		}
@@ -305,7 +300,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 	std::string teams;
-	MANAGER_FOREACH(TeamManager) teams.append(iter->second->GetName()).append("\n");
+	MANAGER_FOREACH(TeamManager) teams.append(iter->first).append(" ").append(iter->second->GetName()).append("\n");
 	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  teams.c_str(), "确定", "");
 	return false;
 }
@@ -314,7 +309,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
 		Profile& player = ProfileMgr[playerid];
 		player.GetRole().OnSpawn();
-		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr.GetNameByID(player.GetTeamFixed()));
+		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr[player.GetTeamId()].GetName());
 		spawnpoint.PerformTeleport(playerid);
 		MANAGER_FOREACH(GangZoneManager) iter->second->Redraw();
 	} catch(std::runtime_error& e) {
@@ -328,7 +323,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	SetPlayerChatBubble(playerid, text, GetPlayerColor(playerid), 100.0f, 5000);
 	Profile& p(ProfileMgr[playerid]);
-	Team& t(TeamMgr[TeamMgr.GetNameByID(p.GetTeamFixed())]);
+	Team& t(TeamMgr[p.GetTeamId()]);
 	std::stringstream chat;
 	chat << ColorToEmbeddingString(t.GetColor()) << "[" << t.GetName() << "]" <<
 		ColorToEmbeddingString(p.GetColor()) << p.GetName() << "{ffffff}: " << text;

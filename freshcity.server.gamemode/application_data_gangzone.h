@@ -27,13 +27,13 @@ protected:
 	boost::shared_ptr<GangZone> _zone;
 	int _areaid, _triggerid;
 	std::string _name;
-	std::string _owner;
+	mongo::OID _owner;
 	int _color;
 	int _endtimerid, _timeouttimerid;
 
 	struct TurfWarInfo {
 		bool InWar;
-		std::string Attacker;
+		mongo::OID Attacker;
 		int MemberDeath, EnemyKill;
 		TurfWarInfo() : InWar(false), MemberDeath(0), EnemyKill(0) {}
 	} _warinfo;
@@ -48,8 +48,8 @@ public:
 	~GangZoneItem();
 	void SetName(const std::string& name);
 	std::string GetName() const;
-	void SetOwner(const std::string& owner);
-	std::string GetOwner() const;
+	void SetOwner(const mongo::OID& owner);
+	mongo::OID GetOwner() const;
 	GangZone& Get();
 	void Redraw();
 	bool StartWar(Profile& attacker);
@@ -59,7 +59,7 @@ public:
 	bool EndWar(bool causedbytimeout = false);
 	int GetAreaID() const;
 	bool InWar() const;
-	std::string GetAttacker() const;
+	mongo::OID GetAttacker() const;
 	void MemberArrived();
 };
 

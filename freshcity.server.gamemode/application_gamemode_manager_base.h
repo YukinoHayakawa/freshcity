@@ -48,7 +48,7 @@ public:
 		return true;
 	}
 
-	value& Get(const key& memberid) {
+	virtual value& Get(const key& memberid) {
 		try {
 			return *_members.at(memberid).get();
 		} catch(...) {
@@ -56,7 +56,7 @@ public:
 		}
 	}
 
-	value& operator[](const key& memberid) {
+	virtual value& operator[](const key& memberid) {
 		return Get(memberid);
 	}
 

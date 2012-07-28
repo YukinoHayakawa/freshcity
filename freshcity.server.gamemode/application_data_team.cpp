@@ -20,17 +20,35 @@
 #include "application_data_team.h"
 #include <sampgdk/a_players.h>
 #include "application_gamemode_colordefinitions.h"
-#include "basic_algorithm_random.h"
 
-Team::Team(const std::string& name, int teamid) : SaveableItem(CONFIG_STRING("Database.team")),
-	_name(name), _score(0), _ingameteamid(teamid), _color(RandomRGBAColor()), _level(0) {}
+void Team::__LoadData() {
+	_name	= UTF8ToGBK(_rawdata["name"].String());
+	_color	= (int)_rawdata["color"].Number();
+	_leader	= _rawdata["leader"].OID();
+}
+
+Team::Team(const mongo::OID& uniqueid, int teamid)
+	: SaveableItem(CONFIG_STRING("Database.team"), uniqueid), _ingameteamid(teamid) {
+		__LoadData();
+}
+
+Team::Team(const mongo::BSONObj& data, int teamid)
+	: SaveableItem(CONFIG_STRING("Database.team")), _ingameteamid(teamid) {
+		InitData(data);
+		__LoadData();
+}
+
+Team::Team(const mongo::OID& leader, const std::string& name, int color, int teamid)
+	: SaveableItem(CONFIG_STRING("Database.team")), _name(name), _leader(leader),
+	_ingameteamid(teamid), _color(color) {}
 
 void Team::Join(Profile& player) {
-	if(IsMember(player.GetId()))
+	if(InGame(player.GetId()))
 		throw std::runtime_error("您已经是该团队的成员了");
-	if(player.GetTeamFixed() != NO_TEAM)
+	if(player.GetTeamId().isSet())
 		throw std::runtime_error("您已加入过别的团队了 请执行 /teamquit 退出先前加入的团队");
-	player.SetTeamFixed(_ingameteamid);
+	player.SetTeam(_ingameteamid);
+	player.SetTeamId(_uniqueid);
 	player.SendChatMessage(COLOR_SUCC, "您已加入团队 " + _name);
 	_onlineplayers.insert(std::make_pair(player.GetId(), player.GetUniqueID()));
 }
@@ -39,13 +57,16 @@ void Team::Quit(Profile& player) {
 	TeamMemberMap::iterator iter = _onlineplayers.find(player.GetId());
 	if(iter == _onlineplayers.end())
 		throw std::runtime_error("您并未加入此团队");
-	player.SetTeamFixed(NO_TEAM);
+	player.SetTeam(NO_TEAM);
+	player.SetTeamId(mongo::OID());
 	player.SendChatMessage(COLOR_SUCC, "您已退出团队 " + _name);
 	_onlineplayers.erase(iter);
 }
 
 void Team::SetName(const std::string& name) {
 	_name = name;
+	if(IsEmpty()) return;
+	Update(BSON("$set" << BSON("name" << GBKToUTF8(name))), false);
 }
 
 std::string Team::GetName() const {
@@ -54,30 +75,16 @@ std::string Team::GetName() const {
 
 void Team::SetColor(int color) {
 	_color = color;
+	if(IsEmpty()) return;
+	Update(BSON("$set" << BSON("color" << color)), false);
 }
 
 int Team::GetColor() const {
 	return _color;
 }
 
-void Team::SetLevel(int level) {
-	_level = level;
-}
-
-int Team::GetLevel() const {
-	return _level;
-}
-
-bool Team::IsMember(int playerid) const {
+bool Team::InGame(int playerid) const {
 	return _onlineplayers.find(playerid) != _onlineplayers.end();
-}
-
-int Team::GetScore() const {
-	return _score;
-}
-
-void Team::IncreaseScore(int amount) {
-	_score += amount;
 }
 
 int Team::GetIngameID() const {
@@ -90,4 +97,17 @@ bool Team::HasOnlineMember() const {
 
 Team::TeamMemberMap::iterator Team::GetMemberIterator() {
 	return TeamMemberMap::iterator(_onlineplayers.begin());
+}
+
+void Team::Create() {
+	mongo::BSONObj submit(BSON(mongo::GENOID <<
+		"name"		<< _name <<
+		"leader"	<< _leader <<
+		"color"		<< _color
+		));
+	SaveableItem::Create(submit, false);
+}
+
+mongo::OID Team::GetLeader() {
+	return _leader;
 }

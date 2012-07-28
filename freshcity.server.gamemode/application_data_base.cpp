@@ -28,7 +28,7 @@ SaveableItem::SaveableItem(const std::string& collection, const mongo::BSONObj& 
 SaveableItem::SaveableItem(const std::string& collection) : _collection(collection) {}
 
 void SaveableItem::Refetch() {
-	if(_uniqueid.compare(mongo::OID()) == 0)
+	if(!_uniqueid.isSet())
 		throw std::runtime_error("尝试重新获取的对象不存在");
 	_rawdata = GetDB().findOne(_collection, BSON("_id" << _uniqueid));
 	if(_rawdata.isEmpty())
@@ -56,7 +56,7 @@ void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {
 }
 
 void SaveableItem::Update(const mongo::BSONObj& modifier, bool refresh) {
-	if(_uniqueid.compare(mongo::OID()) == 0)
+	if(!_uniqueid.isSet())
 		throw std::runtime_error("尝试修改的对象不存在");
 	GetDB().update(_collection, BSON("_id" << _uniqueid), modifier);
 	std::string errormsg = GetDB().getLastError();

@@ -29,28 +29,27 @@ public:
 protected:
 	std::string _name;
 	TeamMemberMap _onlineplayers;
-	int _score;
 	int _ingameteamid;
 	int _color;
-	int _level;
+	mongo::OID _leader;
+	void __LoadData();
 
 public:
-	//Team(const mongo::OID& uniqueid);
-	Team(const std::string& name, int teamid);
+	Team(const mongo::OID& uniqueid, int teamid);
+	Team(const mongo::BSONObj& data, int teamid);
+	Team(const mongo::OID& leader, const std::string& name, int color, int teamid);
 	void Join(Profile& player);
 	void Quit(Profile& player);
 	void SetName(const std::string& name);
 	std::string GetName() const;
 	void SetColor(int color);
 	int GetColor() const;
-	void SetLevel(int level);
-	int GetLevel() const;
-	bool IsMember(int playerid) const;
-	int GetScore() const;
-	void IncreaseScore(int amount);
+	bool InGame(int playerid) const;
 	int GetIngameID() const;
 	bool HasOnlineMember() const;
 	TeamMemberMap::iterator GetMemberIterator();
+	void Create();
+	mongo::OID GetLeader();
 };
 
 #endif

@@ -24,10 +24,13 @@
 #define DIALOG(x) void Dlg##x(Profile& player, bool response, int listitem, const char* inputtext)
 
 DIALOG(SelectTeam) {
-	if(player.GetTeamFixed() != TeamManager::GetInstance()[inputtext].GetIngameID()) {
-		if(player.GetTeamFixed() != NO_TEAM)
-			TeamManager::GetInstance()[TeamManager::GetInstance().GetNameByID(player.GetTeamFixed())].Quit(player);
-		TeamManager::GetInstance()[inputtext].Join(player);
+	std::string id(inputtext);
+	id = id.substr(0, 24);
+	mongo::OID ptid(player.GetTeamId());
+	if(ptid != mongo::OID(id)) {
+		if(player.GetTeamId().isSet())
+			TeamManager::GetInstance()[ptid].Quit(player);
+		TeamManager::GetInstance()[mongo::OID(id)].Join(player);
 	}
 	ShowPlayerDialog(player.GetId(), DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业",
 		"Assault\nMedic\nMechanic\nEngineer", "确定", "");

@@ -83,29 +83,33 @@ void EffectiveItemManager::Exec(int playerid, int itemid) {
 // TeamManager
 TeamManager::TeamManager() : _idgen(255) {}
 
-bool TeamManager::Add(const std::string& teamname) {
+bool TeamManager::Add(const mongo::OID& leader, const std::string& name, int color) {
 	int id = _idgen.Get();
-	MemberPtr ptr(new Team(teamname, id));
-	if(ItemManager::Add(teamname, ptr)) {
-		_idtoname.insert(std::make_pair(id, teamname));
-		return true;
-	} else return false;
+	MemberPtr item(new Team(leader, name, color, id));
+	item->Create();
+	return ItemManager::Add(item->GetUniqueID().str(), item);
 }
 
-bool TeamManager::Remove(const std::string& teamname) {
-	int tid = ItemManager::Get(teamname).GetIngameID();
-	if(ItemManager::Remove(teamname)) {
-		_idtoname.erase(_idtoname.find(tid));
-		_idgen.Return(tid);
+bool TeamManager::Remove(const mongo::OID& teamid) {
+	MemberMap::iterator iter(_members.find(teamid.str()));
+	int id = iter->second->GetIngameID();
+	if(ItemManager::Remove(iter->second->GetUniqueID().str())) {
+		_idgen.Return(id);
 		return true;
 	} return false;
 }
 
-std::string TeamManager::GetNameByID(int teamid) const {
-	IDNameMap::const_iterator iter = _idtoname.find(teamid);
-	if(iter == _idtoname.end())
-		throw std::runtime_error("无法获得指定团队的ID");
-	return iter->second;
+void TeamManager::LoadAllFromDatabase() {
+	MANAGER_FOREACH(TeamManager) _idgen.Return(iter->second->GetIngameID());
+	_members.clear();
+	FETCH_ALL_FROM_DATABASE("Database.team") {
+		MemberPtr item(new Team(_cursor->next(), _idgen.Get()));
+		ItemManager::Add(item->GetUniqueID().str(), item);
+	}
+}
+
+Team& TeamManager::operator[](const mongo::OID& teamid) {
+	return Get(teamid.str());
 }
 
 // GangZoneManager

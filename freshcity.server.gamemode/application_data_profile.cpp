@@ -239,13 +239,12 @@ Coordinate5D Profile::GetDetailedPos() const {
 	return Coordinate5D(x, y, z, Player::GetVirtualWorld(), Player::GetInterior(), Player::GetFacingAngle());
 }
 
-int Profile::GetTeamFixed() const {
+mongo::OID Profile::GetTeamId() const {
 	return _team;
 }
 
-bool Profile::SetTeamFixed(int teamid) {
-	_team = teamid;
-	return Player::SetTeam(teamid);
+void Profile::SetTeamId(const mongo::OID& team) {
+	_team = team;
 }
 
 int Profile::KillCounter() {
