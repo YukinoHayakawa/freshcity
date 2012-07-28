@@ -220,7 +220,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 	SendDeathMessage(killerid, playerid, reason);
 	try {
 		Profile& player = ProfileMgr[playerid];
-		Profile& killer = ProfileMgr[killerid];
 		player.GetRole().OnDeath();
 
 		// µôÂäÎäÆ÷
@@ -236,9 +235,11 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 				PickupManager::GetInstance().Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],
 				deadpos.x + genoffset(), deadpos.y + genoffset(), deadpos.z)));
 		}
-
-		// Á¬É±½±Àø
+		
 		if(killerid != INVALID_PLAYER_ID) {
+			Profile& killer = ProfileMgr[killerid];
+
+			// Á¬É±½±Àø
 			killer.GiveScore(1);
 			killer.GiveMoney(1000);
 			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
@@ -277,18 +278,18 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			}
 			if(kills > 1)
 				SystemMessageQueue::GetInstance().PushMessage(killer.GetName() + killmsg);
-		}
 
-		// TurfWar Counter
-		if(IsPlayerInAnyDynamicArea(playerid) && killerid != INVALID_PLAYER_ID) {
-			GangZoneManager& GZMgr = GangZoneManager::GetInstance();
-			int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
-			if(zoneid != -1) {
-				GangZoneItem& gz = GZMgr[zoneid];
-				if(player.GetTeamId() == gz.GetOwner() && killer.GetTeamId() == gz.GetAttacker())
-					gz.CountMemberDeath();
-				if(player.GetTeamId() == gz.GetAttacker() && killer.GetTeamId() == gz.GetOwner())
-					gz.CountEnemyKill();
+			// TurfWar Counter
+			if(IsPlayerInAnyDynamicArea(playerid)) {
+				GangZoneManager& GZMgr = GangZoneManager::GetInstance();
+				int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
+				if(zoneid != -1) {
+					GangZoneItem& gz = GZMgr[zoneid];
+					if(player.GetTeamId() == gz.GetOwner() && killer.GetTeamId() == gz.GetAttacker())
+						gz.CountMemberDeath();
+					if(player.GetTeamId() == gz.GetAttacker() && killer.GetTeamId() == gz.GetOwner())
+						gz.CountEnemyKill();
+				}
 			}
 		}
 	} catch(std::runtime_error& e) {

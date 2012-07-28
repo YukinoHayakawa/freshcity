@@ -57,7 +57,7 @@ CMD(GiveWeapon, "giveweapon", 1, NEED_SIGNED_IN) {
 	GivePlayerWeapon(target, weapon, ammo);
 }
 
-CMD(GetVehicle, "v", 0, NULL) {
+CMD(GetVehicle, "v", 0, NO_REQUIREMENT) {
 	int mid(-1);
 	sscanf(cmdline, "%d", &mid);
 	Coordinate3D playerpos = player.GetPos();
@@ -75,7 +75,7 @@ CMD(CreateWaypoint, "ctp", 0, NEED_SIGNED_IN) {
 	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
 }
 
-CMD(UseWaypoint, "tp", 0, NULL) {
+CMD(UseWaypoint, "tp", 0, NO_REQUIREMENT) {
 	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
 	Waypoint point(cmdline);
 	point.PerformTeleport(player.GetId());
@@ -96,9 +96,4 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
 	Waypoint point(player.GetDetailedPos());
 	point.PerformTeleport(targetid);
-}
-
-CMD(CreateTeleportTrigger, "ctpt", 0, NULL) {
-	Waypoint wp(cmdline);
-	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
 }
