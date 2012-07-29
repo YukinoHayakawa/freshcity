@@ -35,7 +35,7 @@ int ConvertWeaponIDToModelID(int weaponid);
 
 std::string inline ColorToEmbeddingString(int color) {
 	char dest[10];
-	sprintf(dest, "{%08x", (unsigned long)color);
+	sprintf(dest, "{%08x", (unsigned)color);
 	dest[7] = '}';
 	dest[8] = 0;
 	return dest;

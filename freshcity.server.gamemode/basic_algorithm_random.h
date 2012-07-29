@@ -19,13 +19,12 @@
 
 #include <boost/random.hpp>
 
-template<typename numbertype>
-numbertype Random(numbertype min, numbertype max) {
-	boost::variate_generator<boost::mt19937&, boost::uniform_real<numbertype>>
-		gen(boost::mt19937((unsigned)clock()), boost::uniform_real<numbertype>(min, max));
+__int64 Random(__int64 min, __int64 max) {
+	boost::variate_generator<boost::mt19937&, boost::uniform_int<__int64>>
+		gen(boost::mt19937((unsigned)clock()), boost::uniform_int<__int64>(min, max));
 	return gen();
 }
 
-int inline RandomRGBAColor() { return (int)Random<__int64>(0x00000000, 0xFFFFFFFF); }
+int inline RandomRGBAColor() { return (int)Random(0x00000000, 0xFFFFFFFF); }
 
 #endif
