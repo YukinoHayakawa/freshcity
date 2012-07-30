@@ -246,39 +246,39 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 			Coordinate3D pos = GenerateDirectionalPoint(killer, CONFIG_FLOAT("EffectiveItem.distance"));
 			PickupManager::MemberPtr ptr;
 			int kills = killer.KillCounter();
-			std::string killmsg;
+			std::stringstream killmsg(killer.GetName());
 			switch(kills) {
 			case 1:
 				break;
 
 			case 2:
-				killmsg = " double kill";
+				killmsg << " double kill";
 				ptr.reset(new MedicalPickup(CONFIG_FLOAT("EffectiveItem.medicalpickup"), pos.x, pos.y, pos.z));
 				break;
 
 			case 3:
-				killmsg = " triple kill";
+				killmsg << " triple kill";
 				ptr.reset(new WeaponPickup(16, 3, pos.x, pos.y, pos.z));
 				break;
 
 			case 4:
-				killmsg = " quadra kill";
+				killmsg << " quadra kill";
 				ptr.reset(new WealthPickup(CONFIG_INT("EffectiveItem.wealthpickupmoney"),
 					CONFIG_INT("EffectiveItem.wealthpickupscore"), pos.x, pos.y, pos.z));
 				break;
 
 			case 5:
-				killmsg = " penta kill";
+				killmsg << " penta kill";
 				ptr.reset(new WeaponPickup(38, 15, pos.x, pos.y, pos.z));
 				break;
 
 			default:
-				killmsg = " kills " + boost::lexical_cast<std::string>(kills) + " in a row";
+				killmsg << " kills " << kills << " in a row";
 				ptr.reset(new WeaponPickup(38, 15, pos.x, pos.y, pos.z));
 				break;
 			}
 			if(kills > 1)
-				SystemMessageQueue::GetInstance().PushMessage(killer.GetName() + killmsg);
+				SystemMessageQueue::GetInstance().PushMessage(killmsg.str());
 
 			// TurfWar Counter
 			if(IsPlayerInAnyDynamicArea(playerid)) {

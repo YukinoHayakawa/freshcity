@@ -36,5 +36,5 @@ FunctionRunTime::FunctionRunTime(const char* funcname) : _func(funcname) {
 FunctionRunTime::~FunctionRunTime() {
 	QueryPerformanceCounter(&litmp);
 	__int64 _end = litmp.QuadPart;
-	LOG_INFO(_func.c_str() << " runs " << ((_end - _start) / (dfFreq / 1000 / 1000)) << "ns");
+	LOG_INFO(_func.c_str() << " runs " << ((_end - _start) / (dfFreq / 1000 / 1000)) << "¦Ìs");
 }
