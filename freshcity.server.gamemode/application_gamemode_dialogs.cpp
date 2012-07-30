@@ -81,12 +81,12 @@ DIALOG(DIALOG_PROFILE_REGISTER) {
 			player.SendChatMessage(COLOR_ERROR, "由于未知原因注册失败, 请联系服务器管理员");
 		}
 	}
-	ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "注册", "请输入您的密码:", "注册", "");
+	ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "请输入您的密码:", "注册", "");
 }
 
 DIALOG(DIALOG_PROFILE_LOGIN) {
 	if(!player.AuthPassword(inputtext)) {
-		ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "请输入您的密码以登录:", "登录", "");
+		ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "请输入您的密码以登录:", "登录", "");
 		throw std::runtime_error("密码错误");
 	}
 	player.SetSignedIn(true);

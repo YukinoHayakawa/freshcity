@@ -44,7 +44,7 @@ CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 	player.SendChatMessage(COLOR_SUCC, "数据已保存");
 }
 
-// Gaming
+// Attribute
 CMD(SetSkin, "setskin", 0, NEED_SIGNED_IN) {
 	int skinid(-1);
 	if(sscanf(cmdline, "%d", &skinid) == 0 || skinid == -1) throw std::runtime_error("用法: /setskin <皮肤ID>");

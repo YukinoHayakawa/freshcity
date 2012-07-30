@@ -74,6 +74,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 		TeamMgr.LoadAllFromDatabase();
 		GangZoneManager::GetInstance().LoadAllFromDatabase();
 		LoadAllTeleportTriggerFromDatabase();
+		//ProfileMgr.Add(-1);
 	} catch(std::runtime_error& e) {
 		LOG_ERROR(e.what());
 	} catch(mongo::UserException& e) {
@@ -96,13 +97,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			Profile& player = ProfileMgr[playerid];
 			if(player.IsEmpty()) {
 				player.SetColor(RandomRGBAColor());
-				ShowPlayerDialog(playerid, DIALOG_PROFILE_REGISTER, DIALOG_STYLE_INPUT, "注册", "请输入您的密码:", "注册", "");
+				ShowPlayerDialog(playerid, DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "请输入您的密码:", "注册", "");
 			} else {
 				if(player.IsBannedForGame()) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁");
 					player.KickNow();
 				} else
-					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_INPUT, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
+					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
 			}
 			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
