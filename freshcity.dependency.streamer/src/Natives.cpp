@@ -1061,7 +1061,7 @@ STREAMER_EXPORT int CreateDynamicRectangle(float minx, float miny, float maxx, f
 	area->type = STREAMER_AREA_TYPE_RECTANGLE;
 	area->position = Element::Box2D(Eigen::Vector2f(minx, miny), Eigen::Vector2f(maxx, maxy));
 	boost::geometry::correct(boost::get<Element::Box2D>(area->position));
-	area->size = boost::geometry::comparable_distance(boost::get<Element::Box2D>(area->position).min_corner(), boost::get<Element::Box2D>(area->position).max_corner());
+	area->size = (float)boost::geometry::comparable_distance(boost::get<Element::Box2D>(area->position).min_corner(), boost::get<Element::Box2D>(area->position).max_corner());
 	Utility::addToContainer(area->worlds, worldid);
 	Utility::addToContainer(area->interiors, interiorid);
 	Utility::addToContainer(area->players, playerid);
@@ -1104,7 +1104,7 @@ STREAMER_EXPORT int CreateDynamicCube(float minx, float miny, float minz, float 
 	area->type = STREAMER_AREA_TYPE_CUBE;
 	area->position = Element::Box3D(Eigen::Vector3f(minx, miny, minz), Eigen::Vector3f(maxx, maxy, maxz));
 	boost::geometry::correct(boost::get<Element::Box3D>(area->position));
-	area->size = boost::geometry::comparable_distance(Eigen::Vector2f(boost::get<Element::Box3D>(area->position).min_corner()[0], boost::get<Element::Box3D>(area->position).min_corner()[1]), Eigen::Vector2f(boost::get<Element::Box3D>(area->position).max_corner()[0], boost::get<Element::Box3D>(area->position).max_corner()[1]));
+	area->size = (float)boost::geometry::comparable_distance(Eigen::Vector2f(boost::get<Element::Box3D>(area->position).min_corner()[0], boost::get<Element::Box3D>(area->position).min_corner()[1]), Eigen::Vector2f(boost::get<Element::Box3D>(area->position).max_corner()[0], boost::get<Element::Box3D>(area->position).max_corner()[1]));
 	Utility::addToContainer(area->worlds, worldid);
 	Utility::addToContainer(area->interiors, interiorid);
 	Utility::addToContainer(area->players, playerid);
