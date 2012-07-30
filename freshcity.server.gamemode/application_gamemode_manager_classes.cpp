@@ -54,19 +54,32 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 #undef MATCHREQ
 
 // DialogManager
-bool DialogManager::Add(int dialogid, DIALOG_CALLBACK function) {
-	return ItemManager::Add(dialogid, MemberPtr(new DialogPtr(function)));
+bool DialogManager::Add(int dialogid, const DialogCell& cell) {
+	return ItemManager::Add(dialogid, MemberPtr(new DialogCell(cell)));
+}
+
+void DialogManager::Show(int dialogid, const std::string& content, int playerid, bool showforall) {
+	MemberMap::const_iterator dlg(_members.find(dialogid));
+	if(dlg == _members.end()) throw std::runtime_error("Unregistered dialog.");
+	DialogCell& dlginfo(*dlg->second.get());
+	if(showforall) {
+		MANAGER_FOREACH(ProfileManager) ShowPlayerDialog(iter->first, dialogid, dlginfo.style,
+		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.btnCancel.c_str());
+	} else {
+		ShowPlayerDialog(playerid, dialogid, dlginfo.style,
+		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.btnCancel.c_str());
+	}
 }
 
 void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
 	MemberMap::const_iterator iter(_members.find(dialogid));
 	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog.");
 	Profile& player = ProfileManager::GetInstance()[playerid];
-	iter->second->operator()(player, response, listitem, inputtext);
+	iter->second->callback.operator()(player, response, listitem, inputtext);
 }
 
 // EffectiveItemManager
-bool EffectiveItemManager::Add(MemberPtr& item) {
+bool EffectiveItemManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->GetID(), item);
 }
 
@@ -111,7 +124,7 @@ Team& TeamManager::operator[](const mongo::OID& teamid) {
 }
 
 // GangZoneManager
-bool GangZoneManager::Add(MemberPtr& item) {
+bool GangZoneManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->Get().GetId(), item);
 }
 
@@ -132,6 +145,6 @@ int GangZoneManager::GetPointInWhichZone(Coordinate3D& point) const {
 }
 
 // DynamicAreaManager
-bool DynamicAreaManager::Add(MemberPtr& item) {
+bool DynamicAreaManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->GetID(), item);
 }

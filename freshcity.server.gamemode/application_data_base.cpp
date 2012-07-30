@@ -72,3 +72,14 @@ mongo::OID SaveableItem::GetUniqueID() const {
 bool SaveableItem::IsEmpty() const {
 	return _rawdata.isEmpty();
 }
+
+void SaveableItem::Destroy() {
+	if(!_uniqueid.isSet())
+		throw std::runtime_error("Object doesn't exist.");
+	GetDB().remove(_collection, BSON("_id" << _uniqueid), true);
+	std::string errormsg = GetDB().getLastError();
+	if(!errormsg.empty())
+		throw std::runtime_error("Failed to remove document: " + errormsg);
+	_rawdata = mongo::BSONObj();
+	_uniqueid = mongo::OID();
+}

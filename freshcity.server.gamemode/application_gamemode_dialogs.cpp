@@ -23,17 +23,19 @@
 
 class _DialogRegister {
 public:
-	_DialogRegister(int dialogid, DIALOG_CALLBACK function) {
-		DialogManager::GetInstance().Add(dialogid, function);
+	_DialogRegister(int dialogid, const DialogCell& dlginfo) {
+		DialogManager::GetInstance().Add(dialogid, dlginfo);
 	}
 };
 
-#define DIALOG(id) \
+#define DIALOG(id, style, caption, btnOK, btnCancle) \
 	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext);\
-	_DialogRegister __DlgReg_##id(id, Dlg##id);\
+	_DialogRegister __DlgReg_##id(id, DialogCell(style, caption, btnOK, btnCancle, Dlg##id));\
 	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext)
 
-DIALOG(DIALOG_TEAM_SELECT) {
+DialogManager& _dlg_Dlgmgr(DialogManager::GetInstance());
+
+DIALOG(DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "选择阵营", "确定", "") {
 	std::string id(inputtext, 24);
 	mongo::OID ptid(player.GetTeamId());
 	if(ptid != mongo::OID(id)) {
@@ -41,11 +43,10 @@ DIALOG(DIALOG_TEAM_SELECT) {
 			TeamManager::GetInstance()[ptid].Quit(player);
 		TeamManager::GetInstance()[mongo::OID(id)].Join(player);
 	}
-	ShowPlayerDialog(player.GetId(), DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业",
-		"Assault\nMedic\nMechanic\nEngineer", "确定", "");
+	_dlg_Dlgmgr.Show(DIALOG_ROLE_SELECT, "Assault\nMedic\nMechanic\nEngineer", player.GetId());
 }
 
-DIALOG(DIALOG_ROLE_SELECT) {
+DIALOG(DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业", "确定", "") {
 	switch(listitem) {
 	case 0:
 		player.SetRole(Profile::RolePtr(new Assault(player)));
@@ -66,7 +67,7 @@ DIALOG(DIALOG_ROLE_SELECT) {
 	player.Spawn();
 }
 
-DIALOG(DIALOG_PROFILE_REGISTER) {
+DIALOG(DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "注册", "") {
 	if(inputtext[0] == 0) {
 		player.SendChatMessage(COLOR_ERROR, "密码不能为空");
 	} else {
@@ -81,12 +82,12 @@ DIALOG(DIALOG_PROFILE_REGISTER) {
 			player.SendChatMessage(COLOR_ERROR, "由于未知原因注册失败, 请联系服务器管理员");
 		}
 	}
-	ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "请输入您的密码:", "注册", "");
+	_dlg_Dlgmgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", player.GetId());
 }
 
-DIALOG(DIALOG_PROFILE_LOGIN) {
+DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "") {
 	if(!player.AuthPassword(inputtext)) {
-		ShowPlayerDialog(player.GetId(), DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "请输入您的密码以登录:", "登录", "");
+		_dlg_Dlgmgr.Show(DIALOG_PROFILE_LOGIN, "请输入您的密码:", player.GetId());
 		throw std::runtime_error("密码错误");
 	}
 	player.SetSignedIn(true);

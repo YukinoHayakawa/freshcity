@@ -36,6 +36,7 @@ public:
 	void Update(const mongo::BSONObj& modifier, bool refetch);
 	mongo::OID GetUniqueID() const;
 	bool IsEmpty() const;
+	void Destroy();
 };
 
 #endif

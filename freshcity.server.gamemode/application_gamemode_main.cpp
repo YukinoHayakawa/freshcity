@@ -37,6 +37,7 @@
 
 ProfileManager& ProfileMgr(ProfileManager::GetInstance());
 TeamManager& TeamMgr(TeamManager::GetInstance());
+DialogManager& DlgMgr(DialogManager::GetInstance());
 
 #define STREAMER_CALLBACK __declspec(dllexport)
 
@@ -97,13 +98,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			Profile& player = ProfileMgr[playerid];
 			if(player.IsEmpty()) {
 				player.SetColor(RandomRGBAColor());
-				ShowPlayerDialog(playerid, DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "请输入您的密码:", "注册", "");
+				DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", playerid);
 			} else {
 				if(player.IsBannedForGame()) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁");
 					player.KickNow();
 				} else
-					ShowPlayerDialog(playerid, DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "欢迎归来, 请输入您的密码以登录:", "登录", "");
+					DlgMgr.Show(DIALOG_PROFILE_LOGIN, "欢迎归来, 请输入您的密码以登录:", playerid);
 			}
 			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
@@ -304,7 +305,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 	std::string teams;
 	MANAGER_FOREACH(TeamManager) teams.append(iter->first).append(" ").append(iter->second->GetName()).append("\n");
-	ShowPlayerDialog(playerid, DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "请选择您的阵营",  teams.c_str(), "确定", "");
+	DlgMgr.Show(DIALOG_TEAM_SELECT, teams, playerid);
 	return false;
 }
 

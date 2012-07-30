@@ -56,9 +56,17 @@ enum CommandRequirement {
 typedef void (*DIALOG_CALLBACK)(Profile& player, bool response, int listitem, const char* inputtext);
 typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
 
-class DialogManager : public ItemManager<DialogManager, int, DialogPtr> {
+struct DialogCell {
+	const int style; const std::string caption, btnOK, btnCancel;
+	const DialogPtr callback;
+	DialogCell(int style, const char* caption, const char* btnOK, const char* btnCancel, DIALOG_CALLBACK callback)
+		: style(style), caption(caption), btnOK(btnOK), btnCancel(btnCancel), callback(callback) {}
+};
+
+class DialogManager : public ItemManager<DialogManager, int, DialogCell> {
 public:
-	bool Add(int dialogid, DIALOG_CALLBACK function);
+	bool Add(int dialogid, const DialogCell& cell);
+	void Show(int dialogid, const std::string& content, int playerid, bool showforall = false);
 	void Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext);
 };
 
@@ -67,7 +75,7 @@ public:
 
 class EffectiveItemManager : public ItemManager<EffectiveItemManager, int, EffectiveItem> {
 public:
-	bool Add(MemberPtr& item);
+	bool Add(const MemberPtr& item);
 	void Exec(int playerid, int itemid);
 };
 
@@ -78,7 +86,7 @@ class PickupManager : public EffectiveItemManager {};
 
 class ObjectManager : public ItemManager<ObjectManager, int, DynamicObject> {
 public:
-	bool Add(MemberPtr& item) {
+	bool Add(const MemberPtr& item) {
 		return ItemManager::Add(item->GetID(), item);
 	}
 };
@@ -107,7 +115,7 @@ public:
 
 class GangZoneManager : public ItemManager<GangZoneManager, int, GangZoneItem> {
 public:
-	bool Add(MemberPtr& item);
+	bool Add(const MemberPtr& item);
 	void LoadAllFromDatabase();
 	int GetPointInWhichZone(Coordinate3D& point) const;
 };
@@ -117,7 +125,7 @@ public:
 
 class DynamicAreaManager : public ItemManager<DynamicAreaManager, int, DynamicArea> {
 public:
-	bool Add(MemberPtr& item);
+	bool Add(const MemberPtr& item);
 };
 
 #endif
