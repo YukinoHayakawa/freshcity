@@ -313,9 +313,12 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 	try {
 		Profile& player = ProfileMgr[playerid];
 		player.GetRole().OnSpawn();
-		Waypoint spawnpoint("_map_spawnpoint_" + TeamMgr[player.GetTeamId()].GetName());
-		spawnpoint.PerformTeleport(playerid);
-		MANAGER_FOREACH(GangZoneManager) iter->second->Redraw();
+		std::stringstream gangzones;
+		MANAGER_FOREACH(GangZoneManager) {
+			iter->second->Redraw();
+			gangzones << iter->first << " " << iter->second->GetName() << '\n';
+		}
+		DlgMgr.Show(DIALOG_SPAWN_CHOOSEZONE, gangzones.str(), playerid);
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {

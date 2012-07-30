@@ -27,9 +27,10 @@
 
 void GangZoneItem::_LoadOwnerData() {
 	try {
-		_name	= UTF8ToGBK(_rawdata["name"].String());
-		_owner	= _rawdata["owner"].OID();
-		_color	= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
+		_name		= UTF8ToGBK(_rawdata["name"].String());
+		_owner		= _rawdata["owner"].OID();
+		_color		= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
+		_spawnpoint	= _rawdata["spawn"].OID();
 		_zone->ShowForAll(_color);
 	} catch(mongo::UserException) {
 		throw std::runtime_error("Invalid gangzone data.");
@@ -166,4 +167,13 @@ void GangZoneItem::MemberArrived() {
 		DestroyTimer(_timeouttimerid);
 		_timeouttimerid = 0;
 	}
+}
+
+void GangZoneItem::SetSpawnPoint(const mongo::OID& waypointid) {
+	Update(BSON("$set" << BSON("spawn" << waypointid)), true);
+	_LoadOwnerData();
+}
+
+mongo::OID GangZoneItem::GetSpawnPoint() const {
+	return _spawnpoint;
 }

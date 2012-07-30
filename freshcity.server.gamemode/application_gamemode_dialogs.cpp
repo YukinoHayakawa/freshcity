@@ -94,3 +94,10 @@ DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "") {
 	player.ApplyDataToPlayer();
 	player.SendChatMessage(COLOR_SUCC, "登录成功");
 }
+
+DIALOG(DIALOG_SPAWN_CHOOSEZONE, DIALOG_STYLE_LIST, "选择出生地区", "确定", "") {
+	int zoneid;
+	sscanf(inputtext, "%d", &zoneid);
+	Waypoint sp(GangZoneManager::GetInstance()[zoneid].GetSpawnPoint());
+	sp.PerformTeleport(player.GetId());
+}

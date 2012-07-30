@@ -29,6 +29,7 @@ protected:
 	mongo::OID _owner;
 	int _color;
 	int _endtimerid, _timeouttimerid;
+	mongo::OID _spawnpoint;
 
 	struct TurfWarInfo {
 		bool InWar;
@@ -60,6 +61,8 @@ public:
 	bool InWar() const;
 	mongo::OID GetAttacker() const;
 	void MemberArrived();
+	void SetSpawnPoint(const mongo::OID& waypointid);
+	mongo::OID GetSpawnPoint() const;
 };
 
 #endif
