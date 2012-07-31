@@ -42,10 +42,7 @@ public:
 	}
 
 	bool virtual Remove(const key& memberid) {
-		MemberMap::iterator iter(_members.find(memberid));
-		if(iter == _members.end()) return false;
-		_members.erase(iter);
-		return true;
+		return _members.erase(memberid) != 0;
 	}
 
 	virtual value& Get(const key& memberid) {

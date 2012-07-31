@@ -91,8 +91,8 @@ CMD(UseWaypoint, "tp", 0, NULL) {
 CMD(GoToPlayer, "goto", 0, NULL) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
-	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
-	Waypoint point(ProfileManager::GetInstance()[targetid].GetDetailedPos());
+	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /goto <玩家ID>");
+	Waypoint point(ProfileMgr[targetid].GetDetailedPos());
 	point.PerformTeleport(player.GetId());
 }
 
@@ -104,23 +104,82 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	point.PerformTeleport(targetid);
 }
 
-CMD(CreateTeleportTrigger, "ctpt", 0, NULL) {
+CMD(CreateTeleportTrigger, "ctpt", 0, NEED_SIGNED_IN) {
 	Waypoint wp(cmdline);
 	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
 }
 
 // Server Management
 CMD(ReloadTeamList, "reloadteam", 65535, NEED_SIGNED_IN) {
-	TeamManager::GetInstance().LoadAllFromDatabase();
+	TeamMgr.LoadAllFromDatabase();
 	player.SendChatMessage(COLOR_SUCC, "已重新载入团队数据");
 }
 
 CMD(ReloadGangZoneList, "reloadgangzone", 65535, NEED_SIGNED_IN) {
-	GangZoneManager::GetInstance().LoadAllFromDatabase();
+	GangZoneMgr.LoadAllFromDatabase();
 	player.SendChatMessage(COLOR_SUCC, "已重新载入地盘数据");
 }
 
 CMD(ReloadConfig, "reloadconfig", 65535, NEED_SIGNED_IN) {
 	ReloadConfig();
 	player.SendChatMessage(COLOR_SUCC, "已重新载入服务器设置");
+}
+
+// Team Management
+CMD(CreateGangZone, "gzcreate", 65535, NEED_SIGNED_IN) {
+	if(TeamMgr[player.GetTeamId()].GetLeader() != player.GetUniqueID())
+		throw std::runtime_error("你不是团队首领");
+	if(player.GetVar<bool>("gz_create_in_progress"))
+		throw std::runtime_error("已经在创建进程中");
+	if(cmdline[0] == 0)
+		throw std::runtime_error("名称不能为空");
+	player.SetVar("gz_create_in_progress", true);
+	player.SendChatMessage(COLOR_WARN, "请 ESC->MAP 用右键放置标记来确定 GangZone 的范围");
+	player.SendChatMessage(COLOR_WARN, "你现在所在的地点将会作为出生点, 请稍后用 /gzsettrigger 确定帮派战争的触发标记");
+	player.SendChatMessage(COLOR_WARN, "/gzcreatedone 保存创建的 GangZone, 或 /gzcreatecancel 来取消当前进程");
+	player.SetVar("gz_create_name", std::string(cmdline));
+	player.SetVar("gz_create_spawnpoint", player.GetDetailedPos());
+	player.GetVar<unsigned int>("gz_create_step") |= GANGZONE_CREATE_SPAWNPOINT;
+}
+
+CMD(CreateGangZoneTrigger, "gzsettrigger", 65535, NEED_SIGNED_IN) {
+	if(!player.GetVar<bool>("gz_create_in_progress"))
+		throw std::runtime_error("未在创建进程中");
+	player.SetVar("gz_create_trigger", player.GetPos());
+	player.SendChatMessage(COLOR_SUCC, "已确定帮派战争触发标记位置");
+	player.GetVar<unsigned int>("gz_create_step") |= GANGZONE_CREATE_TRIGGER;
+}
+
+CMD(CreateGangZoneDone, "gzcreatedone", 65535, NEED_SIGNED_IN) {
+	if(!player.GetVar<bool>("gz_create_in_progress"))
+		throw std::runtime_error("未在创建进程中");
+	unsigned int step(player.GetVar<unsigned int>("gz_create_step"));
+	if(step != 15) throw std::runtime_error("尚有未完成的设置");
+	std::string& name(player.GetVar<std::string>("gz_create_name"));
+	Waypoint sp(player.GetVar<Coordinate5D>("gz_create_spawnpoint"));
+	sp.Create("_System_GangZone_Spawnpoint_" + name, player.GetUniqueID());
+	GangZoneManager::MemberPtr newgz(new GangZoneItem(
+		player.GetVar<std::string>("gz_create_name"), player.GetTeamId(),
+		player.GetVar<CoordinatePlane>("gz_create_pos_min"),
+		player.GetVar<CoordinatePlane>("gz_create_pos_max"),
+		sp.GetUniqueID(), player.GetVar<Coordinate3D>("gz_create_trigger")));
+	GangZoneMgr.Add(newgz);
+	player.SetVar("gz_create_in_progress", false);
+	player.SetVar("gz_create_step", (unsigned)0);
+	player.SendChatMessage(COLOR_SUCC, "地盘创建成功");
+}
+
+CMD(CreateGangZoneCancel, "gzcreatecancel", 65535, NEED_SIGNED_IN) {
+	if(!player.GetVar<bool>("gz_create_in_progress"))
+		throw std::runtime_error("未在创建进程中");
+	player.SetVar("gz_create_in_progress", false);
+	player.SetVar("gz_create_step", (unsigned)0);
+	player.SendChatMessage(COLOR_SUCC, "已取消创建进程");
+}
+
+CMD(RemoveGangZone, "gzremove", 65535, NEED_SIGNED_IN) {
+	std::stringstream content;
+	MANAGER_FOREACH(GangZoneManager)
+		content << iter->first << " " << iter->second->GetName() << "\n";
+	DlgMgr.Show(DIALOG_GANGZONE_REMOVE, content.str(), player.GetId());
 }

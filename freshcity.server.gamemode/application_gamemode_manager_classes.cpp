@@ -23,6 +23,8 @@ bool ProfileManager::Add(int playerid) {
 	return ItemManager::Add(playerid, MemberPtr(new Profile(playerid, GetPlayerName(playerid))));
 }
 
+ProfileManager& ProfileMgr(ProfileManager::GetInstance());
+
 // CommandManager
 bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int reqlevel, unsigned int flags) {
 	return ItemManager::Add(cmd, MemberPtr(new CommandCallbackCell(CommandPtr(function), reqlevel, flags)));
@@ -33,16 +35,16 @@ bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int 
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) {
 	MemberMap::const_iterator iter(_members.find(cmd));
 	if(iter == _members.end()) throw std::runtime_error("Unregistered command.");
-	Profile& player = ProfileManager::GetInstance()[playerid];
+	Profile& player = ProfileMgr[playerid];
 	unsigned int flags = iter->second->flags;
 	if(flags != 0) {
-		if(MATCHREQ(NEED_REGISTERED) && ProfileManager::GetInstance()[playerid].IsEmpty())
+		if(MATCHREQ(NEED_REGISTERED) && ProfileMgr[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限已注册玩家使用");
-		if(MATCHREQ(NEED_SIGNED_IN) && !ProfileManager::GetInstance()[playerid].IsSignedIn())
+		if(MATCHREQ(NEED_SIGNED_IN) && !ProfileMgr[playerid].IsSignedIn())
 			throw std::runtime_error("此命令仅限已登录玩家使用");
-		if(MATCHREQ(DONOT_REGISTERED) && !ProfileManager::GetInstance()[playerid].IsEmpty())
+		if(MATCHREQ(DONOT_REGISTERED) && !ProfileMgr[playerid].IsEmpty())
 			throw std::runtime_error("此命令仅限未注册玩家使用");
-		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileManager::GetInstance()[playerid].IsSignedIn())
+		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileMgr[playerid].IsSignedIn())
 			throw std::runtime_error("此命令仅限未登录玩家使用");
 	}
 	int levelreq = iter->second->reqlevel;
@@ -52,6 +54,8 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 }
 
 #undef MATCHREQ
+
+CommandManager& CmdMgr(CommandManager::GetInstance());
 
 // DialogManager
 bool DialogManager::Add(int dialogid, const DialogCell& cell) {
@@ -74,22 +78,28 @@ void DialogManager::Show(int dialogid, const std::string& content, int playerid,
 void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
 	MemberMap::const_iterator iter(_members.find(dialogid));
 	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog.");
-	Profile& player = ProfileManager::GetInstance()[playerid];
+	Profile& player = ProfileMgr[playerid];
 	iter->second->callback.operator()(player, response, listitem, inputtext);
 }
 
-// EffectiveItemManager
-bool EffectiveItemManager::Add(const MemberPtr& item) {
+DialogManager& DlgMgr(DialogManager::GetInstance());
+
+// PickupManager
+bool PickupManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->GetID(), item);
 }
 
-void EffectiveItemManager::Exec(int playerid, int itemid) {
+void PickupManager::Exec(int playerid, int itemid) {
 	MemberMap::const_iterator iter(_members.find(itemid));
 	if(iter == _members.end()) throw std::runtime_error("Invalid object id.");
-	Profile& player = ProfileManager::GetInstance()[playerid];
+	Profile& player = ProfileMgr[playerid];
 	iter->second->Effect(player);
 	if(iter->second->IsDisposable()) _members.erase(iter);
 }
+
+PickupManager& PickupMgr(PickupManager::GetInstance());
+
+ObjectManager& ObjectMgr(ObjectManager::GetInstance());
 
 // TeamManager
 TeamManager::TeamManager() : _idgen(255) {}
@@ -123,6 +133,8 @@ Team& TeamManager::operator[](const mongo::OID& teamid) {
 	return Get(teamid.str());
 }
 
+TeamManager& TeamMgr(TeamManager::GetInstance());
+
 // GangZoneManager
 bool GangZoneManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->Get().GetId(), item);
@@ -138,13 +150,17 @@ void GangZoneManager::LoadAllFromDatabase() {
 
 int GangZoneManager::GetPointInWhichZone(Coordinate3D& point) const {
 	for(MemberMap::const_iterator iter = _members.begin(); iter != _members.end(); ++iter) {
-		if(DynamicAreaManager::GetInstance()[iter->second->GetAreaID()].IsPointIn(point.x, point.y, point.z))
+		if(DynAreaMgr[iter->second->GetAreaID()].IsPointIn(point.x, point.y, point.z))
 			return iter->first;
 	}
 	return -1;
 }
 
+GangZoneManager& GangZoneMgr(GangZoneManager::GetInstance());
+
 // DynamicAreaManager
 bool DynamicAreaManager::Add(const MemberPtr& item) {
 	return ItemManager::Add(item->GetID(), item);
 }
+
+DynamicAreaManager& DynAreaMgr(DynamicAreaManager::GetInstance());

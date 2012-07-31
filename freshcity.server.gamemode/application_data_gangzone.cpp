@@ -29,7 +29,7 @@ void GangZoneItem::_LoadOwnerData() {
 	try {
 		_name		= UTF8ToGBK(_rawdata["name"].String());
 		_owner		= _rawdata["owner"].OID();
-		_color		= TeamManager::GetInstance()[_owner].GetColor() - 0x7F;
+		_color		= TeamMgr[_owner].GetColor() - 0x7F;
 		_spawnpoint	= _rawdata["spawn"].OID();
 		_zone->ShowForAll(_color);
 	} catch(mongo::UserException) {
@@ -46,10 +46,10 @@ void GangZoneItem::_InitArea() {
 	_zone.reset(new GangZone(minx, miny, maxx, maxy));
 	DynamicAreaManager::MemberPtr gzitem(new GangZoneArea(_zone->GetId(), minx, miny, maxx, maxy));
 	_areaid = gzitem->GetID();
-	DynamicAreaManager::GetInstance().Add(gzitem);
+	DynAreaMgr.Add(gzitem);
 	PickupManager::MemberPtr trigger(new TurfWarTrigger(_zone->GetId(), triggerx, triggery, triggerz));
 	_triggerid = trigger->GetID();
-	PickupManager::GetInstance().Add(trigger);
+	PickupMgr.Add(trigger);
 }
 
 GangZoneItem::GangZoneItem(const std::string& name)
@@ -65,9 +65,34 @@ GangZoneItem::GangZoneItem(const mongo::BSONObj& data)
 		_LoadOwnerData();
 }
 
+GangZoneItem::GangZoneItem(const std::string& name, const mongo::OID& owner, const CoordinatePlane& min,
+	const CoordinatePlane& max, const mongo::OID& spawnpoint, const Coordinate3D& trigger)
+	: SaveableItem(CONFIG_STRING("Database.gangzone")), _zone(new GangZone(min.x, min.y, max.x, max.y)) {
+		DynamicAreaManager::MemberPtr gzitem(new GangZoneArea(_zone->GetId(), min.x, min.y, max.x, max.y));
+		_areaid = gzitem->GetID();
+		DynAreaMgr.Add(gzitem);
+		PickupManager::MemberPtr t(new TurfWarTrigger(_zone->GetId(), trigger.x, trigger.y, trigger.z));
+		_triggerid = t->GetID();
+		PickupMgr.Add(t);
+		mongo::BSONObj submit(BSON(mongo::GENOID <<
+			"name"		<< GBKToUTF8(name) <<
+			"minx"		<< min.x <<
+			"miny"		<< min.y <<
+			"maxx"		<< max.x <<
+			"maxy"		<< max.y <<
+			"owner"		<< owner <<
+			"spawn"		<< spawnpoint <<
+			"trigger"	<< BSON(
+				"x"		<< trigger.x <<
+				"y"		<< trigger.y <<
+				"z"		<< trigger.z)));
+		SaveableItem::Create(submit, true);
+		_LoadOwnerData();
+}
+
 GangZoneItem::~GangZoneItem() {
-	DynamicAreaManager::GetInstance().Remove(_areaid);
-	PickupManager::GetInstance().Remove(_triggerid);
+	DynAreaMgr.Remove(_areaid);
+	PickupMgr.Remove(_triggerid);
 }
 
 void GangZoneItem::SetName(const std::string& name) {
@@ -99,16 +124,16 @@ void GangZoneItem::Redraw() {
 bool GangZoneItem::StartWar(Profile& attacker) {
 	if(_warinfo.InWar) return false;
 	if(attacker.GetTeamId() == _owner) return false;
-	std::string tname = TeamManager::GetInstance()[attacker.GetTeamId()].GetName();
+	std::string tname = TeamMgr[attacker.GetTeamId()].GetName();
 	SystemMessageQueue::GetInstance().PushMessage(tname + " has started a turfwar");
 	_warinfo.Attacker = attacker.GetTeamId();
 	_endtimerid = CreateTimer(TimerCallback_EndTurfWar, this,
 		CONFIG_INT("Gaming.turfwarlast") * 60000, false);
 	bool memberinzone = false;
-	for(Team::TeamMemberMap::iterator teammembers(TeamManager::GetInstance()[_owner].GetMemberIterator()), end;
+	for(Team::TeamMemberMap::iterator teammembers(TeamMgr[_owner].GetMemberIterator()), end;
 		teammembers != end; teammembers++) {
-		if(GangZoneManager::GetInstance().GetPointInWhichZone(
-			ProfileManager::GetInstance()[teammembers->first].GetPos()) == _zone->GetId()) {
+		if(GangZoneMgr.GetPointInWhichZone(
+			ProfileMgr[teammembers->first].GetPos()) == _zone->GetId()) {
 				memberinzone = true;
 				break;
 		}
@@ -135,12 +160,12 @@ bool GangZoneItem::EndWar(bool causedbytimeout) {
 		if(causedbytimeout) DestroyTimer(_endtimerid);
 		if(causedbytimeout || _warinfo.EnemyKill < _warinfo.MemberDeath) {
 			SystemMessageQueue::GetInstance().PushMessage(
-				TeamManager::GetInstance()[_warinfo.Attacker].GetName() + " has won the turfwar");
+				TeamMgr[_warinfo.Attacker].GetName() + " has won the turfwar");
 			SetOwner(_warinfo.Attacker);
 			ret = true;
 		} else if(_warinfo.EnemyKill > _warinfo.MemberDeath || _warinfo.MemberDeath == _warinfo.EnemyKill) {
 			SystemMessageQueue::GetInstance().PushMessage(
-				TeamManager::GetInstance()[GetOwner()].GetName() + " has won the turfwar");
+				TeamMgr[GetOwner()].GetName() + " has won the turfwar");
 		}
 		_warinfo.EnemyKill = _warinfo.MemberDeath = 0;
 		_warinfo.Attacker.clear();

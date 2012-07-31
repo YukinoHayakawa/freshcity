@@ -83,3 +83,7 @@ void SaveableItem::Destroy() {
 	_rawdata = mongo::BSONObj();
 	_uniqueid = mongo::OID();
 }
+
+SaveableItem::operator std::string() {
+	return _rawdata.toString();
+}

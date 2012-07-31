@@ -21,6 +21,7 @@
 #include "application_data_base.h"
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
+#include <boost/unordered_map.hpp>
 
 class Profile : public SaveableItem, public Player {
 public:
@@ -56,6 +57,7 @@ private:
 	int _killcounter;
 	RolePtr _role;
 	int _autosavetimer;
+	boost::unordered_map<std::string, boost::shared_ptr<void>> _pvars;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -95,6 +97,26 @@ public:
 	/* HP is limited to 100. */
 	void inline GiveHealth(float health) {
 		SetHealth(((100 - GetHealth()) > health) ? GetHealth() + health : 100);
+	}
+
+	template<typename Type>
+	void SetVar(const std::string& key, const Type& value) {
+		_pvars[key] = boost::shared_ptr<void>(new Type(value));
+	}
+
+	void SetVar(const std::string& key, const boost::shared_ptr<void>& value) {
+		_pvars[key] = value;
+	}
+
+	template<typename Type>
+	Type& GetVar(const std::string& key) {
+		boost::unordered_map<std::string, boost::shared_ptr<void>>::iterator iter(_pvars.find(key));
+		if(iter == _pvars.end()) throw std::runtime_error("Key doesn't exist");
+		return *static_cast<Type*>(iter->second.get());
+	}
+
+	bool DelVar(const std::string& key) {
+		return _pvars.erase(key) != 0;
 	}
 };
 

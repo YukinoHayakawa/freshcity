@@ -37,6 +37,7 @@ public:
 	mongo::OID GetUniqueID() const;
 	bool IsEmpty() const;
 	void Destroy();
+	operator std::string();
 };
 
 #endif

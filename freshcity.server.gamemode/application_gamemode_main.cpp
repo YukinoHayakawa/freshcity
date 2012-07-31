@@ -24,7 +24,6 @@
 #include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
-#include "application_gamemode_dialogdefinitions.h"
 #include "application_dependency_streamer.h"
 #include "application_data_waypoint.h"
 #include "application_gamemode_pickup_classes.h"
@@ -34,10 +33,6 @@
 #include "application_gamemode_role_classes.h"
 #include "application_gamemode_sysmsgqueue.h"
 #include "basic_debug_timer.h"
-
-ProfileManager& ProfileMgr(ProfileManager::GetInstance());
-TeamManager& TeamMgr(TeamManager::GetInstance());
-DialogManager& DlgMgr(DialogManager::GetInstance());
 
 #define STREAMER_CALLBACK __declspec(dllexport)
 
@@ -73,7 +68,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	try {
 		TeamMgr.LoadAllFromDatabase();
-		GangZoneManager::GetInstance().LoadAllFromDatabase();
+		GangZoneMgr.LoadAllFromDatabase();
 		LoadAllTeleportTriggerFromDatabase();
 		//ProfileMgr.Add(-1);
 	} catch(std::runtime_error& e) {
@@ -109,6 +104,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
+			player.SetVar("gz_create_in_progress",		false);
+			player.SetVar("gz_create_step",				(unsigned)0);
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
 			throw;
@@ -158,7 +155,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerCommandText(int playerid, const char *cmd
 	char cmdname[128] = {0}, cmdline[128] = {0};
 	sscanf(cmdtext, "%s%*[ ]%[^\0]", cmdname, cmdline);
 	try {
-		CommandManager::GetInstance().Exec(playerid, boost::to_lower_copy(std::string(&cmdname[1])), cmdline);
+		CmdMgr.Exec(playerid, boost::to_lower_copy(std::string(&cmdname[1])), cmdline);
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
@@ -207,7 +204,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnDialogResponse(int playerid, int dialogid, int 
 	RUN_TIME_COUNTER;
 	LOG_DEBUG("DialogID: " << dialogid << " Response: " << response << " Listitem: " << listitem << " Input: " << inputtext);
 	try {
-		DialogManager::GetInstance().Exec(playerid, response == 1, dialogid, listitem, inputtext);
+		DlgMgr.Exec(playerid, response == 1, dialogid, listitem, inputtext);
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
@@ -234,7 +231,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 		for(int i = 0; i < 13; i++) {
 			GetPlayerWeaponData(playerid, i, &dropweapon[0], &dropweapon[1]);
 			if(dropweapon[0] != 0)
-				PickupManager::GetInstance().Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],
+				PickupMgr.Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],
 				deadpos.x + genoffset(), deadpos.y + genoffset(), deadpos.z)));
 		}
 		
@@ -283,10 +280,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 			// TurfWar Counter
 			if(IsPlayerInAnyDynamicArea(playerid)) {
-				GangZoneManager& GZMgr = GangZoneManager::GetInstance();
-				int zoneid = GZMgr.GetPointInWhichZone(player.GetPos());
+				int zoneid = GangZoneMgr.GetPointInWhichZone(player.GetPos());
 				if(zoneid != -1) {
-					GangZoneItem& gz = GZMgr[zoneid];
+					GangZoneItem& gz = GangZoneMgr[zoneid];
 					if(player.GetTeamId() == gz.GetOwner() && killer.GetTeamId() == gz.GetAttacker())
 						gz.CountMemberDeath();
 					if(player.GetTeamId() == gz.GetAttacker() && killer.GetTeamId() == gz.GetOwner())
@@ -316,9 +312,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 		std::stringstream gangzones;
 		MANAGER_FOREACH(GangZoneManager) {
 			iter->second->Redraw();
-			gangzones << iter->first << " " << iter->second->GetName() << '\n';
+			gangzones << iter->first << " " << iter->second->GetName() << "\n";
 		}
-		DlgMgr.Show(DIALOG_SPAWN_CHOOSEZONE, gangzones.str(), playerid);
+		DlgMgr.Show(DIALOG_GANGZONE_CHOOSETOSPAWN, gangzones.str(), playerid);
 	} catch(std::runtime_error& e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
@@ -339,12 +335,24 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 }
 
 STREAMER_CALLBACK void OnPlayerEnterDynamicArea(int playerid, int areaid) {
-	DynamicAreaManager::GetInstance()[areaid].OnPlayerEnter(ProfileMgr[playerid]);
+	try {
+		DynAreaMgr[areaid].OnPlayerEnter(ProfileMgr[playerid]);
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "OnPlayerEnterDynamicArea 发生错误");
+	}
 	return;
 }
 
 STREAMER_CALLBACK void OnPlayerLeaveDynamicArea(int playerid, int areaid) {
-	DynamicAreaManager::GetInstance()[areaid].OnPlayerExit(ProfileMgr[playerid]);
+	try {
+		DynAreaMgr[areaid].OnPlayerExit(ProfileMgr[playerid]);
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "OnPlayerLeaveDynamicArea 发生错误");
+	}
 	return;
 }
 
@@ -357,7 +365,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid) 
 	try {
 		int streamerid = Streamer_OnPlayerPickUpPickup(playerid, pickupid);
 		if(streamerid != 0)
-			PickupManager::GetInstance().Exec(playerid, streamerid);
+			PickupMgr.Exec(playerid, streamerid);
 	} catch(std::runtime_error &e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
@@ -368,5 +376,31 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerPickUpPickup(int playerid, int pickupid) 
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEditObject(int playerid, bool playerobject, int objectid, int response, float fX, float fY, float fZ, float fRotX, float fRotY, float fRotZ) {
 	Streamer_OnPlayerEditObject(playerid, playerobject, objectid, response, fX, fY, fZ, fRotX, fRotY, fRotZ);
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float fX, float fY, float fZ) {
+	RUN_TIME_COUNTER;
+	try {
+		Profile& player(ProfileMgr[playerid]);
+
+		// GangZone Creation
+		if(player.GetVar<bool>("gz_create_in_progress")) {
+			unsigned int& step(player.GetVar<unsigned int>("gz_create_step"));
+			if((step & GANGZONE_CREATE_MIN) != GANGZONE_CREATE_MIN) {
+				player.SetVar("gz_create_pos_min", CoordinatePlane(fX, fY));
+				step |= GANGZONE_CREATE_MIN;
+				player.SendChatMessage(COLOR_SUCC, "已确定 MinRange");
+			} else if((step & GANGZONE_CREATE_MAX) != GANGZONE_CREATE_MAX) {
+				player.SetVar("gz_create_pos_max", CoordinatePlane(fX, fY));
+				step |= GANGZONE_CREATE_MAX;
+				player.SendChatMessage(COLOR_SUCC, "已确定 MaxRange");
+			}
+		}
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, " OnPlayerClickMap 发生错误");
+	}
 	return true;
 }

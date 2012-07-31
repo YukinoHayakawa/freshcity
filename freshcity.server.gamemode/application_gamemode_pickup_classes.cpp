@@ -55,9 +55,9 @@ TurfWarTrigger::TurfWarTrigger(int zoneid, float x, float y, float z)
 	: _zoneid(zoneid), Pickup(1314, 1, x, y, z, false) {}
 
 void TurfWarTrigger::Effect(Profile& player) {
-	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	GangZoneItem& gz(GangZoneMgr[_zoneid]);
 	if(player.GetTeamId() != gz.GetOwner()) {
-		Team& team(TeamManager::GetInstance()[gz.GetOwner()]);
+		Team& team(TeamMgr[gz.GetOwner()]);
 		if(!team.HasOnlineMember())
 			player.SendChatMessage(COLOR_ERROR, "对方没有玩家在线, 不能发动帮派战争");
 		else

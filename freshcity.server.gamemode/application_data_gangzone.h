@@ -45,6 +45,9 @@ private:
 public:
 	GangZoneItem(const std::string& name);
 	GangZoneItem(const mongo::BSONObj& data);
+	GangZoneItem(const std::string& name, const mongo::OID& owner,
+		const CoordinatePlane& min, const CoordinatePlane& max,
+		const mongo::OID& spawnpoint, const Coordinate3D& trigger);
 	~GangZoneItem();
 	void SetName(const std::string& name);
 	std::string GetName() const;
@@ -63,6 +66,13 @@ public:
 	void MemberArrived();
 	void SetSpawnPoint(const mongo::OID& waypointid);
 	mongo::OID GetSpawnPoint() const;
+};
+
+enum GangZoneCreation {
+	GANGZONE_CREATE_MIN = 1,
+	GANGZONE_CREATE_MAX = 2,
+	GANGZONE_CREATE_SPAWNPOINT = 4,
+	GANGZONE_CREATE_TRIGGER = 8
 };
 
 #endif

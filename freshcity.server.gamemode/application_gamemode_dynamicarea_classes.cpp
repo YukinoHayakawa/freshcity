@@ -25,15 +25,15 @@ GangZoneArea::GangZoneArea(int zoneid, float minx, float miny, float maxx, float
 	: DynamicRectangle(minx, miny, maxx, maxy), _zoneid(zoneid) {}
 
 void GangZoneArea::OnPlayerEnter(Profile& player) {
-	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	GangZoneItem& gz(GangZoneMgr[_zoneid]);
 	player.SendChatMessage(COLOR_INFO, "Entered " + ColorToEmbeddingString(
-		TeamManager::GetInstance()[gz.GetOwner()].GetColor()) + gz.GetName());
+		TeamMgr[gz.GetOwner()].GetColor()) + gz.GetName());
 	if(gz.InWar() && player.GetTeamId() == gz.GetOwner())
 		gz.MemberArrived();
 }
 
 void GangZoneArea::OnPlayerExit(Profile& player) {
-	GangZoneItem& gz(GangZoneManager::GetInstance()[_zoneid]);
+	GangZoneItem& gz(GangZoneMgr[_zoneid]);
 	player.SendChatMessage(COLOR_INFO, "Left " + ColorToEmbeddingString(
-		TeamManager::GetInstance()[gz.GetOwner()].GetColor()) + gz.GetName());
+		TeamMgr[gz.GetOwner()].GetColor()) + gz.GetName());
 }

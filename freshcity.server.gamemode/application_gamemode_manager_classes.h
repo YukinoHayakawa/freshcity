@@ -28,6 +28,8 @@ public:
 	bool Add(int playerid);
 };
 
+extern ProfileManager& ProfileMgr;
+
 // CommandManager
 typedef void (*COMMAND_CALLBACK)(Profile& player, const char* cmdline);
 typedef boost::function<void(Profile&, const char*)> CommandPtr;
@@ -52,7 +54,11 @@ enum CommandRequirement {
 	DONOT_SIGNED_IN = 8
 };
 
+extern CommandManager& CmdMgr;
+
 // DialogManager
+#include "application_gamemode_dialogdefinitions.h"
+
 typedef void (*DIALOG_CALLBACK)(Profile& player, bool response, int listitem, const char* inputtext);
 typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
 
@@ -70,16 +76,18 @@ public:
 	void Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext);
 };
 
-// EffectiveItemManager
+extern DialogManager& DlgMgr;
+
+// PickupManager
 #include "application_gamemode_effectiveitem.h"
 
-class EffectiveItemManager : public ItemManager<EffectiveItemManager, int, EffectiveItem> {
+class PickupManager : public ItemManager<PickupManager, int, EffectiveItem> {
 public:
 	bool Add(const MemberPtr& item);
 	void Exec(int playerid, int itemid);
 };
 
-class PickupManager : public EffectiveItemManager {};
+extern PickupManager& PickupMgr;
 
 // ObjectManager
 #include "application_gamemode_object.h"
@@ -90,6 +98,8 @@ public:
 		return ItemManager::Add(item->GetID(), item);
 	}
 };
+
+extern ObjectManager& ObjectMgr;
 
 // TeamManager
 #include "application_data_team.h"
@@ -110,6 +120,8 @@ public:
 	Team& operator[](const mongo::OID& teamid);
 };
 
+extern TeamManager& TeamMgr;
+
 // GangZoneManager
 #include "application_data_gangzone.h"
 
@@ -120,6 +132,8 @@ public:
 	int GetPointInWhichZone(Coordinate3D& point) const;
 };
 
+extern GangZoneManager& GangZoneMgr;
+
 // DynamicAreaManager
 #include "application_gamemode_dynamicarea.h"
 
@@ -127,5 +141,7 @@ class DynamicAreaManager : public ItemManager<DynamicAreaManager, int, DynamicAr
 public:
 	bool Add(const MemberPtr& item);
 };
+
+extern DynamicAreaManager& DynAreaMgr;
 
 #endif
