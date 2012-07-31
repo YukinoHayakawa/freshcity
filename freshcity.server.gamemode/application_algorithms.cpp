@@ -62,7 +62,7 @@ Coordinate3D GenerateDirectionalPoint(Profile& player, float distance) {
 		result.x += distance;
 		return result;
 	} 
-	throw std::runtime_error("Incorrect facing angle.");
+	throw std::runtime_error("Incorrect facing angle");
 }
 
 // Converting

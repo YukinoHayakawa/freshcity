@@ -16,7 +16,6 @@
 
 #include "application_database.h"
 #include "application_gamemode_role_classes.h"
-#include "application_gamemode_colordefinitions.h"
 #include <sampgdk/a_players.h>
 #include "application_data_profile.h"
 #include "application_algorithms.h"

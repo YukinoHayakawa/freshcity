@@ -29,7 +29,7 @@ SaveableItem::SaveableItem(const std::string& collection) : _collection(collecti
 
 void SaveableItem::Refetch() {
 	if(!_uniqueid.isSet())
-		throw std::runtime_error("Object doesn't exist.");
+		throw std::runtime_error("Object doesn't exist");
 	_rawdata = GetDB().findOne(_collection, BSON("_id" << _uniqueid));
 	if(_rawdata.isEmpty())
 		throw std::runtime_error("Received a empty document: " + GetDB().getLastError());
@@ -37,14 +37,14 @@ void SaveableItem::Refetch() {
 
 void SaveableItem::InitData(const mongo::BSONObj& data) {
 	if(!_rawdata.isEmpty())
-		throw std::runtime_error("Data already exists.");
+		throw std::runtime_error("Data already exists");
 	_rawdata = data;
 	_uniqueid = _rawdata["_id"].OID();
 }
 
 void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {
 	if(!_rawdata.isEmpty())
-		throw std::runtime_error("Object already exists.");
+		throw std::runtime_error("Object already exists");
 	GetDB().insert(_collection, data);
 	std::string errormsg = GetDB().getLastError();
 	if(!errormsg.empty())
@@ -57,7 +57,7 @@ void SaveableItem::Create(const mongo::BSONObj& data, bool refetch) {
 
 void SaveableItem::Update(const mongo::BSONObj& modifier, bool refresh) {
 	if(!_uniqueid.isSet())
-		throw std::runtime_error("Object doesn't exist.");
+		throw std::runtime_error("Object doesn't exist");
 	GetDB().update(_collection, BSON("_id" << _uniqueid), modifier);
 	std::string errormsg = GetDB().getLastError();
 	if(!errormsg.empty())
@@ -75,7 +75,7 @@ bool SaveableItem::IsEmpty() const {
 
 void SaveableItem::Destroy() {
 	if(!_uniqueid.isSet())
-		throw std::runtime_error("Object doesn't exist.");
+		throw std::runtime_error("Object doesn't exist");
 	GetDB().remove(_collection, BSON("_id" << _uniqueid), true);
 	std::string errormsg = GetDB().getLastError();
 	if(!errormsg.empty())

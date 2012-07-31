@@ -50,7 +50,7 @@ void Profile::_LoadMemberData() {
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
 	} catch(mongo::UserException) {
-		throw std::runtime_error("Invalid player profile.");
+		throw std::runtime_error("Invalid player profile");
 	}
 }
 
@@ -81,7 +81,7 @@ void Profile::ApplyDataToPlayer() {
 		GiveMoney((int)attribute["money"].Number());
 		GiveScore((int)attribute["score"].Number());
 	} catch(mongo::UserException) {
-		throw std::runtime_error("Imcomplete player gaming record.");
+		throw std::runtime_error("Imcomplete player gaming record");
 	}
 }
 
@@ -168,7 +168,7 @@ bool Profile::AuthPassword(const std::string& input) const {
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
-	if(newpassword.empty()) throw std::runtime_error("Password cannot be blank.");
+	if(newpassword.empty()) throw std::runtime_error("Password cannot be blank");
 	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
 	Sync();
 }
@@ -278,5 +278,5 @@ Profile::Role& Profile::GetRole() {
 	if(_role.get())
 		return *_role.get();
 	else
-		throw std::runtime_error("Player hasn't chosen a role.");
+		throw std::runtime_error("Player hasn't chosen a role");
 }

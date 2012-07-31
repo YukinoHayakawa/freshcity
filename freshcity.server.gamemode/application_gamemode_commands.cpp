@@ -16,7 +16,6 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_colordefinitions.h"
 #include "application_data_waypoint.h"
 #include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
@@ -42,6 +41,11 @@ public:
 CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 	player.Sync();
 	player.SendChatMessage(COLOR_SUCC, "数据已保存");
+}
+
+CMD(SetNickName, "setnickname", 0, NEED_SIGNED_IN) {
+	player.SetNickname(cmdline);
+	player.SendChatMessage(COLOR_SUCC, "昵称已更改");
 }
 
 // Attribute
@@ -129,51 +133,50 @@ CMD(ReloadConfig, "reloadconfig", 65535, NEED_SIGNED_IN) {
 CMD(CreateGangZone, "gzcreate", 65535, NEED_SIGNED_IN) {
 	if(TeamMgr[player.GetTeamId()].GetLeader() != player.GetUniqueID())
 		throw std::runtime_error("你不是团队首领");
-	if(player.GetVar<bool>("gz_create_in_progress"))
+	if(player.HasVar("gz_create"))
 		throw std::runtime_error("已经在创建进程中");
 	if(cmdline[0] == 0)
 		throw std::runtime_error("名称不能为空");
-	player.SetVar("gz_create_in_progress", true);
+	boost::shared_ptr<void> newgz(new GangZoneCreationInfo(cmdline));
+	static_cast<GangZoneCreationInfo*>(newgz.get())->spawnpoint = player.GetDetailedPos();
+	static_cast<GangZoneCreationInfo*>(newgz.get())->step |= GANGZONE_CREATE_SPAWNPOINT;
+	player.SetVar("gz_create", newgz);
 	player.SendChatMessage(COLOR_WARN, "请 ESC->MAP 用右键放置标记来确定 GangZone 的范围");
 	player.SendChatMessage(COLOR_WARN, "你现在所在的地点将会作为出生点, 请稍后用 /gzsettrigger 确定帮派战争的触发标记");
 	player.SendChatMessage(COLOR_WARN, "/gzcreatedone 保存创建的 GangZone, 或 /gzcreatecancel 来取消当前进程");
-	player.SetVar("gz_create_name", std::string(cmdline));
-	player.SetVar("gz_create_spawnpoint", player.GetDetailedPos());
-	player.GetVar<unsigned int>("gz_create_step") |= GANGZONE_CREATE_SPAWNPOINT;
 }
 
 CMD(CreateGangZoneTrigger, "gzsettrigger", 65535, NEED_SIGNED_IN) {
-	if(!player.GetVar<bool>("gz_create_in_progress"))
+	if(!player.HasVar("gz_create"))
 		throw std::runtime_error("未在创建进程中");
-	player.SetVar("gz_create_trigger", player.GetPos());
+	GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
+	data.trigger = player.GetPos();
+	data.step |= GANGZONE_CREATE_TRIGGER;
 	player.SendChatMessage(COLOR_SUCC, "已确定帮派战争触发标记位置");
-	player.GetVar<unsigned int>("gz_create_step") |= GANGZONE_CREATE_TRIGGER;
 }
 
 CMD(CreateGangZoneDone, "gzcreatedone", 65535, NEED_SIGNED_IN) {
-	if(!player.GetVar<bool>("gz_create_in_progress"))
+	if(!player.HasVar("gz_create"))
 		throw std::runtime_error("未在创建进程中");
-	unsigned int step(player.GetVar<unsigned int>("gz_create_step"));
-	if(step != 15) throw std::runtime_error("尚有未完成的设置");
-	std::string& name(player.GetVar<std::string>("gz_create_name"));
-	Waypoint sp(player.GetVar<Coordinate5D>("gz_create_spawnpoint"));
-	sp.Create("_System_GangZone_Spawnpoint_" + name, player.GetUniqueID());
+	GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
+	if(data.step != 15) throw std::runtime_error("尚有未完成的设置");
+	Waypoint sp(data.spawnpoint);
+	sp.Create("_System_GangZone_Spawnpoint_" + mongo::OID().gen().str(), player.GetUniqueID());
+	CoordinatePlane min(data.min.x > data.max.x ? data.max.x : data.min.x,
+		data.min.y > data.max.y ? data.max.y : data.min.y),
+		max(data.min.x < data.max.x ? data.max.x : data.min.x,
+		data.min.y < data.max.y ? data.max.y : data.min.y);
 	GangZoneManager::MemberPtr newgz(new GangZoneItem(
-		player.GetVar<std::string>("gz_create_name"), player.GetTeamId(),
-		player.GetVar<CoordinatePlane>("gz_create_pos_min"),
-		player.GetVar<CoordinatePlane>("gz_create_pos_max"),
-		sp.GetUniqueID(), player.GetVar<Coordinate3D>("gz_create_trigger")));
+		data.name, player.GetTeamId(), min, max, sp.GetUniqueID(), data.trigger));
 	GangZoneMgr.Add(newgz);
-	player.SetVar("gz_create_in_progress", false);
-	player.SetVar("gz_create_step", (unsigned)0);
+	player.DelVar("gz_create");
 	player.SendChatMessage(COLOR_SUCC, "地盘创建成功");
 }
 
 CMD(CreateGangZoneCancel, "gzcreatecancel", 65535, NEED_SIGNED_IN) {
-	if(!player.GetVar<bool>("gz_create_in_progress"))
+	if(!player.HasVar("gz_create"))
 		throw std::runtime_error("未在创建进程中");
-	player.SetVar("gz_create_in_progress", false);
-	player.SetVar("gz_create_step", (unsigned)0);
+	player.DelVar("gz_create");
 	player.SendChatMessage(COLOR_SUCC, "已取消创建进程");
 }
 

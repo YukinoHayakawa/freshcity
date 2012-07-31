@@ -34,7 +34,7 @@ bool CommandManager::Add(const std::string& cmd, COMMAND_CALLBACK function, int 
 
 void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdline) {
 	MemberMap::const_iterator iter(_members.find(cmd));
-	if(iter == _members.end()) throw std::runtime_error("Unregistered command.");
+	if(iter == _members.end()) throw std::runtime_error("Unregistered command");
 	Profile& player = ProfileMgr[playerid];
 	unsigned int flags = iter->second->flags;
 	if(flags != 0) {
@@ -64,7 +64,7 @@ bool DialogManager::Add(int dialogid, const DialogCell& cell) {
 
 void DialogManager::Show(int dialogid, const std::string& content, int playerid, bool showforall) {
 	MemberMap::const_iterator dlg(_members.find(dialogid));
-	if(dlg == _members.end()) throw std::runtime_error("Unregistered dialog.");
+	if(dlg == _members.end()) throw std::runtime_error("Unregistered dialog");
 	DialogCell& dlginfo(*dlg->second.get());
 	if(showforall) {
 		MANAGER_FOREACH(ProfileManager) ShowPlayerDialog(iter->first, dialogid, dlginfo.style,
@@ -77,7 +77,7 @@ void DialogManager::Show(int dialogid, const std::string& content, int playerid,
 
 void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
 	MemberMap::const_iterator iter(_members.find(dialogid));
-	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog.");
+	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog");
 	Profile& player = ProfileMgr[playerid];
 	iter->second->callback.operator()(player, response, listitem, inputtext);
 }
@@ -91,7 +91,7 @@ bool PickupManager::Add(const MemberPtr& item) {
 
 void PickupManager::Exec(int playerid, int itemid) {
 	MemberMap::const_iterator iter(_members.find(itemid));
-	if(iter == _members.end()) throw std::runtime_error("Invalid object id.");
+	if(iter == _members.end()) throw std::runtime_error("Invalid object id");
 	Profile& player = ProfileMgr[playerid];
 	iter->second->Effect(player);
 	if(iter->second->IsDisposable()) _members.erase(iter);

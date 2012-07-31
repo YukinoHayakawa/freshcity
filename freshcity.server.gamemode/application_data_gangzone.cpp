@@ -19,7 +19,6 @@
 #include "application_config.h"
 #include "basic_algorithm_gbkencoder.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_colordefinitions.h"
 #include "application_gamemode_dynamicarea_classes.h"
 #include "application_gamemode_pickup_classes.h"
 #include "application_gamemode_timercallbacks.h"
@@ -33,7 +32,7 @@ void GangZoneItem::_LoadOwnerData() {
 		_spawnpoint	= _rawdata["spawn"].OID();
 		_zone->ShowForAll(_color);
 	} catch(mongo::UserException) {
-		throw std::runtime_error("Invalid gangzone data.");
+		throw std::runtime_error("Invalid gangzone data");
 	}
 }
 

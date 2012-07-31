@@ -19,7 +19,6 @@
 #include "basic_algorithm_gbkencoder.h"
 #include "application_data_team.h"
 #include <sampgdk/a_players.h>
-#include "application_gamemode_colordefinitions.h"
 
 void Team::__LoadData() {
 	_name	= UTF8ToGBK(_rawdata["name"].String());
@@ -44,9 +43,9 @@ Team::Team(const mongo::OID& leader, const std::string& name, int color, int tea
 
 void Team::Join(Profile& player) {
 	if(InGame(player.GetId()))
-		throw std::runtime_error("You have already been on this team.");
+		throw std::runtime_error("You have already been on this team");
 	if(player.GetTeamId().isSet())
-		throw std::runtime_error("You have already been on another team.");
+		throw std::runtime_error("You have already been on another team");
 	player.SetTeam(_ingameteamid);
 	player.SetTeamId(_uniqueid);
 	player.SendChatMessage(COLOR_SUCC, "You have joined " + _name);
@@ -56,7 +55,7 @@ void Team::Join(Profile& player) {
 void Team::Quit(Profile& player) {
 	TeamMemberMap::iterator iter = _onlineplayers.find(player.GetId());
 	if(iter == _onlineplayers.end())
-		throw std::runtime_error("You are not on this team.");
+		throw std::runtime_error("You are not on this team");
 	player.SetTeam(NO_TEAM);
 	player.SetTeamId(mongo::OID());
 	player.SendChatMessage(COLOR_SUCC, "You have quit " + _name);

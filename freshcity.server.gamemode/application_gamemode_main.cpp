@@ -21,7 +21,6 @@
 #include <sampgdk/plugin.h>
 #include "basic_debug_logging.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_colordefinitions.h"
 #include <boost/algorithm/string.hpp>
 #include "basic_algorithm_random.h"
 #include "application_dependency_streamer.h"
@@ -78,7 +77,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	} catch(...) {
 		LOG_ERROR("发生未知错误");
 	}
-	LOG_INFO("Freshcity Gamemode has been inited.");
+	LOG_INFO("Freshcity Gamemode has been inited");
 	return true;
 }
 
@@ -104,8 +103,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
 			SendDeathMessage(INVALID_PLAYER_ID, playerid, 200);
-			player.SetVar("gz_create_in_progress",		false);
-			player.SetVar("gz_create_step",				(unsigned)0);
 		} catch(std::runtime_error& e) {
 			LOG_ERROR(e.what());
 			throw;
@@ -329,7 +326,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerText(int playerid, const char *text) {
 	Team& t(TeamMgr[p.GetTeamId()]);
 	std::stringstream chat;
 	chat << ColorToEmbeddingString(t.GetColor()) << "[" << t.GetName() << "]" <<
-		ColorToEmbeddingString(p.GetColor()) << p.GetName() << "{ffffff}: " << text;
+		ColorToEmbeddingString(p.GetColor()) << p.GetNickname() << "{ffffff}: " << text;
 	SendClientMessageToAll(COLOR_WHITE, chat.str().c_str());
 	return false;
 }
@@ -385,15 +382,15 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float fX, float fY
 		Profile& player(ProfileMgr[playerid]);
 
 		// GangZone Creation
-		if(player.GetVar<bool>("gz_create_in_progress")) {
-			unsigned int& step(player.GetVar<unsigned int>("gz_create_step"));
-			if((step & GANGZONE_CREATE_MIN) != GANGZONE_CREATE_MIN) {
-				player.SetVar("gz_create_pos_min", CoordinatePlane(fX, fY));
-				step |= GANGZONE_CREATE_MIN;
+		if(player.HasVar("gz_create")) {
+			GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
+			if((data.step & GANGZONE_CREATE_MIN) != GANGZONE_CREATE_MIN) {
+				data.min = CoordinatePlane(fX, fY);
+				data.step |= GANGZONE_CREATE_MIN;
 				player.SendChatMessage(COLOR_SUCC, "已确定 MinRange");
-			} else if((step & GANGZONE_CREATE_MAX) != GANGZONE_CREATE_MAX) {
-				player.SetVar("gz_create_pos_max", CoordinatePlane(fX, fY));
-				step |= GANGZONE_CREATE_MAX;
+			} else if((data.step & GANGZONE_CREATE_MAX) != GANGZONE_CREATE_MAX) {
+				data.max = CoordinatePlane(fX, fY);
+				data.step |= GANGZONE_CREATE_MAX;
 				player.SendChatMessage(COLOR_SUCC, "已确定 MaxRange");
 			}
 		}

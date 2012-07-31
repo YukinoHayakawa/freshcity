@@ -68,11 +68,20 @@ public:
 	mongo::OID GetSpawnPoint() const;
 };
 
-enum GangZoneCreation {
+enum GangZoneCreationStep {
 	GANGZONE_CREATE_MIN = 1,
 	GANGZONE_CREATE_MAX = 2,
 	GANGZONE_CREATE_SPAWNPOINT = 4,
 	GANGZONE_CREATE_TRIGGER = 8
+};
+
+struct GangZoneCreationInfo {
+	GangZoneCreationInfo(const std::string& name) : name(name), step(0) {}
+	std::string name;
+	CoordinatePlane min, max;
+	Coordinate5D spawnpoint;
+	Coordinate3D trigger;
+	unsigned int step;
 };
 
 #endif

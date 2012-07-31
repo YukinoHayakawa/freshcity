@@ -30,7 +30,7 @@ mongo::DBClientConnection& GetDB() {
 		try {
 			_dbconnection.connect(host);
 			_connected = true;
-			LOG_INFO("Connected.");
+			LOG_INFO("Connected");
 		} catch(mongo::DBException &e) {
 			LOG_FATAL("Failed to connect: " << e.toString().c_str());
 			throw;

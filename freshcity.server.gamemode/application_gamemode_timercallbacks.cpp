@@ -17,7 +17,6 @@
 #include "application_database.h"
 #include "application_gamemode_timercallbacks.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_colordefinitions.h"
 
 int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat) {
 	HANDLE timerid = 0;
@@ -46,5 +45,5 @@ TIMERCALLBACK(TurfWarWaitTimeout) {
 TIMERCALLBACK(AutoSaveProfile) {
 	REF(Profile);
 	ref.Sync();
-	ref.SendChatMessage(COLOR_SUCC, "Profile synchronized.");
+	ref.SendChatMessage(COLOR_SUCC, "Profile synchronized");
 }

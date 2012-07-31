@@ -49,7 +49,7 @@ public:
 		try {
 			return *_members.at(memberid).get();
 		} catch(...) {
-			throw std::runtime_error("Object doesn't exist.");
+			throw std::runtime_error("Object doesn't exist");
 		}
 	}
 

@@ -17,7 +17,6 @@
 #include "application_database.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_data_waypoint.h"
-#include "application_gamemode_colordefinitions.h"
 #include "application_gamemode_role_classes.h"
 
 class _DialogRegister {

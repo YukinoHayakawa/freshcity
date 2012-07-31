@@ -31,7 +31,7 @@ void Waypoint::_LoadData() {
 			(int)_rawdata["world"].Number(), (int)_rawdata["interior"].Number(),
 			(float)_rawdata["facing"].Number());
 	} catch(mongo::UserException) {
-		throw std::runtime_error("Invalid waypoint document.");
+		throw std::runtime_error("Invalid waypoint document");
 	}
 }
 

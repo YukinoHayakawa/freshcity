@@ -22,6 +22,7 @@
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
 #include <boost/unordered_map.hpp>
+#include "application_gamemode_colordefinitions.h"
 
 class Profile : public SaveableItem, public Player {
 public:
@@ -117,6 +118,10 @@ public:
 
 	bool DelVar(const std::string& key) {
 		return _pvars.erase(key) != 0;
+	}
+
+	bool HasVar(const std::string& key) {
+		return _pvars.find(key) != _pvars.end();
 	}
 };
 
