@@ -38,13 +38,13 @@ void CommandManager::Exec(int playerid, const std::string& cmd, const char* cmdl
 	Profile& player = ProfileMgr[playerid];
 	unsigned int flags = iter->second->flags;
 	if(flags != 0) {
-		if(MATCHREQ(NEED_REGISTERED) && ProfileMgr[playerid].IsEmpty())
+		if(MATCHREQ(NEED_REGISTERED) && player.IsEmpty())
 			throw std::runtime_error("此命令仅限已注册玩家使用");
-		if(MATCHREQ(NEED_SIGNED_IN) && !ProfileMgr[playerid].IsSignedIn())
+		if(MATCHREQ(NEED_SIGNED_IN) && !player.IsSignedIn())
 			throw std::runtime_error("此命令仅限已登录玩家使用");
-		if(MATCHREQ(DONOT_REGISTERED) && !ProfileMgr[playerid].IsEmpty())
+		if(MATCHREQ(DONOT_REGISTERED) && !player.IsEmpty())
 			throw std::runtime_error("此命令仅限未注册玩家使用");
-		if(MATCHREQ(DONOT_SIGNED_IN) && ProfileMgr[playerid].IsSignedIn())
+		if(MATCHREQ(DONOT_SIGNED_IN) && player.IsSignedIn())
 			throw std::runtime_error("此命令仅限未登录玩家使用");
 	}
 	int levelreq = iter->second->reqlevel;
@@ -68,16 +68,17 @@ void DialogManager::Show(int dialogid, const std::string& content, int playerid,
 	DialogCell& dlginfo(*dlg->second.get());
 	if(showforall) {
 		MANAGER_FOREACH(ProfileManager) ShowPlayerDialog(iter->first, dialogid, dlginfo.style,
-		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.btnCancel.c_str());
+		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.mustresponse ? "" : dlginfo.btnCancel.c_str());
 	} else {
 		ShowPlayerDialog(playerid, dialogid, dlginfo.style,
-		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.btnCancel.c_str());
+		dlginfo.caption.c_str(), content.c_str(), dlginfo.btnOK.c_str(), dlginfo.mustresponse ? "" :  dlginfo.btnCancel.c_str());
 	}
 }
 
 void DialogManager::Exec(int playerid, bool response, int dialogid, int listitem, const char* inputtext) {
 	MemberMap::const_iterator iter(_members.find(dialogid));
 	if(iter == _members.end()) throw std::runtime_error("Unregistered dialog");
+	if(!iter->second->mustresponse && !response) return;
 	Profile& player = ProfileMgr[playerid];
 	iter->second->callback.operator()(player, response, listitem, inputtext);
 }

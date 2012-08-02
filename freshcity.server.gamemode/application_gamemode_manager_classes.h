@@ -65,8 +65,9 @@ typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
 struct DialogCell {
 	const int style; const std::string caption, btnOK, btnCancel;
 	const DialogPtr callback;
-	DialogCell(int style, const char* caption, const char* btnOK, const char* btnCancel, DIALOG_CALLBACK callback)
-		: style(style), caption(caption), btnOK(btnOK), btnCancel(btnCancel), callback(callback) {}
+	const bool mustresponse;
+	DialogCell(int style, const char* caption, const char* btnOK, const char* btnCancel, DIALOG_CALLBACK callback, bool mustresponse)
+		: style(style), caption(caption), btnOK(btnOK), btnCancel(btnCancel), callback(callback), mustresponse(mustresponse) {}
 };
 
 class DialogManager : public ItemManager<DialogManager, int, DialogCell> {

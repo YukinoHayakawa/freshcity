@@ -88,8 +88,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
 		try {
 			ProfileMgr.Add(playerid);
-			ProfileMgr[playerid].SetSignedIn(false);
 			Profile& player = ProfileMgr[playerid];
+			player.SetSignedIn(false);
 			if(player.IsEmpty()) {
 				player.SetColor(RandomRGBAColor());
 				DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", playerid);
@@ -297,7 +297,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerRequestSpawn(int playerid) {
 	std::string teams;
-	MANAGER_FOREACH(TeamManager) teams.append(iter->first).append(" ").append(iter->second->GetName()).append("\n");
+	MANAGER_FOREACH(TeamManager) teams.append(iter->first).append("\t").append(iter->second->GetName()).append("\n");
 	DlgMgr.Show(DIALOG_TEAM_SELECT, teams, playerid);
 	return false;
 }
@@ -309,7 +309,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerSpawn(int playerid) {
 		std::stringstream gangzones;
 		MANAGER_FOREACH(GangZoneManager) {
 			iter->second->Redraw();
-			gangzones << iter->first << " " << iter->second->GetName() << "\n";
+			gangzones << iter->first << "\t" << iter->second->GetName() << "\n";
 		}
 		DlgMgr.Show(DIALOG_GANGZONE_CHOOSETOSPAWN, gangzones.str(), playerid);
 	} catch(std::runtime_error& e) {

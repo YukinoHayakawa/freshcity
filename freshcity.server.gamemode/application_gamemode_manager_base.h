@@ -72,7 +72,7 @@ public:
 	iter != end; iter++)
 
 #define FETCH_ALL_FROM_DATABASE(col) std::auto_ptr<mongo::DBClientCursor> _cursor = \
-	GetDB().query(CONFIG_STRING(col), mongo::BSONObj());\
+	GetDB().query(CONFIG_STRING(col));\
 	while(_cursor->more())
 
 #endif

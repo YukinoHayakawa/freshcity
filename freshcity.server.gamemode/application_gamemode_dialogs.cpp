@@ -26,12 +26,12 @@ public:
 	}
 };
 
-#define DIALOG(id, style, caption, btnOK, btnCancle) \
+#define DIALOG(id, style, caption, btnOK, btnCancle, mustresponse) \
 	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext);\
-	_DialogRegister __DlgReg_##id(id, DialogCell(style, caption, btnOK, btnCancle, Dlg##id));\
+	_DialogRegister __DlgReg_##id(id, DialogCell(style, caption, btnOK, btnCancle, Dlg##id, mustresponse));\
 	void Dlg##id(Profile& player, bool response, int listitem, const char* inputtext)
 
-DIALOG(DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "选择阵营", "确定", "") {
+DIALOG(DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "选择阵营", "确定", "", true) {
 	std::string id(inputtext, 24);
 	mongo::OID ptid(player.GetTeamId());
 	if(ptid != mongo::OID(id)) {
@@ -42,7 +42,7 @@ DIALOG(DIALOG_TEAM_SELECT, DIALOG_STYLE_LIST, "选择阵营", "确定", "") {
 	DlgMgr.Show(DIALOG_ROLE_SELECT, "Assault\nMedic\nMechanic\nEngineer", player.GetId());
 }
 
-DIALOG(DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业", "确定", "") {
+DIALOG(DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业", "确定", "", true) {
 	switch(listitem) {
 	case 0:
 		player.SetRole(Profile::RolePtr(new Assault(player)));
@@ -63,7 +63,7 @@ DIALOG(DIALOG_ROLE_SELECT, DIALOG_STYLE_LIST, "选择职业", "确定", "") {
 	player.Spawn();
 }
 
-DIALOG(DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "注册", "") {
+DIALOG(DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "注册", "", true) {
 	if(inputtext[0] == 0) {
 		player.SendChatMessage(COLOR_ERROR, "密码不能为空");
 	} else {
@@ -81,7 +81,7 @@ DIALOG(DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "注册", "") {
 	DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", player.GetId());
 }
 
-DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "") {
+DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "", true) {
 	if(!player.AuthPassword(inputtext)) {
 		DlgMgr.Show(DIALOG_PROFILE_LOGIN, "请输入您的密码:", player.GetId());
 		throw std::runtime_error("密码错误");
@@ -91,18 +91,22 @@ DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "") {
 	player.SendChatMessage(COLOR_SUCC, "登录成功");
 }
 
-DIALOG(DIALOG_GANGZONE_CHOOSETOSPAWN, DIALOG_STYLE_LIST, "选择出生地区", "确定", "") {
+DIALOG(DIALOG_GANGZONE_CHOOSETOSPAWN, DIALOG_STYLE_LIST, "选择出生地区", "确定", "", true) {
 	int zoneid;
 	sscanf(inputtext, "%d", &zoneid);
 	Waypoint sp(GangZoneMgr[zoneid].GetSpawnPoint());
 	sp.PerformTeleport(player.GetId());
 }
 
-DIALOG(DIALOG_GANGZONE_REMOVE, DIALOG_STYLE_LIST, "选择需要删除的 GangZone", "删除", "取消") {
-	if(!response) return;
+DIALOG(DIALOG_GANGZONE_REMOVE, DIALOG_STYLE_LIST, "选择需要删除的 GangZone", "删除", "取消", false) {
 	int zoneid;
 	sscanf(inputtext, "%d", &zoneid);
 	GangZoneMgr[zoneid].Destroy();
 	GangZoneMgr.Remove(zoneid);
 	player.SendChatMessage(COLOR_SUCC, "指定 GangZone 已永久移除");
+}
+
+DIALOG(DIALOG_TELEPORT_NEARBY, DIALOG_STYLE_LIST, "查看附近的传送点", "传送", "取消", false) {
+	Waypoint target(mongo::OID(std::string(inputtext, 24)));
+	target.PerformTeleport(player.GetId());
 }

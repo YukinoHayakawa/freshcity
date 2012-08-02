@@ -44,25 +44,26 @@ CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
 }
 
 CMD(SetNickName, "setnickname", 0, NEED_SIGNED_IN) {
+	if(cmdline[0] == 0) throw std::runtime_error("Usage: /setnickname <Nickname>");
 	player.SetNickname(cmdline);
-	player.SendChatMessage(COLOR_SUCC, "昵称已更改");
+	player.SendChatMessage(COLOR_SUCC, "昵称更改为" + std::string(cmdline));
 }
 
-// Attribute
-CMD(SetSkin, "setskin", 0, NEED_SIGNED_IN) {
+// Player-Self
+CMD(SetSkin, "skin", 0, NEED_SIGNED_IN) {
 	int skinid(-1);
-	if(sscanf(cmdline, "%d", &skinid) == 0 || skinid == -1) throw std::runtime_error("用法: /setskin <皮肤ID>");
+	sscanf(cmdline, "%d", &skinid);
+	if(skinid == -1) throw std::runtime_error("Usage: /skin <SkinID>");
 	player.SetSkin(skinid);
 	player.SendChatMessage(COLOR_SUCC, "皮肤已更改");
 }
 
-// Weapon
-CMD(GiveWeapon, "giveweapon", 1, NEED_SIGNED_IN) {
-	int target(-1), weapon(-1), ammo(-1);
-	if(sscanf(cmdline, "%d%d%d", &target, &weapon, &ammo) == 0
-		|| !(target != -1 && weapon != -1 && ammo != -1))
-		throw std::runtime_error("用法: /giveweapon <玩家ID> <武器ID> <弹药量>");
-	GivePlayerWeapon(target, weapon, ammo);
+CMD(GiveWeapon, "weapon", 0, NEED_SIGNED_IN) {
+	int weapon(-1), ammo(-1);
+	sscanf(cmdline, "%d%d", &weapon, &ammo);
+	if(weapon == -1 || ammo == -1)
+		throw std::runtime_error("Usage: /weapon <WeaponID> <Ammo>");
+	GivePlayerWeapon(player.GetId(), weapon, ammo);
 }
 
 // Vehicle
@@ -78,8 +79,8 @@ CMD(GetVehicle, "v", 0, NULL) {
 }
 
 // Teleporting
-CMD(CreateWaypoint, "ctp", 0, NEED_SIGNED_IN) {
-	if(cmdline[0] == 0)	throw std::runtime_error("用法: /ctp <传送点名称>");
+CMD(CreateWaypoint, "tpcreate", 0, NEED_SIGNED_IN) {
+	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tpcreate <传送点名称>");
 	Waypoint create(player.GetDetailedPos());
 	create.Create(cmdline, player.GetUniqueID());
 	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
@@ -95,7 +96,7 @@ CMD(UseWaypoint, "tp", 0, NULL) {
 CMD(GoToPlayer, "goto", 0, NULL) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
-	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /goto <玩家ID>");
+	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /goto <在线玩家ID>");
 	Waypoint point(ProfileMgr[targetid].GetDetailedPos());
 	point.PerformTeleport(player.GetId());
 }
@@ -103,14 +104,27 @@ CMD(GoToPlayer, "goto", 0, NULL) {
 CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	int targetid(-1);
 	sscanf(cmdline, "%d", &targetid);
-	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <玩家ID>");
+	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <在线玩家ID>");
 	Waypoint point(player.GetDetailedPos());
 	point.PerformTeleport(targetid);
 }
 
-CMD(CreateTeleportTrigger, "ctpt", 0, NEED_SIGNED_IN) {
+CMD(CreateTeleportTrigger, "tptrigger", 0, NEED_SIGNED_IN) {
 	Waypoint wp(cmdline);
-	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
+	CreateTeleportTrigger(wp.GetUniqueID(), GenerateDirectionalPoint(player, 2.0f));
+	player.SendChatMessage(COLOR_SUCC, "已创建到 " + std::string(cmdline) + " 的传送标记");
+}
+
+CMD(ViewNearbyWaypoints, "tpnearby", 0, NULL) {
+	CoordinatePlane center(player.GetPlaneCoordinate());
+	mongo::BSONObj query(BSON("xy" << BSON("$near" << BSON_ARRAY(center.x << center.y))));
+	std::auto_ptr<mongo::DBClientCursor> results(GetDB().query(CONFIG_STRING("Database.waypoint"), query, 16));
+	std::stringstream str;
+	while(results->more()) {
+		mongo::BSONObj item(results->next());
+		str << item["_id"].OID() << "\t" << item["title"].String() << "\n";
+	}
+	DlgMgr.Show(DIALOG_TELEPORT_NEARBY, str.str(), player.GetId());
 }
 
 // Server Management
@@ -183,6 +197,6 @@ CMD(CreateGangZoneCancel, "gzcreatecancel", 65535, NEED_SIGNED_IN) {
 CMD(RemoveGangZone, "gzremove", 65535, NEED_SIGNED_IN) {
 	std::stringstream content;
 	MANAGER_FOREACH(GangZoneManager)
-		content << iter->first << " " << iter->second->GetName() << "\n";
+		content << iter->first << "\t" << iter->second->GetName() << "\n";
 	DlgMgr.Show(DIALOG_GANGZONE_REMOVE, content.str(), player.GetId());
 }
