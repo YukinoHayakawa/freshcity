@@ -46,7 +46,7 @@ void Profile::_LoadMemberData() {
 		_passwordhash	= _rawdata["auth"]["password"].String();
 		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
 		_banned			= _rawdata["auth"]["deleted"].Bool();
-		_nickname		= _gamearchive["reginfo"]["nickname"].String();
+		_nickname		= UTF8ToGBK(_gamearchive["reginfo"]["nickname"].String());
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
 		_deleted		= _gamearchive["banned"].Bool();
 	} catch(mongo::UserException) {
