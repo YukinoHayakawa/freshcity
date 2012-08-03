@@ -78,12 +78,12 @@ DIALOG(DIALOG_PROFILE_REGISTER, DIALOG_STYLE_PASSWORD, "注册", "注册", "", true)
 			player.SendChatMessage(COLOR_ERROR, "由于未知原因注册失败, 请联系服务器管理员");
 		}
 	}
-	DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", player.GetId());
+	DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码", player.GetId());
 }
 
 DIALOG(DIALOG_PROFILE_LOGIN, DIALOG_STYLE_PASSWORD, "登录", "登录", "", true) {
 	if(!player.AuthPassword(inputtext)) {
-		DlgMgr.Show(DIALOG_PROFILE_LOGIN, "请输入您的密码:", player.GetId());
+		DlgMgr.Show(DIALOG_PROFILE_LOGIN, "请输入您的密码", player.GetId());
 		throw std::runtime_error("密码错误");
 	}
 	player.SetSignedIn(true);
@@ -98,12 +98,80 @@ DIALOG(DIALOG_GANGZONE_CHOOSETOSPAWN, DIALOG_STYLE_LIST, "选择出生地区", "确定",
 	sp.PerformTeleport(player.GetId());
 }
 
+DIALOG(DIALOG_GANGZONE_MAIN, DIALOG_STYLE_LIST, "GangZone", "确定", "取消", false) {
+	switch(listitem) {
+	case 0: /* Create */ {
+		if(TeamMgr[player.GetTeamId()].GetLeader() != player.GetUniqueID())
+			throw std::runtime_error("你不是团队首领");
+		if(player.HasVar("gz_create"))
+			throw std::runtime_error("已经在创建进程中");
+		DlgMgr.Show(DIALOG_GANGZONE_CREATE, "指定一个名称", player.GetId());
+		break;
+	}
+
+	case 1: /* Remove */ {
+		std::stringstream content;
+		MANAGER_FOREACH(GangZoneManager)
+			content << iter->first << "\t" << iter->second->GetName() << "\n";
+		DlgMgr.Show(DIALOG_GANGZONE_REMOVE, content.str(), player.GetId());
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_GANGZONE_CREATE, DIALOG_STYLE_INPUT, "创建 GangZone", "确定", "取消", false) {
+	if(inputtext[0] == 0)
+		throw std::runtime_error("名称不能为空");
+	boost::shared_ptr<void> newgz(new GangZoneCreationInfo(inputtext));
+	player.SetVar("gz_create", newgz);
+	player.SendChatMessage(COLOR_WARN, "请 ESC->MAP 用右键放置标记来确定 GangZone 的范围");
+	player.SendChatMessage(COLOR_WARN, "使用 /gzc 来完成后续工作");
+}
+
+DIALOG(DIALOG_GANGZONE_CREATE_PROCESS, DIALOG_STYLE_LIST, "创建 GangZone", "确定", "取消", false) {
+	GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
+	switch(listitem) {
+	case 0: /* Spwanpoint */
+		data.spawnpoint = player.GetDetailedPos();
+		data.step |= GANGZONE_CREATE_SPAWNPOINT;
+		break;
+
+	case 1: /* TurfwarTrigger */
+		data.trigger = player.GetPos();
+		data.step |= GANGZONE_CREATE_TRIGGER;
+		break;
+
+	case 2: /* Finish */ {
+		if(data.step != 15) throw std::runtime_error("尚有未完成的设置");
+		Waypoint sp(data.spawnpoint);
+		sp.Create("_System_GangZone_Spawnpoint_" + mongo::OID().gen().str(), player.GetUniqueID());
+		CoordinatePlane min(data.min.x > data.max.x ? data.max.x : data.min.x,
+			data.min.y > data.max.y ? data.max.y : data.min.y),
+			max(data.min.x < data.max.x ? data.max.x : data.min.x,
+			data.min.y < data.max.y ? data.max.y : data.min.y);
+		GangZoneManager::MemberPtr newgz(new GangZoneItem(
+			data.name, player.GetTeamId(), min, max, sp.GetUniqueID(), data.trigger));
+		GangZoneMgr.Add(newgz);
+		player.DelVar("gz_create");
+		player.SendChatMessage(COLOR_SUCC, "地盘创建成功");
+		break;
+	}
+
+	case 3: /* Cancel */
+		player.DelVar("gz_create");
+		break;
+	}
+}
+
 DIALOG(DIALOG_GANGZONE_REMOVE, DIALOG_STYLE_LIST, "选择需要删除的 GangZone", "删除", "取消", false) {
 	int zoneid;
 	sscanf(inputtext, "%d", &zoneid);
 	GangZoneMgr[zoneid].Destroy();
 	GangZoneMgr.Remove(zoneid);
-	player.SendChatMessage(COLOR_SUCC, "指定 GangZone 已永久移除");
+	player.SendChatMessage(COLOR_SUCC, "指定 GangZone 已移除");
 }
 
 DIALOG(DIALOG_TELEPORT_MAIN, DIALOG_STYLE_LIST, "传送", "确定", "取消", false) {
@@ -160,4 +228,23 @@ DIALOG(DIALOG_TELEPORT_CREATETRIGGER, DIALOG_STYLE_INPUT, "创建传送标记", "创建"
 	Waypoint wp(inputtext);
 	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
 	player.SendChatMessage(COLOR_SUCC, "已创建到 " + std::string(inputtext) + " 的传送标记");
+}
+
+DIALOG(DIALOG_SERVER_MAIN, DIALOG_STYLE_LIST, "管理服务器", "确定", "取消", false) {
+	switch(listitem) {
+	case 0: /* ReloadTeamList */
+		TeamMgr.LoadAllFromDatabase();
+		break;
+
+	case 1: /* ReloadGangZoneList */
+		GangZoneMgr.LoadAllFromDatabase();
+		break;
+
+	case 2: /* ReloadConfig */
+		ReloadConfig();
+		break;
+
+	default:
+		break;
+	}
 }

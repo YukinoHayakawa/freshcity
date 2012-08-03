@@ -82,20 +82,20 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	RUN_TIME_COUNTER;
 	try {
 		Streamer_OnPlayerConnect(playerid);
-		SendClientMessage(playerid, COLOR_INFO, "欢迎来到 TennenColl 的开发服务器");
+		SendClientMessage(playerid, COLOR_INFO, "TennenColl's Teststation");
 		try {
 			ProfileMgr.Add(playerid);
 			Profile& player = ProfileMgr[playerid];
 			player.SetSignedIn(false);
 			if(player.IsEmpty()) {
 				player.SetColor(RandomRGBAColor());
-				DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码:", playerid);
+				DlgMgr.Show(DIALOG_PROFILE_REGISTER, "请输入您的密码", playerid);
 			} else {
 				if(player.IsBannedForGame()) {
 					player.SendChatMessage(COLOR_ERROR, "你已经被服务器封禁");
 					player.KickNow();
 				} else
-					DlgMgr.Show(DIALOG_PROFILE_LOGIN, "欢迎归来, 请输入您的密码以登录:", playerid);
+					DlgMgr.Show(DIALOG_PROFILE_LOGIN, "欢迎归来, 请输入您的密码以登录", playerid);
 			}
 			player.SetTeam(NO_TEAM);
 			SendClientMessageToAll(COLOR_INFO, std::string(player.GetName() + " 进入服务器").c_str());
@@ -384,11 +384,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float fX, float fY
 			if((data.step & GANGZONE_CREATE_MIN) != GANGZONE_CREATE_MIN) {
 				data.min = CoordinatePlane(fX, fY);
 				data.step |= GANGZONE_CREATE_MIN;
-				player.SendChatMessage(COLOR_SUCC, "已确定 MinRange");
 			} else if((data.step & GANGZONE_CREATE_MAX) != GANGZONE_CREATE_MAX) {
 				data.max = CoordinatePlane(fX, fY);
 				data.step |= GANGZONE_CREATE_MAX;
-				player.SendChatMessage(COLOR_SUCC, "已确定 MaxRange");
+				player.SendChatMessage(COLOR_SUCC, "已确定 GangZone 范围");
 			}
 		}
 	} catch(std::runtime_error &e) {

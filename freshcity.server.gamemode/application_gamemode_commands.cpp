@@ -101,75 +101,17 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 }
 
 // Server Management
-CMD(ReloadTeamList, "reloadteam", 65535, NEED_SIGNED_IN) {
-	TeamMgr.LoadAllFromDatabase();
-	player.SendChatMessage(COLOR_SUCC, "已重新载入团队数据");
-}
-
-CMD(ReloadGangZoneList, "reloadgangzone", 65535, NEED_SIGNED_IN) {
-	GangZoneMgr.LoadAllFromDatabase();
-	player.SendChatMessage(COLOR_SUCC, "已重新载入地盘数据");
-}
-
-CMD(ReloadConfig, "reloadconfig", 65535, NEED_SIGNED_IN) {
-	ReloadConfig();
-	player.SendChatMessage(COLOR_SUCC, "已重新载入服务器设置");
+CMD(ServerMgmt, "s", 65535, NEED_SIGNED_IN) {
+	DlgMgr.Show(DIALOG_SERVER_MAIN, "重新载入团队列表\n重新载入地盘列表\n重新载入服务器设置", player.GetId());
 }
 
 // Team Management
-CMD(CreateGangZone, "gzcreate", 65535, NEED_SIGNED_IN) {
-	if(TeamMgr[player.GetTeamId()].GetLeader() != player.GetUniqueID())
-		throw std::runtime_error("你不是团队首领");
-	if(player.HasVar("gz_create"))
-		throw std::runtime_error("已经在创建进程中");
-	if(cmdline[0] == 0)
-		throw std::runtime_error("名称不能为空");
-	boost::shared_ptr<void> newgz(new GangZoneCreationInfo(cmdline));
-	static_cast<GangZoneCreationInfo*>(newgz.get())->spawnpoint = player.GetDetailedPos();
-	static_cast<GangZoneCreationInfo*>(newgz.get())->step |= GANGZONE_CREATE_SPAWNPOINT;
-	player.SetVar("gz_create", newgz);
-	player.SendChatMessage(COLOR_WARN, "请 ESC->MAP 用右键放置标记来确定 GangZone 的范围");
-	player.SendChatMessage(COLOR_WARN, "你现在所在的地点将会作为出生点, 请稍后用 /gzsettrigger 确定帮派战争的触发标记");
-	player.SendChatMessage(COLOR_WARN, "/gzcreatedone 保存创建的 GangZone, 或 /gzcreatecancel 来取消当前进程");
+CMD(GangZoneMain, "gz", 65535, NEED_SIGNED_IN) {
+	DlgMgr.Show(DIALOG_GANGZONE_MAIN, "创建\n删除", player.GetId());
 }
 
-CMD(CreateGangZoneTrigger, "gzsettrigger", 65535, NEED_SIGNED_IN) {
+CMD(CreateGangZone, "gzc", 65535, NEED_SIGNED_IN) {
 	if(!player.HasVar("gz_create"))
 		throw std::runtime_error("未在创建进程中");
-	GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
-	data.trigger = player.GetPos();
-	data.step |= GANGZONE_CREATE_TRIGGER;
-	player.SendChatMessage(COLOR_SUCC, "已确定帮派战争触发标记位置");
-}
-
-CMD(CreateGangZoneDone, "gzcreatedone", 65535, NEED_SIGNED_IN) {
-	if(!player.HasVar("gz_create"))
-		throw std::runtime_error("未在创建进程中");
-	GangZoneCreationInfo& data(player.GetVar<GangZoneCreationInfo>("gz_create"));
-	if(data.step != 15) throw std::runtime_error("尚有未完成的设置");
-	Waypoint sp(data.spawnpoint);
-	sp.Create("_System_GangZone_Spawnpoint_" + mongo::OID().gen().str(), player.GetUniqueID());
-	CoordinatePlane min(data.min.x > data.max.x ? data.max.x : data.min.x,
-		data.min.y > data.max.y ? data.max.y : data.min.y),
-		max(data.min.x < data.max.x ? data.max.x : data.min.x,
-		data.min.y < data.max.y ? data.max.y : data.min.y);
-	GangZoneManager::MemberPtr newgz(new GangZoneItem(
-		data.name, player.GetTeamId(), min, max, sp.GetUniqueID(), data.trigger));
-	GangZoneMgr.Add(newgz);
-	player.DelVar("gz_create");
-	player.SendChatMessage(COLOR_SUCC, "地盘创建成功");
-}
-
-CMD(CreateGangZoneCancel, "gzcreatecancel", 65535, NEED_SIGNED_IN) {
-	if(!player.HasVar("gz_create"))
-		throw std::runtime_error("未在创建进程中");
-	player.DelVar("gz_create");
-	player.SendChatMessage(COLOR_SUCC, "已取消创建进程");
-}
-
-CMD(RemoveGangZone, "gzremove", 65535, NEED_SIGNED_IN) {
-	std::stringstream content;
-	MANAGER_FOREACH(GangZoneManager)
-		content << iter->first << "\t" << iter->second->GetName() << "\n";
-	DlgMgr.Show(DIALOG_GANGZONE_REMOVE, content.str(), player.GetId());
+	DlgMgr.Show(DIALOG_GANGZONE_CREATE_PROCESS, "保存当前位置为出生点\n保存当前位置为战争触发点\n完成创建\n取消创建", player.GetId());
 }
