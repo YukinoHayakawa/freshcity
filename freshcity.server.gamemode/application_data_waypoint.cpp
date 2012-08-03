@@ -16,8 +16,6 @@
 
 #include "application_database.h"
 #include "application_data_waypoint.h"
-#include "application_config.h"
-#include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
 #include "basic_algorithm_gbkencoder.h"
 #include "application_gamemode_manager_classes.h"
@@ -97,7 +95,6 @@ void LoadAllTeleportTriggerFromDatabase() {
 	FETCH_ALL_FROM_DATABASE("Database.tptrigger") {
 		mongo::BSONObj item(_cursor->next());
 		std::vector<mongo::BSONElement> xy(item["xy"].Array());
-
 		PickupMgr.Add(PickupManager::MemberPtr(new TeleportTrigger(
 			item["waypoint"].OID(), (float)xy[0].Number(), (float)xy[1].Number(), (float)item["z"].Number())));
 	}

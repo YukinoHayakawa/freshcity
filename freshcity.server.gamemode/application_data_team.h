@@ -17,8 +17,6 @@
 #ifndef FRESHCITY_APPLICATION_DATA_TEAM
 #define FRESHCITY_APPLICATION_DATA_TEAM
 
-#include "application_database.h"
-#include <boost/unordered_map.hpp>
 #include "application_data_profile.h"
 
 class Team : public SaveableItem {

@@ -19,7 +19,6 @@
 
 #include <sampgdk/a_samp.h>
 #include <boost/noncopyable.hpp>
-#include <string>
 
 class SystemMessageQueue : public boost::noncopyable {
 private:

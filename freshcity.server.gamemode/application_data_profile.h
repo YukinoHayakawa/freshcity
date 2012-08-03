@@ -17,7 +17,6 @@
 #ifndef FRESHCITY_APPLICATION_DATA_PROFILE
 #define FRESHCITY_APPLICATION_DATA_PROFILE
 
-#include "application_database.h"
 #include "application_data_base.h"
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>

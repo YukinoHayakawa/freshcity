@@ -17,7 +17,6 @@
 #ifndef FRESHCITY_APPLICATION_DATA_GANGZONE
 #define FRESHCITY_APPLICATION_DATA_GANGZONE
 
-#include "application_database.h"
 #include "application_data_profile.h"
 #include <sampgdk/a_samp.h>
 

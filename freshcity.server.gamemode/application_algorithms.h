@@ -18,7 +18,6 @@
 #define FRESHCITY_APPLICATION_ALGORITHMS
 
 #include "application_data_profile.h"
-#include "application_struct_coordinate.h"
 
 // Auth
 std::string GetPasswordDigest(const std::string& source);

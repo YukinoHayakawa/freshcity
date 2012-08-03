@@ -16,7 +16,6 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_config.h"
 
 // ProfileManager
 bool ProfileManager::Add(int playerid) {

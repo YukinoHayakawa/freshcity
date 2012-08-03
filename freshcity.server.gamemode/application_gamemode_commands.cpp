@@ -16,14 +16,10 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_data_waypoint.h"
-#include <sampgdk/a_players.h>
 #include <sampgdk/a_vehicles.h>
-#include "application_dependency_streamer.h"
-#include "application_gamemode_object.h"
 #include "application_algorithms.h"
 #include "application_gamemode_sysmsgqueue.h"
-#include "application_config.h"
+#include "application_data_waypoint.h"
 
 class _CmdRegister {
 public:
@@ -79,18 +75,13 @@ CMD(GetVehicle, "v", 0, NULL) {
 }
 
 // Teleporting
-CMD(CreateWaypoint, "tpcreate", 0, NEED_SIGNED_IN) {
-	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tpcreate <传送点名称>");
-	Waypoint create(player.GetDetailedPos());
-	create.Create(cmdline, player.GetUniqueID());
-	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(cmdline));
-}
-
-CMD(UseWaypoint, "tp", 0, NULL) {
-	if(cmdline[0] == 0)	throw std::runtime_error("用法: /tp <传送点名称>");
-	Waypoint point(cmdline);
-	point.PerformTeleport(player.GetId());
-	player.SendChatMessage(COLOR_SUCC, "已传送到 " + std::string(cmdline));
+CMD(TeleportMain, "t", 0, NEED_SIGNED_IN) {
+	if(cmdline[0] != 0) {
+		Waypoint point(cmdline);
+		point.PerformTeleport(player.GetId());
+	} else {
+		DlgMgr.Show(DIALOG_TELEPORT_MAIN, "在此处创建\n传送到\n查看附近\n创建传送标记", player.GetId());
+	}
 }
 
 CMD(GoToPlayer, "goto", 0, NULL) {
@@ -107,24 +98,6 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 	if(!IsPlayerConnected(targetid)) throw std::runtime_error("用法: /get <在线玩家ID>");
 	Waypoint point(player.GetDetailedPos());
 	point.PerformTeleport(targetid);
-}
-
-CMD(CreateTeleportTrigger, "tptrigger", 0, NEED_SIGNED_IN) {
-	Waypoint wp(cmdline);
-	CreateTeleportTrigger(wp.GetUniqueID(), GenerateDirectionalPoint(player, 2.0f));
-	player.SendChatMessage(COLOR_SUCC, "已创建到 " + std::string(cmdline) + " 的传送标记");
-}
-
-CMD(ViewNearbyWaypoints, "tpnearby", 0, NULL) {
-	CoordinatePlane center(player.GetPlaneCoordinate());
-	mongo::BSONObj query(BSON("xy" << BSON("$near" << BSON_ARRAY(center.x << center.y))));
-	std::auto_ptr<mongo::DBClientCursor> results(GetDB().query(CONFIG_STRING("Database.waypoint"), query, 16));
-	std::stringstream str;
-	while(results->more()) {
-		mongo::BSONObj item(results->next());
-		str << item["_id"].OID() << "\t" << item["title"].String() << "\n";
-	}
-	DlgMgr.Show(DIALOG_TELEPORT_NEARBY, str.str(), player.GetId());
 }
 
 // Server Management

@@ -16,8 +16,8 @@
 
 #include "application_database.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_data_waypoint.h"
 #include "application_gamemode_role_classes.h"
+#include "application_data_waypoint.h"
 
 class _DialogRegister {
 public:
@@ -106,7 +106,58 @@ DIALOG(DIALOG_GANGZONE_REMOVE, DIALOG_STYLE_LIST, "选择需要删除的 GangZone", "删
 	player.SendChatMessage(COLOR_SUCC, "指定 GangZone 已永久移除");
 }
 
+DIALOG(DIALOG_TELEPORT_MAIN, DIALOG_STYLE_LIST, "传送", "确定", "取消", false) {
+	switch(listitem) {
+	case 0: /* Create */
+		DlgMgr.Show(DIALOG_TELEPORT_CREATE, "为传送点命名", player.GetId());
+		break;
+
+	case 1: /* Use */
+		DlgMgr.Show(DIALOG_TELEPORT_USE, "传送点的名称", player.GetId());
+		break;
+
+	case 2: /* ViewNearby */ {
+		CoordinatePlane center(player.GetPlaneCoordinate());
+		mongo::BSONObj query(BSON("xy" << BSON("$near" << BSON_ARRAY(center.x << center.y))));
+		std::auto_ptr<mongo::DBClientCursor> results(GetDB().query(CONFIG_STRING("Database.waypoint"), query, 16));
+		std::stringstream str;
+		while(results->more()) {
+			mongo::BSONObj item(results->next());
+			str << item["_id"].OID() << "\t" << item["title"].String() << "\n";
+		}
+		DlgMgr.Show(DIALOG_TELEPORT_NEARBY, str.str(), player.GetId());
+		break;
+	}
+
+	case 3: /* CreateTrigger */
+		DlgMgr.Show(DIALOG_TELEPORT_CREATETRIGGER, "传送点的名称", player.GetId());
+		break;
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_TELEPORT_CREATE, DIALOG_STYLE_INPUT, "创建传送点", "创建", "取消", false) {
+	if(inputtext[0] == 0) return DlgMgr.Show(DIALOG_TELEPORT_CREATE, "名称不能为空", player.GetId());
+	Waypoint create(player.GetDetailedPos());
+	create.Create(inputtext, player.GetUniqueID());
+	player.SendChatMessage(COLOR_SUCC, "已创建传送点 " + std::string(inputtext));
+}
+
+DIALOG(DIALOG_TELEPORT_USE, DIALOG_STYLE_INPUT, "传送到", "传送", "取消", false) {
+	if(inputtext[0] == 0) return DlgMgr.Show(DIALOG_TELEPORT_USE, "名称不能为空", player.GetId());
+	Waypoint point(inputtext);
+	point.PerformTeleport(player.GetId());
+}
+
 DIALOG(DIALOG_TELEPORT_NEARBY, DIALOG_STYLE_LIST, "查看附近的传送点", "传送", "取消", false) {
 	Waypoint target(mongo::OID(std::string(inputtext, 24)));
 	target.PerformTeleport(player.GetId());
+}
+
+DIALOG(DIALOG_TELEPORT_CREATETRIGGER, DIALOG_STYLE_INPUT, "创建传送标记", "创建", "取消", false) {
+	Waypoint wp(inputtext);
+	CreateTeleportTrigger(wp.GetUniqueID(), player.GetPos());
+	player.SendChatMessage(COLOR_SUCC, "已创建到 " + std::string(inputtext) + " 的传送标记");
 }

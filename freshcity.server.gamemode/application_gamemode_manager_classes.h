@@ -19,6 +19,7 @@
 
 #include "application_gamemode_manager_base.h"
 #include <boost/function.hpp>
+#include "application_config.h"
 
 // ProfileManager
 #include "application_data_profile.h"
