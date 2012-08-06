@@ -20,6 +20,15 @@
 #include "application_gamemode_manager_base.h"
 #include <boost/function.hpp>
 #include "application_config.h"
+#include "application_database.h"
+
+#define MANAGER_FOREACH(manager) \
+	for(manager::MemberMap::iterator iter = manager::GetInstance().GetIterator(), end; \
+	iter != end; iter++)
+
+#define FETCH_ALL_FROM_DATABASE(col) std::auto_ptr<mongo::DBClientCursor> _cursor = \
+	GetDB().query(CONFIG_STRING(col));\
+	while(_cursor->more())
 
 // ProfileManager
 #include "application_data_profile.h"
