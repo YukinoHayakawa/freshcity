@@ -248,3 +248,54 @@ DIALOG(DIALOG_SERVER_MAIN, DIALOG_STYLE_LIST, "管理服务器", "确定", "取消", fals
 		break;
 	}
 }
+
+DIALOG(DIALOG_PLAYER_MAIN, DIALOG_STYLE_LIST, "玩家", "确定", "取消", false) {
+	int target(player.GetVar<int>("player_lastclicked"));
+	switch(listitem) {
+	case 0: // SendPrivateMessage
+		DlgMgr.Show(DIALOG_PLAYER_MESSAGE, "向 " + ProfileMgr[target].GetName()
+			+ " 发送消息", player.GetId());
+		break;
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_PLAYER_MESSAGE, DIALOG_STYLE_INPUT, "发送消息", "发送", "取消", false) {
+	ProfileMgr[player.GetVar<int>("player_lastclicked")].SendChatMessage(COLOR_SUCC, "来自 " + player.GetName()
+		+ " 的消息: " + inputtext);
+	player.SendChatMessage(COLOR_SUCC, "消息已发送");
+}
+
+DIALOG(DIALOG_PROFILE_SETTING, DIALOG_STYLE_LIST, "个人设置", "确定", "取消", false) {
+	switch(listitem) {
+	case 0: // SetNickname
+		DlgMgr.Show(DIALOG_PROFILE_SETTING_NICKNAME, "输入新昵称", player.GetId());
+		break;
+
+	case 1: // Sync
+		player.Sync();
+		player.SendChatMessage(COLOR_SUCC, "数据已同步");
+		break;
+
+	case 2: // ForceClassSelection
+		player.ForceReselectPlayerClass();
+		player.ToggleSpectating(true);
+		player.ToggleSpectating(false);
+		break;
+
+	case 3: // Selfkill
+		player.SetHealth(0.0f);
+		break;
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_PROFILE_SETTING_NICKNAME, DIALOG_STYLE_INPUT, "更改昵称", "确定", "取消", false) {
+	if(inputtext[0] == 0) throw std::runtime_error("昵称不能为空");
+	player.SetNickname(inputtext);
+	player.SendChatMessage(COLOR_SUCC, "昵称更改为" + std::string(inputtext));
+}

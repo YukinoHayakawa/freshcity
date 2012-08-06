@@ -393,7 +393,24 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickMap(int playerid, float fX, float fY
 	} catch(std::runtime_error &e) {
 		SendClientMessage(playerid, COLOR_ERROR, e.what());
 	} catch(...) {
-		SendClientMessage(playerid, COLOR_ERROR, " OnPlayerClickMap 发生错误");
+		SendClientMessage(playerid, COLOR_ERROR, "OnPlayerClickMap 发生错误");
+	}
+	return true;
+}
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplayerid, int source) {
+	RUN_TIME_COUNTER;
+	try {
+		Profile& player(ProfileMgr[playerid]);
+		player.SetVar("player_lastclicked", clickedplayerid);
+		if(playerid != clickedplayerid)
+			DlgMgr.Show(DIALOG_PLAYER_MAIN, "发送消息", playerid);
+		else
+			DlgMgr.Show(DIALOG_PROFILE_SETTING, "设置昵称\n同步数据\n更换队伍\n自杀", playerid); 
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "OnPlayerClickPlayer 发生错误");
 	}
 	return true;
 }

@@ -33,35 +33,6 @@ public:
 	_CmdRegister __CmdReg##callback(cmd, Cmd##callback, levelreq, flags);\
 	void Cmd##callback(Profile& player, const char* cmdline)
 
-// Profile
-CMD(SaveData, "sync", 0, NEED_SIGNED_IN) {
-	player.Sync();
-	player.SendChatMessage(COLOR_SUCC, "数据已保存");
-}
-
-CMD(SetNickName, "setnickname", 0, NEED_SIGNED_IN) {
-	if(cmdline[0] == 0) throw std::runtime_error("Usage: /setnickname <Nickname>");
-	player.SetNickname(cmdline);
-	player.SendChatMessage(COLOR_SUCC, "昵称更改为" + std::string(cmdline));
-}
-
-// Player-Self
-CMD(SetSkin, "skin", 0, NEED_SIGNED_IN) {
-	int skinid(-1);
-	sscanf(cmdline, "%d", &skinid);
-	if(skinid == -1) throw std::runtime_error("Usage: /skin <SkinID>");
-	player.SetSkin(skinid);
-	player.SendChatMessage(COLOR_SUCC, "皮肤已更改");
-}
-
-CMD(GiveWeapon, "weapon", 0, NEED_SIGNED_IN) {
-	int weapon(-1), ammo(-1);
-	sscanf(cmdline, "%d%d", &weapon, &ammo);
-	if(weapon == -1 || ammo == -1)
-		throw std::runtime_error("Usage: /weapon <WeaponID> <Ammo>");
-	GivePlayerWeapon(player.GetId(), weapon, ammo);
-}
-
 // Vehicle
 CMD(GetVehicle, "v", 0, NULL) {
 	int mid(-1);
