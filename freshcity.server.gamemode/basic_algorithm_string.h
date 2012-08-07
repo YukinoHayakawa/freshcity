@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_OBJECT
-#define FRESHCITY_APPLICATION_GAMEMODE_OBJECT
+#ifndef FRESHCITY_BASIC_ALGORITHM_STRING
+#define FRESHCITY_BASIC_ALGORITHM_STRING
 
-#include "application_dependency_streamer.h"
-#include "application_gamemode_effectiveitem.h"
+#include <string>
 
-class DynamicObject : public EffectiveItem {
-public:
-	DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz,
-		int worldid = -1, int interiorid = -1, int playerid = -1, float streamdistance = 100.0);
-	~DynamicObject();
-	void Edit(int playerid);
-};
+// GBK Encoding
+std::string GBKToUTF8(const std::string& strGBK);
+std::string UTF8ToGBK(const std::string& strUTF8);
+
+// Wide-char string converting
+std::wstring string2wstring(const std::string& str);
+std::string wstring2string(const std::wstring& wstr);
+
+#define S2W(x) string2wstring(x)
+#define W2S(x) wstring2string(x)
+
+// Hashing
+std::string sha256(std::string msg_arr);
 
 #endif

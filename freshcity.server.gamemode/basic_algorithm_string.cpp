@@ -14,21 +14,77 @@
  * limitations under the License.
  */
 
-//jagatsastry.nitk@gmail.com 9th April  '09
-//Implementation of SHA 256
-
+#include "basic_algorithm_string.h"
+#include <Windows.h>
 #include <vector>
 #include <exception>
 #include <string>
 #include <sstream>
 
-using namespace std;
-
 typedef unsigned int uint;
 
-string fromDecimal(uint n, int b) {
-	string chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	string result="";
+// GBK Encoding
+std::string GBKToUTF8(const std::string& strGBK) {
+    std::string strOutUTF8;
+    WCHAR * str1;
+    int n = MultiByteToWideChar(CP_ACP, 0, strGBK.c_str(), -1, NULL, 0);
+    str1 = new WCHAR[n];
+    MultiByteToWideChar(CP_ACP, 0, strGBK.c_str(), -1, str1, n);
+    n = WideCharToMultiByte(CP_UTF8, 0, str1, -1, NULL, 0, NULL, NULL);
+    char * str2 = new char[n];
+    WideCharToMultiByte(CP_UTF8, 0, str1, -1, str2, n, NULL, NULL);
+    strOutUTF8 = str2;
+    delete[]str1;
+    str1 = NULL;
+    delete[]str2;
+    str2 = NULL;
+    return strOutUTF8;
+}
+
+std::string UTF8ToGBK(const std::string& strUTF8) {
+    int len = MultiByteToWideChar(CP_UTF8, 0, strUTF8.c_str(), -1, NULL, 0);
+    unsigned short * wszGBK = new unsigned short[len + 1];
+    memset(wszGBK, 0, len * 2 + 2);
+    MultiByteToWideChar(CP_UTF8, 0, (LPCSTR)strUTF8.c_str(), -1, (LPWSTR)wszGBK, len);
+    len = WideCharToMultiByte(CP_ACP, 0, (LPCWSTR)wszGBK, -1, NULL, 0, NULL, NULL);
+    char *szGBK = new char[len + 1];
+    memset(szGBK, 0, len + 1);
+    WideCharToMultiByte(CP_ACP,0, (LPCWSTR)wszGBK, -1, szGBK, len, NULL, NULL);
+    std::string strTemp(szGBK);
+    delete[]szGBK;
+    delete[]wszGBK;
+    return strTemp;
+}
+
+// Wide-char string converting
+std::wstring string2wstring(const std::string& str) {
+	std::wstring result;
+	int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
+	TCHAR* buffer = new TCHAR[len + 1];
+	MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
+	buffer[len] = '\0';
+	result.append(buffer);
+	delete[] buffer;
+	return result;
+}
+
+std::string wstring2string(const std::wstring& src) {  
+	std::string result;
+	int len = WideCharToMultiByte(CP_ACP, 0, src.c_str(), src.size(), NULL, 0, NULL, NULL);
+	char* buffer = new char[len + 1];
+	WideCharToMultiByte(CP_ACP, 0, src.c_str(), src.size(), buffer, len, NULL, NULL);
+	buffer[len] = '\0';
+	result.append(buffer);
+	delete[] buffer;
+	return result;
+}
+
+// Hashing
+//jagatsastry.nitk@gmail.com 9th April  '09
+//Implementation of SHA 256
+std::string fromDecimal(uint n, int b) {
+	std::string chars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	std::string result="";
 	
 	while(n>0) {
 		result=chars.at(n%b)+result;
@@ -49,7 +105,7 @@ uint K[]= {
 	0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
    
-void makeblock(vector<uint>& ret, string p_msg) {
+void makeblock(std::vector<uint>& ret, std::string p_msg) {
 	uint cur=0;
 	int ind=0;
 	for(uint i=0; i<p_msg.size(); i++) {
@@ -64,14 +120,14 @@ void makeblock(vector<uint>& ret, string p_msg) {
    
 class Block {
 public:
-	vector<uint> msg;
+	std::vector<uint> msg;
 	Block():msg(16, 0) {}
-	Block(string p_msg):msg(16, 0) {
+	Block(std::string p_msg):msg(16, 0) {
 		makeblock(msg, p_msg);
 	}
 };
 
-void split(vector<Block>& blks, string& msg) {
+void split(std::vector<Block>& blks, std::string& msg) {
 	for(uint i=0; i<msg.size(); i+=64) {
 		try {
 			makeblock(blks[i/64].msg, msg.substr(i, 64));
@@ -79,8 +135,8 @@ void split(vector<Block>& blks, string& msg) {
 	}
 }
 
-string mynum(uint x) {
-	string ret;
+std::string mynum(uint x) {
+	std::string ret;
 	for(uint i=0; i<4; i++)
 		ret+=char(0);
 	
@@ -118,26 +174,26 @@ uint sigma1(uint x) {
 	return rotr(x, 17) ^ rotr(x, 19) ^ shr(x, 10);
 }
 
-string sha256(string msg_arr) {
-	string msg;
+std::string sha256(std::string msg_arr) {
+	std::string msg;
 	msg=msg_arr;
 	msg_arr += (char)(1<<7);
 	uint cur_len = msg.size()*8 + 8;
 	uint reqd_len = ((msg.size()*8)/512+1) *512;
 	uint pad_len = reqd_len - cur_len - 64;
 	
-	string pad(pad_len/8, char(0));
+	std::string pad(pad_len/8, char(0));
 	msg_arr += pad;
-	string len_str(mynum(msg.size()*8));
+	std::string len_str(mynum(msg.size()*8));
 	msg_arr = msg_arr + len_str;	
 	uint num_blk = msg_arr.size()*8/512;
-	vector<Block> M(num_blk, Block());
+	std::vector<Block> M(num_blk, Block());
 	split(M, msg_arr);
 	
 	uint H[]={0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
 	for(uint i=0; i<num_blk; i++) {
-		vector<uint> W(64, 0);
+		std::vector<uint> W(64, 0);
 		for(uint t=0; t<16; t++) {
 			W[t] = M[i].msg[t];
 		}
@@ -169,7 +225,7 @@ string sha256(string msg_arr) {
 		}
 	}
 	
-	stringstream dest;
+	std::stringstream dest;
 	for(uint i=0; i<8; i++)
 		dest << fromDecimal(H[i], 16);
 

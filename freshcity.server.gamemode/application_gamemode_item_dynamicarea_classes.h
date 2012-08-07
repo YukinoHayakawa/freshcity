@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA_CLASSES
-#define FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA_CLASSES
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ITEM_DYNAMICAREA_CLASSES
+#define FRESHCITY_APPLICATION_GAMEMODE_ITEM_DYNAMICAREA_CLASSES
 
-#include "application_gamemode_dynamicarea.h"
+#include "application_gamemode_item_streamed.h"
 
 // GangZoneArea
 class GangZoneArea : public DynamicRectangle {
 private:
-	int _zoneid;
+	const int _zoneid;
 
 public:
 	GangZoneArea(int zoneid, float minx, float miny, float maxx, float maxy);

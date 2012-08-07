@@ -21,8 +21,8 @@
 #include "basic_debug_logging.h"
 #include "application_gamemode_manager_classes.h"
 #include <boost/algorithm/string.hpp>
-#include "basic_algorithm_random.h"
-#include "application_gamemode_pickup_classes.h"
+#include "basic_algorithm_math.h"
+#include "application_gamemode_item_pickup_classes.h"
 #include "application_algorithms.h"
 #include <boost/random.hpp>
 #include "application_gamemode_role_classes.h"

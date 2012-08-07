@@ -16,7 +16,7 @@
 
 #include "application_database.h"
 #include "application_config.h"
-#include "basic_algorithm_gbkencoder.h"
+#include "basic_algorithm_string.h"
 #include "application_data_team.h"
 #include <sampgdk/a_players.h>
 

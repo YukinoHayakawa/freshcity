@@ -21,7 +21,7 @@
 #include "application_struct_coordinate.h"
 #include <sampgdk/a_players.h>
 #include <boost/unordered_map.hpp>
-#include "application_gamemode_colordefinitions.h"
+#include "application_gamemode_definition_color.h"
 
 class Profile : public SaveableItem, public Player {
 public:

@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
-#define FRESHCITY_APPLICATION_GAMEMODE_TIMERCALLBACKS
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ITEM_EFFECTIVE
+#define FRESHCITY_APPLICATION_GAMEMODE_ITEM_EFFECTIVE
 
-#include <WinBase.h>
+#include "application_data_profile.h"
 
-typedef void (CALLBACK*TimerCallbackFunc)(void*, unsigned char);
-#define TIMERCALLBACK(x) void CALLBACK TimerCallback_##x(void* param, unsigned char TimerOrWaitFired)
-int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat);
-void DestroyTimer(int timerid);
+class EffectiveItem {
+protected:
+	bool _disposable;
+	const int _id;
 
-TIMERCALLBACK(EndTurfWar);
-TIMERCALLBACK(TurfWarWaitTimeout);
-TIMERCALLBACK(AutoSaveProfile);
+public:
+	EffectiveItem(int id, bool disposable) : _id(id), _disposable(disposable) {}
+	void virtual Effect(Profile& player) {}
+	bool IsDisposable() const { return _disposable; }
+	int GetID() const { return _id; }
+};
 
 #endif

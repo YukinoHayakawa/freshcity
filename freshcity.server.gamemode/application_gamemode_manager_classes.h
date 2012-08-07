@@ -21,6 +21,7 @@
 #include <boost/function.hpp>
 #include "application_config.h"
 #include "application_database.h"
+#include "application_gamemode_item_streamed.h"
 
 #define MANAGER_FOREACH(manager) \
 	for(manager::MemberMap::iterator iter = manager::GetInstance().GetIterator(), end; \
@@ -67,7 +68,7 @@ enum CommandRequirement {
 extern CommandManager& CmdMgr;
 
 // DialogManager
-#include "application_gamemode_dialogdefinitions.h"
+#include "application_gamemode_definition_dialog.h"
 
 typedef void (*DIALOG_CALLBACK)(Profile& player, bool response, int listitem, const char* inputtext);
 typedef boost::function<void(Profile&, bool, int, const char*)> DialogPtr;
@@ -90,7 +91,7 @@ public:
 extern DialogManager& DlgMgr;
 
 // PickupManager
-#include "application_gamemode_effectiveitem.h"
+#include "application_gamemode_item_effective.h"
 
 class PickupManager : public ItemManager<PickupManager, int, EffectiveItem> {
 public:
@@ -101,8 +102,6 @@ public:
 extern PickupManager& PickupMgr;
 
 // ObjectManager
-#include "application_gamemode_object.h"
-
 class ObjectManager : public ItemManager<ObjectManager, int, DynamicObject> {
 public:
 	bool Add(const MemberPtr& item) {
@@ -114,7 +113,7 @@ extern ObjectManager& ObjectMgr;
 
 // TeamManager
 #include "application_data_team.h"
-#include "basic_algorithm_identifier.h"
+#include "basic_algorithm_math.h"
 
 class TeamManager : public ItemManager<TeamManager, std::string, Team> {
 private:
@@ -146,8 +145,6 @@ public:
 extern GangZoneManager& GangZoneMgr;
 
 // DynamicAreaManager
-#include "application_gamemode_dynamicarea.h"
-
 class DynamicAreaManager : public ItemManager<DynamicAreaManager, int, DynamicArea> {
 public:
 	bool Add(const MemberPtr& item);

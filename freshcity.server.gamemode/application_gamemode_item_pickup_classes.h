@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_PICKUP_CLASSES
-#define FRESHCITY_APPLICATION_GAMEMODE_PICKUP_CLASSES
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ITEM_PICKUP_CLASSES
+#define FRESHCITY_APPLICATION_GAMEMODE_ITEM_PICKUP_CLASSES
 
-#include "application_gamemode_pickup.h"
+#include "application_gamemode_item_streamed.h"
 
 // MedicalPickup
-class MedicalPickup : public Pickup {
+class MedicalPickup : public DynamicPickup {
 private:
 	float _health;
 
@@ -30,7 +30,7 @@ public:
 };
 
 // WealthPickup
-class WealthPickup : public Pickup {
+class WealthPickup : public DynamicPickup {
 private:
 	int _money;
 	int _score;
@@ -41,7 +41,7 @@ public:
 };
 
 // WeaponPickup
-class WeaponPickup : public Pickup {
+class WeaponPickup : public DynamicPickup {
 private:
 	int _weaponid, _ammo;
 
@@ -51,7 +51,7 @@ public:
 };
 
 // TurfWarTrigger
-class TurfWarTrigger : public Pickup {
+class TurfWarTrigger : public DynamicPickup {
 private:
 	int _zoneid;
 
@@ -61,7 +61,7 @@ public:
 };
 
 // TeleportTrigger
-class TeleportTrigger : public Pickup {
+class TeleportTrigger : public DynamicPickup {
 private:
 	mongo::OID _waypoint;
 

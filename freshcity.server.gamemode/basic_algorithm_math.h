@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_BASIC_ALGORITHM_IDENTIFIER
-#define FRESHCITY_BASIC_ALGORITHM_IDENTIFIER
+#ifndef FRESHCITY_BASIC_ALGORITHM_MATH
+#define FRESHCITY_BASIC_ALGORITHM_MATH
 
+// Random
+#include <boost/random.hpp>
+
+__int64 inline Random(__int64 min, __int64 max) {
+	boost::variate_generator<boost::mt19937&, boost::uniform_int<__int64>>
+		gen(boost::mt19937((unsigned)clock()), boost::uniform_int<__int64>(min, max));
+	return gen();
+}
+
+int inline RandomRGBAColor() { return (int)Random(0x00000000, 0xFFFFFFFF); }
+
+// IdentifierAllocator
 #include <stack>
 
 class IdentifierAllocator {

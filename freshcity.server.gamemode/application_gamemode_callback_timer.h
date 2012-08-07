@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_BASIC_ALGORITHM_WCHAR
-#define FRESHCITY_BASIC_ALGORITHM_WCHAR
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_CALLBACK_TIMER
+#define FRESHCITY_APPLICATION_GAMEMODE_CALLBACK_TIMER
 
-#include <string>
+#include <WinBase.h>
 
-std::wstring string2wstring(const std::string& str);
-std::string wstring2string(const std::wstring& wstr);
+typedef void (CALLBACK*TimerCallbackFunc)(void*, unsigned char);
+#define TIMERCALLBACK(x) void CALLBACK TimerCallback_##x(void* param, unsigned char TimerOrWaitFired)
+int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat);
+void DestroyTimer(int timerid);
 
-#define S2W(x) string2wstring(x)
-#define W2S(x) wstring2string(x)
+TIMERCALLBACK(EndTurfWar);
+TIMERCALLBACK(TurfWarWaitTimeout);
+TIMERCALLBACK(AutoSaveProfile);
 
 #endif

@@ -15,7 +15,7 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_timercallbacks.h"
+#include "application_gamemode_callback_timer.h"
 #include "application_gamemode_manager_classes.h"
 
 int CreateTimer(TimerCallbackFunc callback, void* param, unsigned long period, bool repeat) {

@@ -18,8 +18,8 @@
 #include "application_data_profile.h"
 #include "application_config.h"
 #include "application_algorithms.h"
-#include "basic_algorithm_gbkencoder.h"
-#include "application_gamemode_timercallbacks.h"
+#include "basic_algorithm_string.h"
+#include "application_gamemode_callback_timer.h"
 
 Profile::Role::Role(Profile& player, int timelimit, bool musthavetarget)
 	: _timelimit(timelimit), _skilllastuse(0), _musthavetarget(musthavetarget),

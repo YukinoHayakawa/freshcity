@@ -17,9 +17,9 @@
 #include "application_database.h"
 #include "application_data_waypoint.h"
 #include <sampgdk/a_vehicles.h>
-#include "basic_algorithm_gbkencoder.h"
+#include "basic_algorithm_string.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_pickup_classes.h"
+#include "application_gamemode_item_pickup_classes.h"
 
 void Waypoint::_LoadData() {
 	try {

@@ -15,14 +15,14 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_pickup_classes.h"
+#include "application_gamemode_item_pickup_classes.h"
 #include "application_algorithms.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_data_waypoint.h"
 
 // MedicalPickup
 MedicalPickup::MedicalPickup(float health, float x, float y, float z)
-	: Pickup(1240, 1, x, y, z, true), _health(health) {}
+	: DynamicPickup(1240, 1, x, y, z, true), _health(health) {}
 
 void MedicalPickup::Effect(Profile& player) {
 	player.GiveHealth(_health);
@@ -31,7 +31,7 @@ void MedicalPickup::Effect(Profile& player) {
 
 // WealthPickup
 WealthPickup::WealthPickup(int money, int score, float x, float y, float z)
-	: Pickup(1550, 1, x, y, z, true), _money(money), _score(score) {}
+	: DynamicPickup(1550, 1, x, y, z, true), _money(money), _score(score) {}
 
 void WealthPickup::Effect(Profile& player) {
 	player.GiveMoney(_money);
@@ -42,7 +42,7 @@ void WealthPickup::Effect(Profile& player) {
 // WeaponPickup
 WeaponPickup::WeaponPickup(int weaponid, int ammo, float x, float y, float z)
 	: _weaponid(weaponid), _ammo(ammo),
-	Pickup(ConvertWeaponIDToModelID(weaponid), 1, x, y, z, true) {}
+	DynamicPickup(ConvertWeaponIDToModelID(weaponid), 1, x, y, z, true) {}
 
 void WeaponPickup::Effect(Profile& player) {
 	player.GiveWeapon(_weaponid, _ammo);
@@ -51,7 +51,7 @@ void WeaponPickup::Effect(Profile& player) {
 
 // TurfWarTrigger
 TurfWarTrigger::TurfWarTrigger(int zoneid, float x, float y, float z)
-	: _zoneid(zoneid), Pickup(1314, 1, x, y, z, false) {}
+	: _zoneid(zoneid), DynamicPickup(1314, 1, x, y, z, false) {}
 
 void TurfWarTrigger::Effect(Profile& player) {
 	GangZoneItem& gz(GangZoneMgr[_zoneid]);
@@ -66,7 +66,7 @@ void TurfWarTrigger::Effect(Profile& player) {
 
 // TeleportTrigger
 TeleportTrigger::TeleportTrigger(const mongo::OID& waypoint, float x, float y, float z)
-	: _waypoint(waypoint), Pickup(1318, 1, x, y, z, false) {}
+	: _waypoint(waypoint), DynamicPickup(1318, 1, x, y, z, false) {}
 
 void TeleportTrigger::Effect(Profile& player) {
 	Waypoint target(_waypoint);

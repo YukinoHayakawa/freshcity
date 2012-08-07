@@ -16,11 +16,11 @@
 
 #include "application_database.h"
 #include "application_data_gangzone.h"
-#include "basic_algorithm_gbkencoder.h"
+#include "basic_algorithm_string.h"
 #include "application_gamemode_manager_classes.h"
-#include "application_gamemode_dynamicarea_classes.h"
-#include "application_gamemode_pickup_classes.h"
-#include "application_gamemode_timercallbacks.h"
+#include "application_gamemode_item_dynamicarea_classes.h"
+#include "application_gamemode_item_pickup_classes.h"
+#include "application_gamemode_callback_timer.h"
 #include "application_gamemode_sysmsgqueue.h"
 
 void GangZoneItem::_LoadOwnerData() {

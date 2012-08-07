@@ -16,7 +16,7 @@
 
 #include "application_database.h"
 #include "application_algorithms.h"
-#include "basic_algorithm_sha256.h"
+#include "basic_algorithm_string.h"
 
 // Auth
 const std::string salt1("Y5Nz.MM;K?xtQkd80V@l?p*RF)I8mH.6n>o`,;`Rlh!3c.?#FZdWMuFPOvnQi#Da");

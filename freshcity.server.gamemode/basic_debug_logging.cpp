@@ -16,7 +16,7 @@
 
 #include "basic_debug_logging.h"
 #include "application_config.h"
-#include "basic_algorithm_wchar.h"
+#include "basic_algorithm_string.h"
 #include <log4cplus/layout.h>
 #include <log4cplus/consoleappender.h>
 #include <log4cplus/fileappender.h>

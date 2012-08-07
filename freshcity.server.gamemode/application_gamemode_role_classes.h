@@ -18,7 +18,7 @@
 #define FRESHCITY_APPLICATION_GAMEMODE_ROLE_CLASSES
 
 #include "application_data_profile.h"
-#include "application_gamemode_object.h"
+#include "application_gamemode_item_streamed.h"
 
 // Assault
 class Assault : public Profile::Role {

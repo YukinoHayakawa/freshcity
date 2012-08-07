@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA
-#define FRESHCITY_APPLICATION_GAMEMODE_DYNAMICAREA
+#ifndef FRESHCITY_APPLICATION_GAMEMODE_ITEM_STREAMED
+#define FRESHCITY_APPLICATION_GAMEMODE_ITEM_STREAMED
 
 #include "application_dependency_streamer.h"
 #include "application_data_profile.h"
+#include "application_gamemode_item_effective.h"
 
+// Area
 class DynamicArea {
 protected:
-	int _id;
+	const int _id;
 
 public:
 	DynamicArea(int id) : _id(id) {}
@@ -84,6 +86,23 @@ class DynamicCube : public DynamicArea {
 public:
 	DynamicCube(float minx, float miny, float minz, float maxx, float maxy, float maxz, int worldid = -1, int interiorid = -1, int playerid = -1)
 		: DynamicArea(CreateDynamicCube(minx, miny, minz, maxx, maxy, maxz, worldid, interiorid, playerid)) {}
+};
+
+// Object
+class DynamicObject : public EffectiveItem {
+public:
+	DynamicObject(int modelid, float x, float y, float z, float rx, float ry, float rz,
+		int worldid = -1, int interiorid = -1, int playerid = -1, float streamdistance = 100.0)
+		: EffectiveItem(CreateDynamicObject(modelid, x, y, z, rx, ry, rz, worldid, interiorid, playerid, streamdistance), false) {}
+	~DynamicObject() { DestroyDynamicObject(_id); }
+};
+
+// Pickup
+class DynamicPickup : public EffectiveItem {
+public:
+	DynamicPickup(int modelid, int type, float x, float y, float z, bool disposable, int worldid = -1, int interiorid = -1, int playerid = -1, float distance = 100.0f)
+		: EffectiveItem(CreateDynamicPickup(modelid, type, x, y, z, worldid, interiorid, playerid, distance), disposable) {}
+	~DynamicPickup() { DestroyDynamicPickup(_id); }
 };
 
 #endif

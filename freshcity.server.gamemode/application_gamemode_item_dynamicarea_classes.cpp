@@ -15,7 +15,7 @@
  */
 
 #include "application_database.h"
-#include "application_gamemode_dynamicarea_classes.h"
+#include "application_gamemode_item_dynamicarea_classes.h"
 #include "application_gamemode_manager_classes.h"
 #include "application_algorithms.h"
 
