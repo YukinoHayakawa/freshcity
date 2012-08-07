@@ -137,9 +137,13 @@
     <ClInclude Include=".\basic_algorithm_math.h" />
     <ClInclude Include="basic_debug_logging.h" />
     <ClInclude Include="basic_debug_timer.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\application_gamemode_export.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="version.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

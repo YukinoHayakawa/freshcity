@@ -129,7 +129,7 @@ bool GangZoneItem::StartWar(Profile& attacker) {
 		CONFIG_INT("Gaming.turfwarlast") * 60000, false);
 	bool memberinzone = false;
 	for(Team::TeamMemberMap::iterator teammembers(TeamMgr[_owner].GetMemberIterator()), end;
-		teammembers != end; teammembers++) {
+		teammembers != end; ++teammembers) {
 		if(GangZoneMgr.GetPointInWhichZone(
 			ProfileMgr[teammembers->first].GetPos()) == _zone->GetId()) {
 				memberinzone = true;

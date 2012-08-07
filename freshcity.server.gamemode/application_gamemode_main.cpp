@@ -29,6 +29,7 @@
 #include "application_gamemode_sysmsgqueue.h"
 #include "basic_debug_timer.h"
 #include "application_data_waypoint.h"
+#include "application_gamemode_callback_timer.h"
 
 #define STREAMER_CALLBACK __declspec(dllexport)
 
@@ -60,13 +61,15 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 	RUN_TIME_COUNTER;
 	SetGameModeText("ShadowBlue");
-	for(int i = 1; i < 299; i++) 
+	for(int i = 1; i < 299; ++i) 
 		AddPlayerClass(i, 1497.07f, -689.485f, 94.956f, 180.86f, 0, 0, 0, 0, 0, 0);
 	try {
 		TeamMgr.LoadAllFromDatabase();
 		GangZoneMgr.LoadAllFromDatabase();
 		LoadAllTeleportTriggerFromDatabase();
 		//ProfileMgr.Add(-1);
+		CreateTimer(TimerCallback_ChangeWeather, 0, 300000, true);
+		CreateTimer(TimerCallback_ChangeTime, 0, 60000, true);
 	} catch(std::runtime_error& e) {
 		LOG_ERROR(e.what());
 	} catch(mongo::UserException& e) {
@@ -222,7 +225,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerDeath(int playerid, int killerid, int rea
 		float radius = CONFIG_FLOAT("EffectiveItem.weapondropradius");
 		boost::uniform_real<float> range(radius * -1, radius);
 		boost::variate_generator<boost::mt19937&, boost::uniform_real<float>> genoffset(engine, range);
-		for(int i = 0; i < 13; i++) {
+		for(int i = 0; i < 13; ++i) {
 			GetPlayerWeaponData(playerid, i, &dropweapon[0], &dropweapon[1]);
 			if(dropweapon[0] != 0)
 				PickupMgr.Add(PickupManager::MemberPtr(new WeaponPickup(dropweapon[0], dropweapon[1],

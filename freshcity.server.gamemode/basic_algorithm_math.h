@@ -26,7 +26,14 @@ __int64 inline Random(__int64 min, __int64 max) {
 	return gen();
 }
 
-int inline RandomRGBAColor() { return (int)Random(0x00000000, 0xFFFFFFFF); }
+int inline RandomRGBAColor() { return (int)Random((__int64)0x00000000, (__int64)0xFFFFFFFF); }
+
+int inline Random(int min, int max) {
+	srand((unsigned)clock());
+	return (rand() % (max - min)) + min;
+}
+
+int inline RandomWeather() { return Random(0, 45); }
 
 // IdentifierAllocator
 #include <stack>

@@ -108,7 +108,7 @@ uint K[]= {
 void makeblock(std::vector<uint>& ret, std::string p_msg) {
 	uint cur=0;
 	int ind=0;
-	for(uint i=0; i<p_msg.size(); i++) {
+	for(uint i=0; i<p_msg.size(); ++i) {
 		cur = (cur<<8) | (unsigned char)p_msg[i];
 		
 		if(i%4==3) {
@@ -137,7 +137,7 @@ void split(std::vector<Block>& blks, std::string& msg) {
 
 std::string mynum(uint x) {
 	std::string ret;
-	for(uint i=0; i<4; i++)
+	for(uint i=0; i<4; ++i)
 		ret+=char(0);
 	
 	for(uint i=4; i>=1; i--) {	//big endian machine assumed
@@ -192,21 +192,21 @@ std::string sha256(std::string msg_arr) {
 	
 	uint H[]={0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19};
 
-	for(uint i=0; i<num_blk; i++) {
+	for(uint i=0; i<num_blk; ++i) {
 		std::vector<uint> W(64, 0);
-		for(uint t=0; t<16; t++) {
+		for(uint t=0; t<16; ++t) {
 			W[t] = M[i].msg[t];
 		}
 		
-		for(uint t=16; t<64; t++) {
+		for(uint t=16; t<64; ++t) {
 			W[t] = sigma1(W[t-2]) + W[t-7] + sigma0(W[t-15]) + W[t-16];
 		}
 		
 		uint work[8];
-		for(uint i=0; i<8; i++)
+		for(uint i=0; i<8; ++i)
 			work[i] = H[i];
 		
-		for(uint t=0; t<64; t++) {
+		for(uint t=0; t<64; ++t) {
 			uint t1, t2;
 			t1 = work[7] + fn1(work[4]) + ch(work[4], work[5], work[6]) + K[t] + W[t];
 			t2 = fn0(work[0]) + maj(work[0], work[1], work[2]);
@@ -220,13 +220,13 @@ std::string sha256(std::string msg_arr) {
 			work[0] = t1 + t2;
 		}
 		
-		for(uint i=0; i<8; i++) {
+		for(uint i=0; i<8; ++i) {
 			H[i] = work[i] + H[i];
 		}
 	}
 	
 	std::stringstream dest;
-	for(uint i=0; i<8; i++)
+	for(uint i=0; i<8; ++i)
 		dest << fromDecimal(H[i], 16);
 
 	return dest.str();

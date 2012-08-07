@@ -136,7 +136,7 @@ void Profile::Sync() {
 
 	int weapon[2];
 	std::list<mongo::BSONObj> weapons;
-	for(int i = 0; i < 13; i++) {
+	for(int i = 0; i < 13; ++i) {
 		GetWeaponData(i, &weapon[0], &weapon[1]);
 		if(weapon[0] != 0)
 			weapons.push_back(BSON("id" << weapon[0] << "ammo" << weapon[1]));

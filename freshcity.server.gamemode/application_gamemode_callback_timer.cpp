@@ -47,3 +47,12 @@ TIMERCALLBACK(AutoSaveProfile) {
 	ref.Sync();
 	ref.SendChatMessage(COLOR_SUCC, "Profile synchronized");
 }
+
+TIMERCALLBACK(ChangeWeather) {
+	SetWeather(RandomWeather());
+}
+
+TIMERCALLBACK(ChangeTime) {
+	static int time(11);
+	SetWorldTime(++time % 24);
+}

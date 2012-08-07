@@ -27,5 +27,7 @@ void DestroyTimer(int timerid);
 TIMERCALLBACK(EndTurfWar);
 TIMERCALLBACK(TurfWarWaitTimeout);
 TIMERCALLBACK(AutoSaveProfile);
+TIMERCALLBACK(ChangeWeather);
+TIMERCALLBACK(ChangeTime);
 
 #endif
