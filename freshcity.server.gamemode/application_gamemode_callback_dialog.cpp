@@ -147,7 +147,7 @@ DIALOG(DIALOG_GANGZONE_CREATE_PROCESS, DIALOG_STYLE_LIST, "创建 GangZone", "确定
 	case 2: /* Finish */ {
 		if(data.step != 15) throw std::runtime_error("尚有未完成的设置");
 		Waypoint sp(data.spawnpoint);
-		sp.Create("_System_GangZone_Spawnpoint_" + mongo::OID().gen().str(), player.GetUniqueID());
+		sp.Create("_gz_sp_" + mongo::OID().gen().str(), player.GetUniqueID());
 		CoordinatePlane min(data.min.x > data.max.x ? data.max.x : data.min.x,
 			data.min.y > data.max.y ? data.max.y : data.min.y),
 			max(data.min.x < data.max.x ? data.max.x : data.min.x,
