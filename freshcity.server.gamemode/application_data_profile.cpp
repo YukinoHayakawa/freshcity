@@ -45,10 +45,10 @@ void Profile::_LoadMemberData() {
 	try {
 		_passwordhash	= _rawdata["auth"]["password"].String();
 		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
-		_banned			= _rawdata["auth"]["deleted"].Bool();
+		_deleted		= _rawdata["auth"]["deleted"].Bool();
 		_nickname		= UTF8ToGBK(_gamearchive["reginfo"]["nickname"].String());
 		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
-		_deleted		= _gamearchive["banned"].Bool();
+		_banned			= _gamearchive["banned"].Bool();
 	} catch(mongo::UserException) {
 		throw std::runtime_error("Invalid player profile");
 	}

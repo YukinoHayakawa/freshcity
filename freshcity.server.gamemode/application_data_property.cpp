@@ -104,7 +104,7 @@ int Property::Draw(Profile& player) {
 	if(player.GetUniqueID() != _owner) return 0;
 	__int64 now(time(0));
 	Update(BSON("$set" << BSON("lastdraw" << now)), false);
-	int earns((int)((now - _lastdraw) / 3600) * _profit);
+	int earns((int)((now - _lastdraw) / 1440) * _profit);
 	player.GiveMoney(earns);
 	_lastdraw = now;
 	return earns;

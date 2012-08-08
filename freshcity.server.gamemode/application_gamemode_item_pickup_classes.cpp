@@ -83,7 +83,7 @@ void PropertyMarker_OnSale::Effect(Profile& player) {
 	player.SetVar("property_lastviewed", _property);
 	Property& prop(PropertyMgr[_property]);
 	std::stringstream str;
-	str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+	str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每天收益: $" << prop.GetProfit();
 	DlgMgr.Show(DIALOG_PROPERTY_ONSALE, str.str(), player.GetId());
 }
 
@@ -98,10 +98,10 @@ void PropertyMarker_Sold::Effect(Profile& player) {
 	std::stringstream str;
 	if(prop.GetOwner() == player.GetUniqueID()) {
 		str << "领取收益\n售出\n------------------------\n" << prop.GetName() << "\n售价: $"
-			<< prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+			<< prop.GetValue() << "\n每天收益: $" << prop.GetProfit();
 		DlgMgr.Show(DIALOG_PROPERTY_SOLD, str.str(), player.GetId());
 	} else {
-		str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+		str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每天收益: $" << prop.GetProfit();
 		DlgMgr.Show(DIALOG_PROPERTY_INFO, str.str(), player.GetId());
 	}
 }
