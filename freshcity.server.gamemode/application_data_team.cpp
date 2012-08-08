@@ -63,9 +63,8 @@ void Team::Quit(Profile& player) {
 }
 
 void Team::SetName(const std::string& name) {
-	_name = name;
-	if(IsEmpty()) return;
 	Update(BSON("$set" << BSON("name" << GBKToUTF8(name))), false);
+	_name = name;
 }
 
 std::string Team::GetName() const {
@@ -73,9 +72,8 @@ std::string Team::GetName() const {
 }
 
 void Team::SetColor(int color) {
-	_color = color;
-	if(IsEmpty()) return;
 	Update(BSON("$set" << BSON("color" << color)), false);
+	_color = color;
 }
 
 int Team::GetColor() const {

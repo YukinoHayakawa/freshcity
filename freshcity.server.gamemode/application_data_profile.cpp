@@ -169,8 +169,9 @@ bool Profile::AuthPassword(const std::string& input) const {
 
 void Profile::SetPassword(const std::string& newpassword) {
 	if(newpassword.empty()) throw std::runtime_error("Password cannot be blank");
-	Update(BSON("$set" << BSON("auth.password" << GetPasswordDigest(GBKToUTF8(newpassword)))), false);
-	Sync();
+	std::string passwordhash(GetPasswordDigest(GBKToUTF8(newpassword)));
+	Update(BSON("$set" << BSON("auth.password" << passwordhash)), false);
+	_passwordhash = passwordhash;
 }
 
 CoordinatePlane Profile::GetPlaneCoordinate() const {
@@ -184,8 +185,9 @@ std::string Profile::GetNickname() const {
 }
 
 void Profile::SetNickname(const std::string& nickname) {
-	Update(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << GBKToUTF8(nickname))), false);
-	Sync();
+	std::string nick(GBKToUTF8(nickname));
+	Update(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << nick)), false);
+	_nickname = nick;
 }
 
 int Profile::GetAdminLevel() const {
@@ -194,7 +196,7 @@ int Profile::GetAdminLevel() const {
 
 void Profile::SetAdminLevel(int level) {
 	Update(BSON("$set" << BSON("archive.gtasa.mgmtlevel" << level)), false);
-	Sync();
+	_adminlevel = level;
 }
 
 Coordinate3D Profile::GetCameraFrontVector() const {
@@ -223,7 +225,7 @@ Coordinate3D Profile::GetVelocity() const {
 
 void Profile::SetBanned(bool banned) {
 	Update(BSON("$set" << BSON("archive.gtasa.banned" << banned)), false);
-	Sync();
+	_banned = banned;
 }
 
 bool Profile::IsSignedIn() const {
