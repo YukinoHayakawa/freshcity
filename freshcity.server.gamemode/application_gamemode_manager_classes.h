@@ -19,7 +19,6 @@
 
 #include "application_gamemode_manager_base.h"
 #include <boost/function.hpp>
-#include "application_config.h"
 #include "application_database.h"
 #include "application_gamemode_item_streamed.h"
 
@@ -151,5 +150,18 @@ public:
 };
 
 extern DynamicAreaManager& DynAreaMgr;
+
+// PropertyManager
+#include "application_data_property.h"
+
+class PropertyManager : public ItemManager<PropertyManager, std::string, Property> {
+public:
+	bool Add(const MemberPtr& item);
+	void LoadAllFromDatabase();
+	bool Remove(const mongo::OID& id);
+	Property& operator[](const mongo::OID& id);
+};
+
+extern PropertyManager& PropertyMgr;
 
 #endif

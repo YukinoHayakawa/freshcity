@@ -66,12 +66,6 @@ GangZoneItem::GangZoneItem(const mongo::BSONObj& data)
 GangZoneItem::GangZoneItem(const std::string& name, const mongo::OID& owner, const CoordinatePlane& min,
 	const CoordinatePlane& max, const mongo::OID& spawnpoint, const Coordinate3D& trigger)
 	: SaveableItem(CONFIG_STRING("Database.gangzone")), _zone(new GangZone(min.x, min.y, max.x, max.y)) {
-		DynamicAreaManager::MemberPtr gzitem(new GangZoneArea(_zone->GetId(), min.x, min.y, max.x, max.y));
-		_areaid = gzitem->GetID();
-		DynAreaMgr.Add(gzitem);
-		PickupManager::MemberPtr t(new TurfWarTrigger(_zone->GetId(), trigger.x, trigger.y, trigger.z));
-		_triggerid = t->GetID();
-		PickupMgr.Add(t);
 		mongo::BSONObj submit(BSON(mongo::GENOID <<
 			"name"		<< GBKToUTF8(name) <<
 			"minx"		<< min.x <<
@@ -86,6 +80,12 @@ GangZoneItem::GangZoneItem(const std::string& name, const mongo::OID& owner, con
 				"z"		<< trigger.z)));
 		SaveableItem::Create(submit, true);
 		_LoadOwnerData();
+		DynamicAreaManager::MemberPtr gzitem(new GangZoneArea(_zone->GetId(), min.x, min.y, max.x, max.y));
+		_areaid = gzitem->GetID();
+		DynAreaMgr.Add(gzitem);
+		PickupManager::MemberPtr t(new TurfWarTrigger(_zone->GetId(), trigger.x, trigger.y, trigger.z));
+		_triggerid = t->GetID();
+		PickupMgr.Add(t);
 }
 
 GangZoneItem::~GangZoneItem() {
@@ -94,8 +94,8 @@ GangZoneItem::~GangZoneItem() {
 }
 
 void GangZoneItem::SetName(const std::string& name) {
-	Update(BSON("$set" << BSON("name" << GBKToUTF8(name))), true);
-	_LoadOwnerData();
+	Update(BSON("$set" << BSON("name" << GBKToUTF8(name))), false);
+	_name = name;
 }
 
 std::string GangZoneItem::GetName() const {
@@ -103,8 +103,8 @@ std::string GangZoneItem::GetName() const {
 }
 
 void GangZoneItem::SetOwner(const mongo::OID& owner) {
-	Update(BSON("$set" << BSON("owner" << owner)), true);
-	_LoadOwnerData();
+	Update(BSON("$set" << BSON("owner" << owner)), false);
+	_owner = owner;
 }
 
 mongo::OID GangZoneItem::GetOwner() const {
@@ -193,8 +193,8 @@ void GangZoneItem::MemberArrived() {
 }
 
 void GangZoneItem::SetSpawnPoint(const mongo::OID& waypointid) {
-	Update(BSON("$set" << BSON("spawn" << waypointid)), true);
-	_LoadOwnerData();
+	Update(BSON("$set" << BSON("spawn" << waypointid)), false);
+	_spawnpoint = waypointid;
 }
 
 mongo::OID GangZoneItem::GetSpawnPoint() const {

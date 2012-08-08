@@ -67,7 +67,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnGameModeInit() {
 		TeamMgr.LoadAllFromDatabase();
 		GangZoneMgr.LoadAllFromDatabase();
 		LoadAllTeleportTriggerFromDatabase();
-		//ProfileMgr.Add(-1);
+		PropertyMgr.LoadAllFromDatabase();
+		ProfileMgr.Add(-1);
 		CreateTimer(TimerCallback_ChangeWeather, 0, 300000, true);
 		CreateTimer(TimerCallback_ChangeTime, 0, 60000, true);
 	} catch(std::runtime_error& e) {

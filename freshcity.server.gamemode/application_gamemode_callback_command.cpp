@@ -46,7 +46,7 @@ CMD(GetVehicle, "v", 0, NULL) {
 }
 
 // Teleporting
-CMD(TeleportMain, "t", 0, NEED_SIGNED_IN) {
+CMD(TeleportMain, "tp", 0, NEED_SIGNED_IN) {
 	if(cmdline[0] != 0) {
 		Waypoint point(cmdline);
 		point.PerformTeleport(player.GetId());
@@ -73,7 +73,7 @@ CMD(GetPlayer, "get", 1, NEED_SIGNED_IN) {
 
 // Server Management
 CMD(ServerMgmt, "s", 65535, NEED_SIGNED_IN) {
-	DlgMgr.Show(DIALOG_SERVER_MAIN, "重新载入团队列表\n重新载入地盘列表\n重新载入服务器设置", player.GetId());
+	DlgMgr.Show(DIALOG_SERVER_MAIN, "重新载入团队列表\n重新载入地盘列表\n重新载入服务器设置\n重新载入产业列表", player.GetId());
 }
 
 // Team Management
@@ -85,4 +85,9 @@ CMD(CreateGangZone, "gzc", 65535, NEED_SIGNED_IN) {
 	if(!player.HasVar("gz_create"))
 		throw std::runtime_error("未在创建进程中");
 	DlgMgr.Show(DIALOG_GANGZONE_CREATE_PROCESS, "保存当前位置为出生点\n保存当前位置为战争触发点\n完成创建\n取消创建", player.GetId());
+}
+
+// Property Management
+CMD(PropertyMain, "p", 65535, NEED_SIGNED_IN) {
+	DlgMgr.Show(DIALOG_PROPERTY_MAIN, "创建", player.GetId());
 }

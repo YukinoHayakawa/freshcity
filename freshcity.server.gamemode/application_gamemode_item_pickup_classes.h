@@ -70,4 +70,23 @@ public:
 	void Effect(Profile& player);
 };
 
+// PropertyMarker
+class PropertyMarker_OnSale : public DynamicPickup {
+private:
+	mongo::OID _property;
+
+public:
+	PropertyMarker_OnSale(const mongo::OID& property, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
+class PropertyMarker_Sold : public DynamicPickup {
+private:
+	mongo::OID _property;
+
+public:
+	PropertyMarker_Sold(const mongo::OID& property, float x, float y, float z);
+	void Effect(Profile& player);
+};
+
 #endif

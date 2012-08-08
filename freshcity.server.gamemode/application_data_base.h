@@ -18,6 +18,7 @@
 #define FRESHCITY_APPLICATION_DATA_BASE
 
 #include "application_database.h"
+#include "application_config.h"
 
 /* The base class for database element. Throws std::runtime_error. */
 class SaveableItem {

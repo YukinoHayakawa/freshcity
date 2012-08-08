@@ -164,3 +164,26 @@ bool DynamicAreaManager::Add(const MemberPtr& item) {
 }
 
 DynamicAreaManager& DynAreaMgr(DynamicAreaManager::GetInstance());
+
+// PropertyManager
+bool PropertyManager::Add(const MemberPtr& item) {
+	return ItemManager::Add(item->GetUniqueID().str(), item);
+}
+
+void PropertyManager::LoadAllFromDatabase() {
+	_members.clear();
+	FETCH_ALL_FROM_DATABASE("Database.property") {
+		MemberPtr _item(new Property(_cursor->next()));
+		ItemManager::Add(_item->GetUniqueID().str(), _item);
+	}
+}
+
+bool PropertyManager::Remove(const mongo::OID& id) {
+	return ItemManager::Remove(id.str());
+}
+
+Property& PropertyManager::operator[](const mongo::OID& id) {
+	return ItemManager::Get(id.str());
+}
+
+PropertyManager& PropertyMgr(PropertyManager::GetInstance());

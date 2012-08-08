@@ -33,7 +33,7 @@ int inline Random(int min, int max) {
 	return (rand() % (max - min)) + min;
 }
 
-int inline RandomWeather() { return Random(0, 45); }
+int inline RandomWeather() { return Random(0, 22); }
 
 // IdentifierAllocator
 #include <stack>

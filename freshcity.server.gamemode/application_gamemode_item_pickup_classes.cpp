@@ -72,3 +72,36 @@ void TeleportTrigger::Effect(Profile& player) {
 	Waypoint target(_waypoint);
 	target.PerformTeleport(player.GetId());
 }
+
+// PropertyMarker
+PropertyMarker_OnSale::PropertyMarker_OnSale(const mongo::OID& property, float x, float y, float z)
+	: _property(property), DynamicPickup(1273, 1, x, y, z, false) {}
+
+void PropertyMarker_OnSale::Effect(Profile& player) {
+	if(player.HasVar("property_lastviewtime") && time(0) - player.GetVar<__int64>("property_lastviewtime") < 5) return;
+	player.SetVar("property_lastviewtime", time(0));
+	player.SetVar("property_lastviewed", _property);
+	Property& prop(PropertyMgr[_property]);
+	std::stringstream str;
+	str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+	DlgMgr.Show(DIALOG_PROPERTY_ONSALE, str.str(), player.GetId());
+}
+
+PropertyMarker_Sold::PropertyMarker_Sold(const mongo::OID& property, float x, float y, float z)
+	: _property(property), DynamicPickup(1272, 1, x, y, z, false) {}
+
+void PropertyMarker_Sold::Effect(Profile& player) {
+	if(player.HasVar("property_lastviewtime") && time(0) - player.GetVar<__int64>("property_lastviewtime") < 5) return;
+	player.SetVar("property_lastviewtime", time(0));
+	player.SetVar("property_lastviewed", _property);
+	Property& prop(PropertyMgr[_property]);
+	std::stringstream str;
+	if(prop.GetOwner() == player.GetUniqueID()) {
+		str << "领取收益\n售出\n------------------------\n" << prop.GetName() << "\n售价: $"
+			<< prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+		DlgMgr.Show(DIALOG_PROPERTY_SOLD, str.str(), player.GetId());
+	} else {
+		str << prop.GetName() << "\n售价: $" << prop.GetValue() << "\n每小时收益: $" << prop.GetProfit();
+		DlgMgr.Show(DIALOG_PROPERTY_INFO, str.str(), player.GetId());
+	}
+}

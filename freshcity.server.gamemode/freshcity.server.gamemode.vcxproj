@@ -89,6 +89,7 @@
     <ClCompile Include=".\application_gamemode_item_pickup_classes.cpp" />
     <ClCompile Include="application_data_profile.cpp" />
     <ClCompile Include=".\application_gamemode_callback_command.cpp" />
+    <ClCompile Include="application_data_property.cpp" />
     <ClCompile Include="application_data_team.cpp" />
     <ClCompile Include="application_data_waypoint.cpp" />
     <ClCompile Include=".\application_gamemode_callback_dialog.cpp" />
@@ -125,6 +126,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
     </ClInclude>
     <ClInclude Include=".\application_gamemode_definition_color.h" />
+    <ClInclude Include="application_data_property.h" />
     <ClInclude Include="application_data_waypoint.h" />
     <ClInclude Include=".\application_gamemode_manager_base.h" />
     <ClInclude Include="application_dependency_streamer.h" />

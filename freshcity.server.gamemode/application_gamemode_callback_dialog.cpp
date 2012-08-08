@@ -244,6 +244,10 @@ DIALOG(DIALOG_SERVER_MAIN, DIALOG_STYLE_LIST, "管理服务器", "确定", "取消", fals
 		ReloadConfig();
 		break;
 
+	case 3: /* ReloadPropertyList */
+		PropertyMgr.LoadAllFromDatabase();
+		break;
+
 	default:
 		break;
 	}
@@ -298,4 +302,58 @@ DIALOG(DIALOG_PROFILE_SETTING_NICKNAME, DIALOG_STYLE_INPUT, "更改昵称", "确定", 
 	if(inputtext[0] == 0) throw std::runtime_error("昵称不能为空");
 	player.SetNickname(inputtext);
 	player.SendChatMessage(COLOR_SUCC, "昵称更改为" + std::string(inputtext));
+}
+
+DIALOG(DIALOG_PROPERTY_ONSALE, DIALOG_STYLE_MSGBOX, "产业", "购买", "取消", false) {
+	PropertyMgr[player.GetVar<mongo::OID>("property_lastviewed")].Purchase(player);
+	player.SendChatMessage(COLOR_SUCC, "购买成功");
+}
+
+DIALOG(DIALOG_PROPERTY_SOLD, DIALOG_STYLE_LIST, "产业", "确定", "取消", false) {
+	Property& prop(PropertyMgr[player.GetVar<mongo::OID>("property_lastviewed")]);
+	switch(listitem) {
+	case 0: // Draw
+		prop.Draw(player);
+		break;
+
+	case 1: // Sell
+		prop.Sell(player);
+		break;
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_PROPERTY_INFO, DIALOG_STYLE_MSGBOX, "产业", "确定", "", true) {}
+
+DIALOG(DIALOG_PROPERTY_MAIN, DIALOG_STYLE_LIST, "产业", "确定", "", false) {
+	switch(listitem) {
+	case 0: { /* Create */
+		PropertyCreateInfo info;
+		info.pos = player.GetPos();
+		player.SetVar("property_creation", info);
+		DlgMgr.Show(DIALOG_PROPERTY_CREATE_NAME, "产业名称", player.GetId());
+		break;
+	}
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_PROPERTY_CREATE_NAME, DIALOG_STYLE_INPUT, "创建产业", "确定", "取消", false) {
+	player.GetVar<PropertyCreateInfo>("property_creation").name = inputtext;
+	DlgMgr.Show(DIALOG_PROPERTY_CREATE_VALUE, "产业价值", player.GetId());
+}
+
+DIALOG(DIALOG_PROPERTY_CREATE_VALUE, DIALOG_STYLE_INPUT, "创建产业", "确定", "取消", false) {
+	player.GetVar<PropertyCreateInfo>("property_creation").value = boost::lexical_cast<int>(inputtext);
+	DlgMgr.Show(DIALOG_PROPERTY_CREATE_PROFIT, "产业收益", player.GetId());
+}
+
+DIALOG(DIALOG_PROPERTY_CREATE_PROFIT, DIALOG_STYLE_INPUT, "创建产业", "完成", "取消", false) {
+	PropertyCreateInfo& info(player.GetVar<PropertyCreateInfo>("property_creation"));
+	info.profit = boost::lexical_cast<int>(inputtext);
+	PropertyMgr.Add(PropertyManager::MemberPtr(new Property(info.name, info.pos, info.profit, info.value)));
 }
