@@ -45,19 +45,36 @@ public:
 
 private:
 	void _LoadMemberData();
-	std::string _nickname;
-	std::string _passwordhash;
 	mongo::BSONObj _gamearchive;
-	int _adminlevel;
-	bool _deleted;
-	bool _banned;
-	bool _signedin;
 	mongo::OID _team;
-	time_t _lastkill;
-	int _killcounter;
+
+	struct AuthData {
+		std::string passwordhash;
+		int adminlevel;
+		bool deleted;
+		bool banned;
+		bool signedin;
+		int autosavetimer;
+		AuthData() : adminlevel(0), deleted(false), banned(false), signedin(false), autosavetimer(0) {}
+	} _auth;
+
+	struct KillCounter {
+		time_t lastkill;
+		int counter;
+		KillCounter() : lastkill(0), counter(0) {}
+	} _killcounter;
+
 	RolePtr _role;
-	int _autosavetimer;
+	
 	boost::unordered_map<std::string, boost::shared_ptr<void>> _pvars;
+
+	struct GameData {
+		std::string nickname;
+		int money;
+		int score;
+		int color;
+		GameData() : money(0), score(0), color(0) {}
+	} _gamedata;
 
 public:
 	Profile(int playerid, const mongo::OID& uniqueid);
@@ -122,6 +139,13 @@ public:
 	bool HasVar(const std::string& key) {
 		return _pvars.find(key) != _pvars.end();
 	}
+
+	bool SetColor(int color);
+	int GetColor();
+	bool GiveMoney(int money);
+	int GetMoney();
+	int GetScore();
+	bool SetScore(int score);
 };
 
 #endif

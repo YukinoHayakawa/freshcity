@@ -43,12 +43,12 @@ bool Profile::Role::MustHaveTarget() {
 
 void Profile::_LoadMemberData() {
 	try {
-		_passwordhash	= _rawdata["auth"]["password"].String();
-		_gamearchive	= _rawdata["archive"]["gtasa"].Obj();
-		_deleted		= _rawdata["auth"]["deleted"].Bool();
-		_nickname		= UTF8ToGBK(_gamearchive["reginfo"]["nickname"].String());
-		_adminlevel		= (int)_gamearchive["mgmtlevel"].Number();
-		_banned			= _gamearchive["banned"].Bool();
+		_auth.passwordhash	= _rawdata["auth"]["password"].String();
+		_gamearchive		= _rawdata["archive"]["gtasa"].Obj();
+		_auth.deleted		= _rawdata["auth"]["deleted"].Bool();
+		_gamedata.nickname	= UTF8ToGBK(_gamearchive["reginfo"]["nickname"].String());
+		_auth.adminlevel	= (int)_gamearchive["mgmtlevel"].Number();
+		_auth.banned		= _gamearchive["banned"].Bool();
 	} catch(mongo::UserException) {
 		throw std::runtime_error("Invalid player profile");
 	}
@@ -86,29 +86,26 @@ void Profile::ApplyDataToPlayer() {
 }
 
 Profile::Profile(int playerid, const mongo::OID& uniqueid)
-	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid), _autosavetimer(0),
-	_adminlevel(0), _deleted(false), _banned(false), _signedin(false), _killcounter(0), _lastkill(0) {
+	: SaveableItem(CONFIG_STRING("Database.profile"), uniqueid), Player(playerid) {
 		_LoadMemberData();
 }
 
 Profile::Profile(int playerid, const std::string& logname)
-	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))),
-	Player(playerid), _adminlevel(0), _deleted(false), _banned(false), _signedin(false),
-	_killcounter(0), _lastkill(0), _autosavetimer(0) {
+	: SaveableItem(CONFIG_STRING("Database.profile"), BSON("auth.logname" << GBKToUTF8(logname))), Player(playerid) {
 		if(!_rawdata.isEmpty())
 			_LoadMemberData();
 }
 
 Profile::~Profile() {
-	if(_autosavetimer != 0) DestroyTimer(_autosavetimer);
+	if(_auth.autosavetimer != 0) DestroyTimer(_auth.autosavetimer);
 }
 
 bool Profile::IsProfileDeleted() {
-	return _deleted;
+	return _auth.deleted;
 }
 
 bool Profile::IsBannedForGame() {
-	return _banned;
+	return _auth.banned;
 }
 
 void Profile::Create(const std::string& logname, const std::string& password) {
@@ -164,14 +161,14 @@ void Profile::Sync() {
 }
 
 bool Profile::AuthPassword(const std::string& input) const {
-	return GetPasswordDigest(GBKToUTF8(input)) == _passwordhash;
+	return GetPasswordDigest(GBKToUTF8(input)) == _auth.passwordhash;
 }
 
 void Profile::SetPassword(const std::string& newpassword) {
 	if(newpassword.empty()) throw std::runtime_error("Password cannot be blank");
 	std::string passwordhash(GetPasswordDigest(GBKToUTF8(newpassword)));
 	Update(BSON("$set" << BSON("auth.password" << passwordhash)), false);
-	_passwordhash = passwordhash;
+	_auth.passwordhash = passwordhash;
 }
 
 CoordinatePlane Profile::GetPlaneCoordinate() const {
@@ -181,22 +178,22 @@ CoordinatePlane Profile::GetPlaneCoordinate() const {
 }
 
 std::string Profile::GetNickname() const {
-	return _nickname;
+	return _gamedata.nickname;
 }
 
 void Profile::SetNickname(const std::string& nickname) {
 	std::string nick(GBKToUTF8(nickname));
 	Update(BSON("$set" << BSON("archive.gtasa.reginfo.nickname" << nick)), false);
-	_nickname = nick;
+	_gamedata.nickname = nick;
 }
 
 int Profile::GetAdminLevel() const {
-	return _adminlevel;
+	return _auth.adminlevel;
 }
 
 void Profile::SetAdminLevel(int level) {
 	Update(BSON("$set" << BSON("archive.gtasa.mgmtlevel" << level)), false);
-	_adminlevel = level;
+	_auth.adminlevel = level;
 }
 
 Coordinate3D Profile::GetCameraFrontVector() const {
@@ -225,17 +222,17 @@ Coordinate3D Profile::GetVelocity() const {
 
 void Profile::SetBanned(bool banned) {
 	Update(BSON("$set" << BSON("archive.gtasa.banned" << banned)), false);
-	_banned = banned;
+	_auth.banned = banned;
 }
 
 bool Profile::IsSignedIn() const {
-	return _signedin;
+	return _auth.signedin;
 }
 
 void Profile::SetSignedIn(bool signedin) {
-	_signedin = signedin;
-	if(signedin && _autosavetimer == 0)
-		_autosavetimer = CreateTimer(TimerCallback_AutoSaveProfile, this, CONFIG_INT("Gaming.autosave") * 60000, true);
+	_auth.signedin = signedin;
+	if(signedin && _auth.autosavetimer == 0)
+		_auth.autosavetimer = CreateTimer(TimerCallback_AutoSaveProfile, this, CONFIG_INT("Gaming.autosave") * 60000, true);
 }
 
 Coordinate5D Profile::GetDetailedPos() const {
@@ -255,16 +252,16 @@ void Profile::SetTeamId(const mongo::OID& team) {
 int Profile::KillCounter() {
 	int interval = CONFIG_INT("Gaming.killinterval");
 	time_t now = time(0);
-	if(_killcounter == 0)
-		++_killcounter;
+	if(_killcounter.counter == 0)
+		++_killcounter.counter;
 	else {
-		if((now - _lastkill) > interval)
-			_killcounter = 1;
+		if((now - _killcounter.lastkill) > interval)
+			_killcounter.counter = 1;
 		else 
-			++_killcounter;
+			++_killcounter.counter;
 	}
-	_lastkill = now;
-	return _killcounter;
+	_killcounter.lastkill = now;
+	return _killcounter.counter;
 }
 
 void Profile::PlaySound(int soundid) {
@@ -281,4 +278,31 @@ Profile::Role& Profile::GetRole() {
 		return *_role.get();
 	else
 		throw std::runtime_error("Player hasn't chosen a role");
+}
+
+bool Profile::SetColor(int color) {
+	_gamedata.color = color;
+	return Player::SetColor(color);
+}
+
+int Profile::GetColor() {
+	return _gamedata.color;
+}
+
+bool Profile::GiveMoney(int money) {
+	_gamedata.money = money;
+	return Player::GiveMoney(money);
+}
+
+int Profile::GetMoney() {
+	return _gamedata.money;
+}
+
+int Profile::GetScore() {
+	return _gamedata.score;
+}
+
+bool Profile::SetScore(int score) {
+	_gamedata.score = score;
+	return Player::SetScore(score);
 }
