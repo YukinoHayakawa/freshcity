@@ -26,7 +26,7 @@ namespace sampgdk {
 
 class FakeAmx {
 public:
-	static const size_t INITIAL_HEAP_SIZE = 1024;
+	static const size_t INITIAL_HEAP_SIZE = 8192;
 
 	static AMX *amx();
 

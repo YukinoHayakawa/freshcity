@@ -84,7 +84,7 @@ cell FakeAmx::Push(size_t cells) {
 cell FakeAmx::Push(const char *s) {
 	std::size_t size = std::strlen(s) + 1;
 	cell address = Push(size);
-	amx_SetString(&heap_[0] + address/sizeof(cell), s, 1, 0, size);
+	amx_SetString(&heap_[0] + address/sizeof(cell), s, 0, 0, size);
 	return address;
 }
 
