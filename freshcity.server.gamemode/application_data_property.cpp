@@ -40,22 +40,26 @@ void Property::_ReloadMarker() {
 	if(_pickupid != 0)
 		PickupMgr.Remove(_pickupid);
 	PickupManager::MemberPtr marker;
-	_owner.isSet() ?
-		marker.reset(new PropertyMarker_Sold(_uniqueid, _x, _y, _z)) :
+	if(_owner.isSet()) {
+		marker.reset(new PropertyMarker_Sold(_uniqueid, _x, _y, _z));
+		_mapicon.reset(new DynamicMapIcon(32, 0, Coordinate5D(_x, _y, _z, -1, -1)));
+	} else {
 		marker.reset(new PropertyMarker_OnSale(_uniqueid, _x, _y, _z));
+		_mapicon.reset(new DynamicMapIcon(31, 0, Coordinate5D(_x, _y, _z, -1, -1)));
+	}
 	_pickupid = marker->GetID();
 	PickupMgr.Add(marker);
 }
 
 Property::Property(const mongo::BSONObj& data)
-	: SaveableItem(CONFIG_STRING("Database.property")) {
+	: SaveableItem(CONFIG_STRING("Database.property")), _pickupid(0) {
 		InitData(data);
 		_LoadData();
 		_ReloadMarker();
 }
 
 Property::Property(const std::string& name, const Coordinate3D& pos, int profit, int value)
-	: SaveableItem(CONFIG_STRING("Database.property")) {
+	: SaveableItem(CONFIG_STRING("Database.property")), _pickupid(0) {
 		mongo::BSONObj submit(BSON(mongo::GENOID <<
 			"name"		<< GBKToUTF8(name) <<
 			"owner"		<< mongo::OID() <<
@@ -103,8 +107,9 @@ int Property::GetProfit() const {
 int Property::Draw(Profile& player) {
 	if(player.GetUniqueID() != _owner) return 0;
 	__int64 now(time(0));
-	Update(BSON("$set" << BSON("lastdraw" << now)), false);
 	int earns((int)((now - _lastdraw) / 1440) * _profit);
+	if(earns == 0) return 0;
+	Update(BSON("$set" << BSON("lastdraw" << now)), false);
 	player.GiveMoney(earns);
 	_lastdraw = now;
 	return earns;

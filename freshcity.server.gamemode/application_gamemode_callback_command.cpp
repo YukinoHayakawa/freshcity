@@ -20,6 +20,8 @@
 #include "application_algorithms.h"
 #include "application_gamemode_sysmsgqueue.h"
 #include "application_data_waypoint.h"
+#include <fstream>
+#include<boost/tokenizer.hpp>
 
 class _CmdRegister {
 public:
@@ -90,4 +92,28 @@ CMD(CreateGangZone, "gzc", 65535, NEED_SIGNED_IN) {
 // Property Management
 CMD(PropertyMain, "p", 65535, NEED_SIGNED_IN) {
 	DlgMgr.Show(DIALOG_PROPERTY_MAIN, "创建", player.GetId());
+}
+
+// Used to import property data from SATDM
+// [xpos,ypos,zpos,interior,name,value,profit]
+CMD(ImportProperty, "importprop", 65535, NEED_SIGNED_IN) {
+	std::ifstream import(cmdline);
+	if(!import) throw std::runtime_error("指定文件不存在");
+	std::string line;
+	float x(0.0f), y(0.0f), z(0.0f);
+	int value(0), profit(0);
+	std::string name;
+	while(getline(import, line)) {
+		typedef boost::tokenizer<boost::char_separator<char>> tokenizer;
+		tokenizer token(line, boost::char_separator<char>(","));
+		tokenizer::const_iterator iter(token.begin());
+		x			= boost::lexical_cast<float>(*iter);
+		y			= boost::lexical_cast<float>(*++iter);
+		z			= boost::lexical_cast<float>(*++iter);
+		if(boost::lexical_cast<int>(*++iter) != 0) continue; // Interior
+		name		= *++iter;
+		value		= boost::lexical_cast<int>(*++iter);
+		profit		= boost::lexical_cast<int>(*++iter);
+		PropertyMgr.Add(PropertyManager::MemberPtr(new Property(name, Coordinate3D(x, y, z), profit, value)));
+	}
 }

@@ -109,12 +109,24 @@ protected:
 	const int _id;
 
 public:
-	Dynamic3DTextLabel(const std::string& text, int color, Coordinate5D& pos, float drawdistance, int attachedplayer = INVALID_PLAYER_ID, int attachedvehicle = INVALID_VEHICLE_ID, int testlos = 0, int playerid = -1, float streamdistance = 100.0)
+	Dynamic3DTextLabel(const std::string& text, int color, const Coordinate5D& pos, float drawdistance, int attachedplayer = INVALID_PLAYER_ID, int attachedvehicle = INVALID_VEHICLE_ID, int testlos = 0, int playerid = -1, float streamdistance = 100.0)
 		: _id(CreateDynamic3DTextLabel(text, color, pos.x, pos.y, pos.z, drawdistance, attachedplayer, attachedvehicle, testlos, pos.virtualworld, pos.interior, playerid, streamdistance)) {}
 	~Dynamic3DTextLabel() { DestroyDynamic3DTextLabel(_id); }
 	bool IsValid() { return IsValidDynamic3DTextLabel(_id); }
 	std::string GetText() { std::string text; GetDynamic3DTextLabelText(_id, text); return text; }
 	bool SetText(int color, const std::string& text) { return UpdateDynamic3DTextLabelText(_id, color, text); }
+};
+
+// MapIcon
+class DynamicMapIcon {
+protected:
+	const int _id;
+
+public:
+	DynamicMapIcon(int type, int color, const Coordinate5D& pos, int playerid = -1, float streamdistance = 100.0)
+		: _id(CreateDynamicMapIcon(pos.x, pos.y, pos.z, type, color, pos.virtualworld, pos.interior, playerid, streamdistance)) {}
+	~DynamicMapIcon() { DestroyDynamicMapIcon(_id); }
+	bool IsValid() { return IsValidDynamicMapIcon(_id); }
 };
 
 #endif

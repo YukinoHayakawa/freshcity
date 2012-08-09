@@ -30,6 +30,7 @@ protected:
 	float _x, _y, _z;
 	void _LoadData();
 	void _ReloadMarker();
+	boost::shared_ptr<DynamicMapIcon> _mapicon;
 
 public:
 	Property(const mongo::BSONObj& data);
