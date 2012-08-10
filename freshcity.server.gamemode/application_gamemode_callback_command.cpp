@@ -21,7 +21,7 @@
 #include "application_gamemode_sysmsgqueue.h"
 #include "application_data_waypoint.h"
 #include <fstream>
-#include<boost/tokenizer.hpp>
+#include <boost/tokenizer.hpp>
 
 class _CmdRegister {
 public:
@@ -116,4 +116,28 @@ CMD(ImportProperty, "importprop", 65535, NEED_SIGNED_IN) {
 		profit		= boost::lexical_cast<int>(*++iter);
 		PropertyMgr.Add(PropertyManager::MemberPtr(new Property(name, Coordinate3D(x, y, z), profit, value)));
 	}
+}
+
+// Racing
+CMD(RacingMain, "r", 0, NEED_SIGNED_IN) {
+	DlgMgr.Show(DIALOG_RACING_MAIN, "发起\n创建", player.GetId());
+}
+
+CMD(CreateRaceAppendCP, "rcacp", 65535, NEED_SIGNED_IN) {
+	player.GetVar<Racing>("race_create").AppendCheckpoint(player.GetPos());
+}
+
+CMD(CreateRaceDone, "rcf", 65535, NEED_SIGNED_IN) {
+	player.GetVar<Racing>("race_create").Create();
+	player.DelVar("race_create");
+}
+
+CMD(RaceStart, "rstart", 65535, NEED_SIGNED_IN) {
+	RacingMgr[player.GetId()].Ready();
+}
+
+CMD(RaceJoin, "rjoin", 0, NEED_SIGNED_IN) {
+	int starter(-1);
+	sscanf(cmdline, "%d", &starter);
+	RacingMgr[starter].Join(player);
 }

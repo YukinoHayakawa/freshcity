@@ -29,5 +29,6 @@ TIMERCALLBACK(TurfWarWaitTimeout);
 TIMERCALLBACK(AutoSaveProfile);
 TIMERCALLBACK(ChangeWeather);
 TIMERCALLBACK(ChangeTime);
+TIMERCALLBACK(RaceCountDown);
 
 #endif

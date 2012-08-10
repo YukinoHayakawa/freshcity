@@ -187,3 +187,6 @@ Property& PropertyManager::operator[](const mongo::OID& id) {
 }
 
 PropertyManager& PropertyMgr(PropertyManager::GetInstance());
+
+// RacingManager
+RacingManager& RacingMgr(RacingManager::GetInstance());

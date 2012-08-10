@@ -418,3 +418,17 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerClickPlayer(int playerid, int clickedplay
 	}
 	return true;
 }
+
+PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerEnterRaceCheckpoint(int playerid) {
+	RUN_TIME_COUNTER;
+	try {
+		Profile& player(ProfileMgr[playerid]);
+		if(!player.HasVar("race_joined")) return true;
+		RacingMgr[player.GetVar<int>("race_joined")].PlayerReachCheckpoint(playerid);
+	} catch(std::runtime_error &e) {
+		SendClientMessage(playerid, COLOR_ERROR, e.what());
+	} catch(...) {
+		SendClientMessage(playerid, COLOR_ERROR, "OnPlayerEnterRaceCheckpoint ·¢Éú´íÎó");
+	}
+	return true;
+}

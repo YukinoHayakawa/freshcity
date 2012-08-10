@@ -164,4 +164,11 @@ public:
 
 extern PropertyManager& PropertyMgr;
 
+// RacingManager
+#include "application_data_racing.h"
+
+class RacingManager : public ItemManager<RacingManager, int, Racing> {};
+
+extern RacingManager& RacingMgr;
+
 #endif

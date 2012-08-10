@@ -56,3 +56,8 @@ TIMERCALLBACK(ChangeTime) {
 	static int time(11);
 	SetWorldTime(++time % 24);
 }
+
+TIMERCALLBACK(RaceCountDown) {
+	REF(Racing);
+	ref.CountDown();
+}

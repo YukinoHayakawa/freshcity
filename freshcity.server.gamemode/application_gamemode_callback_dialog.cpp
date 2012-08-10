@@ -357,3 +357,30 @@ DIALOG(DIALOG_PROPERTY_CREATE_PROFIT, DIALOG_STYLE_INPUT, "´´½¨²úÒµ", "Íê³É", "È
 	info.profit = boost::lexical_cast<int>(inputtext);
 	PropertyMgr.Add(PropertyManager::MemberPtr(new Property(info.name, info.pos, info.profit, info.value)));
 }
+
+DIALOG(DIALOG_RACING_MAIN, DIALOG_STYLE_LIST, "¾ºÈü", "È·¶¨", "È¡Ïû", false) {
+	switch(listitem) {
+	case 0: /* Start */
+		DlgMgr.Show(DIALOG_RACING_START_NAME, "ÈüµÀÃû³Æ", player.GetId());
+		break;
+
+	case 1: /* Create */
+		DlgMgr.Show(DIALOG_RACING_CREATE_NAME, "ÈüµÀÃû³Æ", player.GetId());
+		break;
+
+	default:
+		break;
+	}
+}
+
+DIALOG(DIALOG_RACING_START_NAME, DIALOG_STYLE_INPUT, "·¢Æð¾ºÈü", "È·¶¨", "È¡Ïû", false) {
+	boost::shared_ptr<Racing> session(new Racing(inputtext, player.GetId()));
+	session->Join(player);
+	RacingMgr.Add(player.GetId(), session);
+}
+
+DIALOG(DIALOG_RACING_CREATE_NAME, DIALOG_STYLE_INPUT, "´´½¨ÈüµÀ", "È·¶¨", "È¡Ïû", false) {
+	if(player.HasVar("race_joined")) throw std::runtime_error("ÒÑ¾­²Î¼ÓÁË±ðµÄ¾ºÈü");
+	Profile::PVarPtr session(new Racing(inputtext, player.GetId(), Racing::Type::NORMAL, player.GetUniqueID()));
+	player.SetVar("race_create", session);
+}

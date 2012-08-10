@@ -121,7 +121,9 @@ public:
 		_pvars[key] = boost::shared_ptr<void>(new Type(value));
 	}
 
-	void SetVar(const std::string& key, const boost::shared_ptr<void>& value) {
+	typedef boost::shared_ptr<void> PVarPtr;
+
+	void SetVar(const std::string& key, const PVarPtr& value) {
 		_pvars[key] = value;
 	}
 

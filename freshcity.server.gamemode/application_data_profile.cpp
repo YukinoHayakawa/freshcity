@@ -290,8 +290,9 @@ int Profile::GetColor() {
 }
 
 bool Profile::GiveMoney(int money) {
-	_gamedata.money = money;
-	return Player::GiveMoney(money);
+	_gamedata.money += money;
+	Player::ResetMoney();
+	return Player::GiveMoney(_gamedata.money);
 }
 
 int Profile::GetMoney() {

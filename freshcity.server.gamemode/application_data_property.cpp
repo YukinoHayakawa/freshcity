@@ -42,10 +42,10 @@ void Property::_ReloadMarker() {
 	PickupManager::MemberPtr marker;
 	if(_owner.isSet()) {
 		marker.reset(new PropertyMarker_Sold(_uniqueid, _x, _y, _z));
-		_mapicon.reset(new DynamicMapIcon(32, 0, Coordinate5D(_x, _y, _z, -1, -1)));
+		_mapicon.reset(new DynamicMapIcon(32, 0, Coordinate5D(_x, _y, _z, -1, -1), -1, 500.0f));
 	} else {
 		marker.reset(new PropertyMarker_OnSale(_uniqueid, _x, _y, _z));
-		_mapicon.reset(new DynamicMapIcon(31, 0, Coordinate5D(_x, _y, _z, -1, -1)));
+		_mapicon.reset(new DynamicMapIcon(31, 0, Coordinate5D(_x, _y, _z, -1, -1), -1, 500.0f));
 	}
 	_pickupid = marker->GetID();
 	PickupMgr.Add(marker);
